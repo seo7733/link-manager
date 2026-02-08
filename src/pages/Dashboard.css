@@ -38,15 +38,17 @@
   .dashboard-logo {
     line-height: 0;
     margin: 0;
+    width: 260px;
+    flex-shrink: 0;
   }
 
   .dashboard-logo img {
     display: block;
-    height: 40px;
-    max-height: 44px;
-    max-width: 200px;
-    width: auto;
+    width: 100%;
+    height: auto;
+    max-height: 56px;
     object-fit: contain;
+    object-position: left center;
   }
 
   .header-google-search {
