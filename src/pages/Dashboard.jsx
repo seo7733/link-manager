@@ -383,7 +383,7 @@ function Dashboard({ user, onLogout }) {
     <div className="dashboard">
       <header className="dashboard-header">
         <h1 className="dashboard-logo">
-          <img src="/logo.png" alt="즐순이 즐겨찾기 매니저" />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
         </h1>
         <form className="header-google-search" onSubmit={handleGoogleSearch}>
           <input

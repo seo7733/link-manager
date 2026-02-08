@@ -19,7 +19,7 @@ function Login() {
       <div className="login-card">
         <div className="login-header">
         <h1 className="login-logo">
-          <img src="/logo.png" alt="즐순이 즐겨찾기 매니저" />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
         </h1>
           <p>나만의 즐겨찾기기를 체계적으로 관리하세요</p>
         </div>
