@@ -575,6 +575,9 @@ function Dashboard({ user, onLogout }) {
               </li>
             )}
           </ul>
+          <footer className="panel-links-footer">
+            © 2026 Seo Jongkeun. All rights reserved.
+          </footer>
         </section>
 
         <aside className="panel panel-memos">
