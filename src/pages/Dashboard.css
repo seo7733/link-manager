@@ -64,6 +64,55 @@
     object-position: left center;
   }
 
+  .header-search-center {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .header-search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .header-search-row input {
+    flex: 1;
+    min-width: 0;
+    width: 90%;
+    max-width: 270px;
+    padding: 6px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1a1a2e;
+    background: #f9fafb;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .header-search-row input::placeholder {
+    color: #9ca3af;
+  }
+
+  .header-search-row input:focus {
+    border-color: #6366f1;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  .header-search-row .btn-search-icon {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
   .header-right {
     display: flex;
     align-items: center;
@@ -144,47 +193,6 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-  }
-
-  .panel-links-search {
-    flex-shrink: 0;
-    width: 90%;
-    max-width: 480px;
-    margin: 0 auto 12px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .links-search-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-  }
-
-  .links-search-row input {
-    width: 90%;
-    flex: 0 0 90%;
-    min-width: 0;
-    padding: 8px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #1a1a2e;
-    background: #f9fafb;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
-  }
-
-  .links-search-row input::placeholder {
-    color: #9ca3af;
-  }
-
-  .links-search-row input:focus {
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
   }
 
   .btn-search-icon {
