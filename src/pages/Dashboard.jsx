@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import './Dashboard.css'
 
@@ -49,9 +49,21 @@ function Dashboard({ user, onLogout }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
+  const [searchAreaWidth, setSearchAreaWidth] = useState(null)
+  const linksPanelRef = useRef(null)
 
   useEffect(() => {
     fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    const el = linksPanelRef.current
+    if (!el) return
+    const update = () => setSearchAreaWidth(el.offsetWidth * 0.8)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
   }, [])
 
   useEffect(() => {
@@ -413,7 +425,7 @@ function Dashboard({ user, onLogout }) {
             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
           </button>
         </h1>
-        <div className="header-search-center">
+        <div className="header-search-center" style={searchAreaWidth != null ? { width: `${searchAreaWidth}px`, maxWidth: `${searchAreaWidth}px` } : undefined}>
           <form className="header-search-row" onSubmit={handleGoogleSearch}>
             <input
               type="text"
@@ -465,7 +477,7 @@ function Dashboard({ user, onLogout }) {
           </ul>
         </aside>
 
-        <section className="panel panel-links">
+        <section ref={linksPanelRef} className="panel panel-links">
           <div className="panel-header">
             <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : '카테고리를 선택하세요'}</h2>
             {searchResults !== null ? (
