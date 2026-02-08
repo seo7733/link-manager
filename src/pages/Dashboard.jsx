@@ -26,6 +26,8 @@ function Dashboard({ user, onLogout }) {
   const [editingMemo, setEditingMemo] = useState(null)
   const [editMemoContent, setEditMemoContent] = useState('')
 
+  const [googleSearchQuery, setGoogleSearchQuery] = useState('')
+
   useEffect(() => {
     fetchCategories()
   }, [])
@@ -258,6 +260,13 @@ function Dashboard({ user, onLogout }) {
     if (e.key === 'Enter') action()
   }
 
+  const handleGoogleSearch = (e) => {
+    e?.preventDefault()
+    const q = googleSearchQuery?.trim()
+    if (!q) return
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer')
+  }
+
   // 카테고리 트리 렌더링
   const renderCategoryItem = (cat, depth = 0, siblingIndex = 0, siblingCount = 1) => {
     const isExpanded = expandedCategories[cat.id]
@@ -342,6 +351,16 @@ function Dashboard({ user, onLogout }) {
     <div className="dashboard">
       <header className="dashboard-header">
         <h1><span style={{fontSize: '20px'}}>⭐ 즐순이</span> <span style={{fontSize: '12px', color: '#9ca3af', fontWeight: '400'}}>즐겨찾기 매니저</span></h1>
+        <form className="header-google-search" onSubmit={handleGoogleSearch}>
+          <input
+            type="text"
+            placeholder="Google 검색..."
+            value={googleSearchQuery}
+            onChange={(e) => setGoogleSearchQuery(e.target.value)}
+            aria-label="Google 검색"
+          />
+          <button type="submit" className="btn-google-search" title="Google에서 검색">🔍</button>
+        </form>
         <div className="header-right">
           <span className="user-email">{user.email}</span>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
