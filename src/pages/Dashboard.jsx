@@ -28,11 +28,15 @@ function Dashboard({ user, onLogout }) {
 
   const [googleSearchQuery, setGoogleSearchQuery] = useState('')
 
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState(null)
+
   useEffect(() => {
     fetchCategories()
   }, [])
 
   useEffect(() => {
+    setSearchResults(null)
     if (selectedCategory) {
       fetchLinks(selectedCategory.id)
     } else {
@@ -267,6 +271,34 @@ function Dashboard({ user, onLogout }) {
     window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer')
   }
 
+  const runSearch = async () => {
+    const q = searchQuery?.trim().toLowerCase()
+    if (!q) {
+      setSearchResults(null)
+      return
+    }
+    const { data: allLinks } = await supabase.from('links').select('*').eq('user_id', user.id)
+    const linkIds = (allLinks || []).map(l => l.id)
+    const { data: memosData } = linkIds.length > 0
+      ? await supabase.from('memos').select('link_id, content').eq('user_id', user.id).in('link_id', linkIds)
+      : { data: [] }
+    const memosByLink = {}
+    ;(memosData || []).forEach(m => {
+      if (!memosByLink[m.link_id]) memosByLink[m.link_id] = []
+      memosByLink[m.link_id].push(m.content || '')
+    })
+    const getCategoryName = (id) => (categories.find(c => c.id === id) || {}).name || ''
+    const matched = (allLinks || []).filter(link => {
+      const catName = getCategoryName(link.category_id).toLowerCase()
+      const matchCat = catName.includes(q)
+      const matchLink = [link.title, link.url, link.description].some(s => (s || '').toLowerCase().includes(q))
+      const matchMemo = (memosByLink[link.id] || []).some(content => (content || '').toLowerCase().includes(q))
+      return matchCat || matchLink || matchMemo
+    }).map(link => ({ ...link, categoryName: getCategoryName(link.category_id) }))
+    setSearchResults(matched)
+    setSelectedLink(null)
+  }
+
   // 카테고리 트리 렌더링
   const renderCategoryItem = (cat, depth = 0, siblingIndex = 0, siblingCount = 1) => {
     const isExpanded = expandedCategories[cat.id]
@@ -388,16 +420,29 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">카테고리를 추가해보세요!</li>
             )}
           </ul>
+          <div className="panel-search">
+            <input
+              type="text"
+              placeholder="카테고리·링크·메모 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
+              aria-label="검색"
+            />
+            <button type="button" className="btn-add" onClick={runSearch}>검색</button>
+          </div>
         </aside>
 
         <section className="panel panel-links">
           <div className="panel-header">
-            <h2>🔗 {selectedCategory ? selectedCategory.name : '카테고리를 선택하세요'}</h2>
-            {selectedCategory && (
+            <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : '카테고리를 선택하세요'}</h2>
+            {searchResults !== null ? (
+              <button type="button" className="btn-cancel" onClick={() => setSearchResults(null)}>검색 해제</button>
+            ) : selectedCategory ? (
               <button className="btn-add-link" onClick={() => setShowLinkForm(!showLinkForm)}>
                 {showLinkForm ? '취소' : '+ 링크 추가'}
               </button>
-            )}
+            ) : null}
           </div>
 
           {showLinkForm && selectedCategory && (
@@ -425,9 +470,11 @@ function Dashboard({ user, onLogout }) {
           )}
 
           <ul className="item-list">
-            {links.map((link, idx) => {
-              const canMoveUp = idx > 0
-              const canMoveDown = idx < links.length - 1
+            {(searchResults !== null ? searchResults : links).map((link, idx) => {
+              const list = searchResults !== null ? searchResults : links
+              const canMoveUp = searchResults === null && idx > 0
+              const canMoveDown = searchResults === null && idx < list.length - 1
+              const isSearchMode = searchResults !== null
               return (
                 <li
                   key={link.id}
@@ -462,6 +509,9 @@ function Dashboard({ user, onLogout }) {
                   ) : (
                     <>
                       <div className="link-info" onClick={() => setSelectedLink(link)}>
+                        {isSearchMode && link.categoryName && (
+                          <span className="link-category-badge">{link.categoryName}</span>
+                        )}
                         <strong>{link.title}</strong>
                         <a href={link.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                           {link.url.length > 50 ? link.url.substring(0, 50) + '...' : link.url}
@@ -479,10 +529,13 @@ function Dashboard({ user, onLogout }) {
                 </li>
               )
             })}
-            {selectedCategory && links.length === 0 && (
+            {searchResults !== null && searchResults.length === 0 && (
+              <li className="empty-message">검색 결과가 없습니다</li>
+            )}
+            {searchResults === null && selectedCategory && links.length === 0 && (
               <li className="empty-message">링크를 추가해보세요!</li>
             )}
-            {!selectedCategory && (
+            {searchResults === null && !selectedCategory && (
               <li className="empty-message">왼쪽에서 카테고리를 선택하세요</li>
             )}
           </ul>
