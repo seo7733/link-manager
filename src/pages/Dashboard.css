@@ -56,8 +56,8 @@
   .header-google-search {
     display: flex;
     align-items: center;
-    width: 420px;
-    flex: 0 0 420px;
+    width: 336px;
+    flex: 0 0 336px;
     margin: 0 24px;
     gap: 6px;
     padding: 12px 0;
@@ -104,8 +104,8 @@
   .header-app-search {
     display: flex;
     align-items: center;
-    width: 420px;
-    flex: 0 0 420px;
+    width: 336px;
+    flex: 0 0 336px;
     gap: 6px;
     margin: 0 0 0 16px;
     padding: 12px 0;
