@@ -1,3 +1,20 @@
+# 즐순이 (Link Manager)
+
+React + Vite 기반 즐겨찾기/링크 매니저. Supabase 백엔드 사용.
+
+## 링크 순서 기능 (sort_order)
+
+링크 순서를 변경하려면 Supabase에 `sort_order` 컬럼이 필요합니다.  
+Supabase 대시보드 → **SQL Editor**에서 아래 마이그레이션을 실행하세요:
+
+```
+supabase/migrations/20250208000000_add_links_sort_order.sql
+```
+
+또는 해당 파일 내용을 복사해 SQL Editor에 붙여 넣고 실행하면 됩니다.
+
+---
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

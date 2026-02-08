@@ -63,7 +63,7 @@ function Dashboard({ user, onLogout }) {
       .from('links')
       .select('*')
       .eq('category_id', categoryId)
-      .order('created_at', { ascending: false })
+      .order('sort_order', { ascending: true })
     if (!error) setLinks(data || [])
   }
 
@@ -76,10 +76,11 @@ function Dashboard({ user, onLogout }) {
     if (!error) setMemos(data || [])
   }
 
-  // 트리 구조 만들기
+  // 트리 구조 만들기 (형제는 sort_order로 정렬)
   const buildTree = (items, parentId = null) => {
     return items
       .filter(item => item.parent_id === parentId)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map(item => ({
         ...item,
         children: buildTree(items, item.id)
@@ -96,15 +97,24 @@ function Dashboard({ user, onLogout }) {
     return categories.some(cat => cat.parent_id === id)
   }
 
+  // 같은 부모下的 형제 카테고리 목록 (sort_order 순)
+  const getSiblingCategories = (parentId) => {
+    return categories
+      .filter(c => c.parent_id === parentId)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+  }
+
   // 카테고리 CRUD
   const addCategory = async (parentId = null) => {
     const name = parentId ? newSubCategoryName : newCategoryName
     if (!name.trim()) return
+    const siblings = getSiblingCategories(parentId)
+    const nextOrder = siblings.length > 0 ? Math.max(...siblings.map(s => s.sort_order ?? 0)) + 1 : 0
     const { error } = await supabase.from('categories').insert({
       name: name.trim(),
       user_id: user.id,
       parent_id: parentId,
-      sort_order: categories.length
+      sort_order: nextOrder
     })
     if (!error) {
       if (parentId) {
@@ -139,15 +149,31 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
+  const moveCategory = async (cat, direction) => {
+    const siblings = getSiblingCategories(cat.parent_id)
+    const idx = siblings.findIndex(s => s.id === cat.id)
+    if (idx < 0) return
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= siblings.length) return
+    const other = siblings[swapIdx]
+    const catOrder = cat.sort_order ?? 0
+    const otherOrder = other.sort_order ?? 0
+    const { error: e1 } = await supabase.from('categories').update({ sort_order: otherOrder }).eq('id', cat.id)
+    const { error: e2 } = await supabase.from('categories').update({ sort_order: catOrder }).eq('id', other.id)
+    if (!e1 && !e2) fetchCategories()
+  }
+
   // 링크 CRUD
   const addLink = async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) return
+    const nextOrder = links.length > 0 ? Math.max(...links.map(l => l.sort_order ?? 0)) + 1 : 0
     const { error } = await supabase.from('links').insert({
       title: newLink.title.trim(),
       url: newLink.url.trim(),
       description: newLink.description.trim(),
       category_id: selectedCategory.id,
-      user_id: user.id
+      user_id: user.id,
+      sort_order: nextOrder
     })
     if (!error) {
       setNewLink({ title: '', url: '', description: '' })
@@ -179,6 +205,19 @@ function Dashboard({ user, onLogout }) {
       if (selectedLink?.id === id) setSelectedLink(null)
       fetchLinks(selectedCategory.id)
     }
+  }
+
+  const moveLink = async (link, direction) => {
+    const idx = links.findIndex(l => l.id === link.id)
+    if (idx < 0) return
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= links.length) return
+    const other = links[swapIdx]
+    const linkOrder = link.sort_order ?? 0
+    const otherOrder = other.sort_order ?? 0
+    const { error: e1 } = await supabase.from('links').update({ sort_order: otherOrder }).eq('id', link.id)
+    const { error: e2 } = await supabase.from('links').update({ sort_order: linkOrder }).eq('id', other.id)
+    if (!e1 && !e2) fetchLinks(selectedCategory.id)
   }
 
   // 메모 CRUD
@@ -220,9 +259,11 @@ function Dashboard({ user, onLogout }) {
   }
 
   // 카테고리 트리 렌더링
-  const renderCategoryItem = (cat, depth = 0) => {
+  const renderCategoryItem = (cat, depth = 0, siblingIndex = 0, siblingCount = 1) => {
     const isExpanded = expandedCategories[cat.id]
     const hasChild = hasChildren(cat.id)
+    const canMoveUp = siblingIndex > 0
+    const canMoveDown = siblingIndex < siblingCount - 1
 
     return (
       <div key={cat.id}>
@@ -259,6 +300,8 @@ function Dashboard({ user, onLogout }) {
                 </span>
               </div>
               <div className="item-actions">
+                {canMoveUp && <button title="위로" onClick={(e) => { e.stopPropagation(); moveCategory(cat, 'up') }}>⬆️</button>}
+                {canMoveDown && <button title="아래로" onClick={(e) => { e.stopPropagation(); moveCategory(cat, 'down') }}>⬇️</button>}
                 <button title="하위 카테고리 추가" onClick={(e) => { e.stopPropagation(); setAddingSubTo(cat.id); setNewSubCategoryName(''); setExpandedCategories(prev => ({ ...prev, [cat.id]: true })) }}>➕</button>
                 <button onClick={(e) => { e.stopPropagation(); setEditingCategory(cat.id); setEditCategoryName(cat.name) }}>✏️</button>
                 <button onClick={(e) => { e.stopPropagation(); deleteCategory(cat.id) }}>🗑️</button>
@@ -284,8 +327,8 @@ function Dashboard({ user, onLogout }) {
           </li>
         )}
 
-        {isExpanded && cat.children && cat.children.map(child =>
-          renderCategoryItem(child, depth + 1)
+        {isExpanded && cat.children && cat.children.map((child, i) =>
+          renderCategoryItem(child, depth + 1, i, cat.children.length)
         )}
       </div>
     )
@@ -321,7 +364,7 @@ function Dashboard({ user, onLogout }) {
             <button className="btn-add" onClick={() => addCategory(null)}>추가</button>
           </div>
           <ul className="item-list">
-            {categoryTree.map((cat) => renderCategoryItem(cat, 0))}
+            {categoryTree.map((cat, i) => renderCategoryItem(cat, 0, i, categoryTree.length))}
             {categories.length === 0 && (
               <li className="empty-message">카테고리를 추가해보세요!</li>
             )}
@@ -363,54 +406,60 @@ function Dashboard({ user, onLogout }) {
           )}
 
           <ul className="item-list">
-            {links.map((link) => (
-              <li
-                key={link.id}
-                className={`item link-item ${selectedLink?.id === link.id ? 'active' : ''}`}
-              >
-                {editingLink === link.id ? (
-                  <div className="edit-form link-edit-form">
-                    <input
-                      type="text"
-                      value={editLink.title}
-                      onChange={(e) => setEditLink({ ...editLink, title: e.target.value })}
-                      placeholder="제목"
-                      autoFocus
-                    />
-                    <input
-                      type="url"
-                      value={editLink.url}
-                      onChange={(e) => setEditLink({ ...editLink, url: e.target.value })}
-                      placeholder="URL"
-                    />
-                    <input
-                      type="text"
-                      value={editLink.description}
-                      onChange={(e) => setEditLink({ ...editLink, description: e.target.value })}
-                      placeholder="설명"
-                    />
-                    <div className="edit-buttons">
-                      <button className="btn-save" onClick={() => updateLink(link.id)}>저장</button>
-                      <button className="btn-cancel" onClick={() => setEditingLink(null)}>취소</button>
+            {links.map((link, idx) => {
+              const canMoveUp = idx > 0
+              const canMoveDown = idx < links.length - 1
+              return (
+                <li
+                  key={link.id}
+                  className={`item link-item ${selectedLink?.id === link.id ? 'active' : ''}`}
+                >
+                  {editingLink === link.id ? (
+                    <div className="edit-form link-edit-form">
+                      <input
+                        type="text"
+                        value={editLink.title}
+                        onChange={(e) => setEditLink({ ...editLink, title: e.target.value })}
+                        placeholder="제목"
+                        autoFocus
+                      />
+                      <input
+                        type="url"
+                        value={editLink.url}
+                        onChange={(e) => setEditLink({ ...editLink, url: e.target.value })}
+                        placeholder="URL"
+                      />
+                      <input
+                        type="text"
+                        value={editLink.description}
+                        onChange={(e) => setEditLink({ ...editLink, description: e.target.value })}
+                        placeholder="설명"
+                      />
+                      <div className="edit-buttons">
+                        <button className="btn-save" onClick={() => updateLink(link.id)}>저장</button>
+                        <button className="btn-cancel" onClick={() => setEditingLink(null)}>취소</button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="link-info" onClick={() => setSelectedLink(link)}>
-                      <strong>{link.title}</strong>
-                      <a href={link.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                        {link.url.length > 50 ? link.url.substring(0, 50) + '...' : link.url}
-                      </a>
-                      {link.description && <p className="link-desc">{link.description}</p>}
-                    </div>
-                    <div className="item-actions">
-                      <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '' }) }}>✏️</button>
-                      <button onClick={() => deleteLink(link.id)}>🗑️</button>
-                    </div>
-                  </>
-                )}
-              </li>
-            ))}
+                  ) : (
+                    <>
+                      <div className="link-info" onClick={() => setSelectedLink(link)}>
+                        <strong>{link.title}</strong>
+                        <a href={link.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                          {link.url.length > 50 ? link.url.substring(0, 50) + '...' : link.url}
+                        </a>
+                        {link.description && <p className="link-desc">{link.description}</p>}
+                      </div>
+                      <div className="item-actions">
+                        {canMoveUp && <button title="위로" onClick={() => moveLink(link, 'up')}>⬆️</button>}
+                        {canMoveDown && <button title="아래로" onClick={() => moveLink(link, 'down')}>⬇️</button>}
+                        <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '' }) }}>✏️</button>
+                        <button onClick={() => deleteLink(link.id)}>🗑️</button>
+                      </div>
+                    </>
+                  )}
+                </li>
+              )
+            })}
             {selectedCategory && links.length === 0 && (
               <li className="empty-message">링크를 추가해보세요!</li>
             )}
