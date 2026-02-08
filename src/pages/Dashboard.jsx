@@ -432,7 +432,7 @@ function Dashboard({ user, onLogout }) {
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
             aria-label="카테고리 링크 메모 검색"
           />
-          <button type="button" className="btn-app-search" onClick={runSearch}>검색</button>
+          <button type="button" className="btn-app-search" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
         </div>
         <div className="header-right">
           <span className="user-email">{user.email}</span>
