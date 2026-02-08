@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
+import './App.css'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 
@@ -42,9 +43,14 @@ function App() {
     )
   }
 
-  return user
-    ? <Dashboard user={user} onLogout={handleLogout} />
-    : <Login />
+  return (
+    <>
+      {user ? <Dashboard user={user} onLogout={handleLogout} /> : <Login />}
+      <footer className="app-footer">
+        © 2026 Seo Jongkeun. All rights reserved.
+      </footer>
+    </>
+  )
 }
 
 export default App
