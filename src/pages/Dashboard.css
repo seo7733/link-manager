@@ -165,6 +165,8 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0;
+    padding: 6px 16px;
+    transition: padding 0.2s ease;
   }
 
   .panel-categories .item .category-name-row {
@@ -181,8 +183,19 @@
 
   .panel-categories .item .item-actions {
     flex: 0 0 auto;
-    margin-top: 6px;
     justify-content: flex-end;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+    transition: max-height 0.2s ease, opacity 0.15s ease, margin-top 0.2s ease;
+  }
+
+  .panel-categories .item:hover .item-actions {
+    max-height: 36px;
+    opacity: 1;
+    margin-top: 6px;
   }
 
   .panel-links {
