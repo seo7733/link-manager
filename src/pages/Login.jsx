@@ -18,9 +18,7 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <div className="login-banner">
-            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 - 즐겨찾기 매니저" />
-          </div>
+          <h1 className="login-title">즐순이 - 즐겨찾기 매니저</h1>
           <p>나만의 즐겨찾기를 체계적으로 관리하세요</p>
         </div>
         <div className="login-buttons">
