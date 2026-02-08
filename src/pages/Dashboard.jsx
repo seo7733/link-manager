@@ -395,6 +395,17 @@ function Dashboard({ user, onLogout }) {
           />
           <button type="submit" className="btn-google-search" title="Google에서 검색">🔍</button>
         </form>
+        <div className="header-app-search">
+          <input
+            type="text"
+            placeholder="카테고리·링크·메모 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
+            aria-label="카테고리 링크 메모 검색"
+          />
+          <button type="button" className="btn-app-search" onClick={runSearch}>검색</button>
+        </div>
         <div className="header-right">
           <span className="user-email">{user.email}</span>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
@@ -422,17 +433,6 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">카테고리를 추가해보세요!</li>
             )}
           </ul>
-          <div className="panel-search">
-            <input
-              type="text"
-              placeholder="카테고리·링크·메모 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
-              aria-label="검색"
-            />
-            <button type="button" className="btn-add" onClick={runSearch}>검색</button>
-          </div>
         </aside>
 
         <section className="panel panel-links">
