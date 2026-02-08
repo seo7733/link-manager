@@ -35,6 +35,20 @@
     letter-spacing: -0.3px;
   }
 
+  .dashboard-logo {
+    line-height: 0;
+    margin: 0;
+  }
+
+  .dashboard-logo img {
+    display: block;
+    height: 40px;
+    max-height: 44px;
+    max-width: 200px;
+    width: auto;
+    object-fit: contain;
+  }
+
   .header-google-search {
     display: flex;
     align-items: center;

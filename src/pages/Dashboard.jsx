@@ -382,7 +382,9 @@ function Dashboard({ user, onLogout }) {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1><span style={{fontSize: '20px'}}>⭐ 즐순이</span> <span style={{fontSize: '12px', color: '#9ca3af', fontWeight: '400'}}>즐겨찾기 매니저</span></h1>
+        <h1 className="dashboard-logo">
+          <img src="/logo.png" alt="즐순이 즐겨찾기 매니저" />
+        </h1>
         <form className="header-google-search" onSubmit={handleGoogleSearch}>
           <input
             type="text"

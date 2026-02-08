@@ -25,6 +25,21 @@
     font-weight: 700;
     letter-spacing: -0.5px;
   }
+
+  .login-logo {
+    margin: 0 0 8px 0;
+    line-height: 0;
+  }
+
+  .login-logo img {
+    display: block;
+    height: 64px;
+    max-height: 80px;
+    max-width: 100%;
+    width: auto;
+    margin: 0 auto;
+    object-fit: contain;
+  }
   
   .login-header p {
     color: #6b7280;

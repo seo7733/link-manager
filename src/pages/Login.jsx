@@ -18,7 +18,9 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-        <h1><span style={{fontSize: '34px'}}>⭐ 즐순이</span> <span style={{fontSize: '14px', color: '#9ca3af', fontWeight: '400'}}>즐겨찾기 매니저</span></h1>
+        <h1 className="login-logo">
+          <img src="/logo.png" alt="즐순이 즐겨찾기 매니저" />
+        </h1>
           <p>나만의 즐겨찾기기를 체계적으로 관리하세요</p>
         </div>
         <div className="login-buttons">
