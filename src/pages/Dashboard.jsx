@@ -413,27 +413,6 @@ function Dashboard({ user, onLogout }) {
             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
           </button>
         </h1>
-        <form className="header-google-search" onSubmit={handleGoogleSearch}>
-          <input
-            type="text"
-            placeholder="Google 검색..."
-            value={googleSearchQuery}
-            onChange={(e) => setGoogleSearchQuery(e.target.value)}
-            aria-label="Google 검색"
-          />
-          <button type="submit" className="btn-google-search" title="Google에서 검색">🔍</button>
-        </form>
-        <div className="header-app-search">
-          <input
-            type="text"
-            placeholder="카테고리·링크·메모 검색"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
-            aria-label="카테고리 링크 메모 검색"
-          />
-          <button type="button" className="btn-app-search" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
-        </div>
         <div className="header-right">
           <span className="user-email">{user.email}</span>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
@@ -473,6 +452,30 @@ function Dashboard({ user, onLogout }) {
                 {showLinkForm ? '취소' : '+ 링크 추가'}
               </button>
             ) : null}
+          </div>
+
+          <div className="panel-links-search">
+            <form className="links-search-row" onSubmit={handleGoogleSearch}>
+              <input
+                type="text"
+                placeholder="Google 검색..."
+                value={googleSearchQuery}
+                onChange={(e) => setGoogleSearchQuery(e.target.value)}
+                aria-label="Google 검색"
+              />
+              <button type="submit" className="btn-search-icon" title="Google에서 검색">🔍</button>
+            </form>
+            <div className="links-search-row">
+              <input
+                type="text"
+                placeholder="카테고리·링크·메모 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
+                aria-label="카테고리 링크 메모 검색"
+              />
+              <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
+            </div>
           </div>
 
           {showLinkForm && selectedCategory && (
