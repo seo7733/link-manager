@@ -369,6 +369,42 @@
   .empty-message:hover {
     background: transparent;
   }
+
+  .welcome-quote-wrap {
+    padding: 48px 24px;
+    text-align: center;
+    list-style: none;
+  }
+
+  .welcome-quote {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.08);
+  }
+
+  .welcome-quote-text {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #374151;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+  }
+
+  .welcome-quote-author {
+    font-size: 14px;
+    color: #6366f1;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .welcome-quote-hint {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0;
+  }
   
   .edit-form {
     display: flex;

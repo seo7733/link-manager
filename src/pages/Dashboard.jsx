@@ -2,6 +2,24 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import './Dashboard.css'
 
+const WELCOME_QUOTES = [
+  { text: '오늘 할 일을 내일로 미루지 마라.', author: '벤자민 프랭클린' },
+  { text: '시작이 반이다.', author: '플라톤' },
+  { text: '배움에는 왕도가 없다.', author: '유클리드' },
+  { text: '성공은 매일 반복한 작은 노력의 합이다.', author: '로버트 콜리어' },
+  { text: '지금이 살기 가장 좋은 때다.', author: '월트 휘트먼' },
+  { text: '실패는 성공의 어머니다.', author: '토마스 에디슨' },
+  { text: '오늘 당신이 어디에 있든, 거기서 시작하라.', author: '아르투어 숀펜하우어' },
+  { text: '노력은 배신하지 않는다.', author: '일본 속담' },
+  { text: '작은 습관이 인생을 바꾼다.', author: '제임스 클리어' },
+  { text: '당신이 생각하므로 당신이 된다.', author: '노르만 빈센트 필' },
+  { text: '오늘 하루를 최선으로 살아라.', author: '랄프 왈도 에머슨' },
+  { text: '끝이 좋으면 다 좋다.', author: '윌리엄 셰익스피어' },
+  { text: '기회는 준비된 자에게만 온다.', author: '루이 파스퇴르' },
+  { text: '한 걸음 한 걸음이 모여 길이 된다.', author: '속담' },
+  { text: '오늘의 나는 어제의 나보다 나은 사람이 되자.', author: '칼 로저스' },
+]
+
 function Dashboard({ user, onLogout }) {
   const [categories, setCategories] = useState([])
   const [links, setLinks] = useState([])
@@ -30,6 +48,7 @@ function Dashboard({ user, onLogout }) {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
+  const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
 
   useEffect(() => {
     fetchCategories()
@@ -268,6 +287,7 @@ function Dashboard({ user, onLogout }) {
     setSearchResults(null)
     setSelectedCategory(null)
     setSelectedLink(null)
+    setQuoteIndex(Math.floor(Math.random() * WELCOME_QUOTES.length))
   }
 
   const handleGoogleSearch = (e) => {
@@ -546,7 +566,13 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">링크를 추가해보세요!</li>
             )}
             {searchResults === null && !selectedCategory && (
-              <li className="empty-message">왼쪽에서 카테고리를 선택하세요</li>
+              <li className="welcome-quote-wrap">
+                <div className="welcome-quote">
+                  <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                  <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                </div>
+                <p className="welcome-quote-hint">왼쪽에서 카테고리를 선택하세요</p>
+              </li>
             )}
           </ul>
         </section>
