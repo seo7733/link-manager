@@ -213,6 +213,30 @@
     border-right: 1px solid #e5e7eb;
   }
 
+  .panel-categories .item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .panel-categories .item .category-name-row {
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .panel-categories .item .item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .panel-categories .item .item-actions {
+    flex: 0 0 auto;
+    margin-top: 6px;
+    justify-content: flex-end;
+  }
+
   .panel-links {
     flex: 1;
     background: #f5f7fb;
@@ -681,6 +705,7 @@
     align-items: center;
     gap: 6px;
     flex: 1;
+    min-width: 0;
     cursor: pointer;
   }
   
