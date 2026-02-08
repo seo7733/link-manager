@@ -264,6 +264,12 @@ function Dashboard({ user, onLogout }) {
     if (e.key === 'Enter') action()
   }
 
+  const goToFirstScreen = () => {
+    setSearchResults(null)
+    setSelectedCategory(null)
+    setSelectedLink(null)
+  }
+
   const handleGoogleSearch = (e) => {
     e?.preventDefault()
     const q = googleSearchQuery?.trim()
@@ -383,7 +389,9 @@ function Dashboard({ user, onLogout }) {
     <div className="dashboard">
       <header className="dashboard-header">
         <h1 className="dashboard-logo">
-          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
+          <button type="button" className="dashboard-logo-btn" onClick={goToFirstScreen} title="처음 화면으로">
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
+          </button>
         </h1>
         <form className="header-google-search" onSubmit={handleGoogleSearch}>
           <input
