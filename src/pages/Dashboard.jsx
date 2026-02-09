@@ -39,7 +39,7 @@ function Dashboard({ user, onLogout }) {
   const [showLinkForm, setShowLinkForm] = useState(false)
   const [newLink, setNewLink] = useState({ title: '', url: '', description: '' })
   const [editingLink, setEditingLink] = useState(null)
-  const [editLink, setEditLink] = useState({ title: '', url: '', description: '' })
+  const [editLink, setEditLink] = useState({ title: '', url: '', description: '', category_id: null })
 
   const [newMemo, setNewMemo] = useState('')
   const [editingMemo, setEditingMemo] = useState(null)
@@ -277,19 +277,37 @@ function Dashboard({ user, onLogout }) {
   }
 
   const updateLink = async (id) => {
-    if (!editLink.title.trim() || !editLink.url.trim()) return
+    if (!editLink.title.trim() || !editLink.url.trim() || !editLink.category_id) return
+    const oldCategoryId = links.find(l => l.id === id)?.category_id
     const { error } = await supabase
       .from('links')
       .update({
         title: editLink.title.trim(),
         url: editLink.url.trim(),
-        description: editLink.description.trim()
+        description: editLink.description.trim(),
+        category_id: editLink.category_id
       })
       .eq('id', id)
     if (!error) {
       setEditingLink(null)
-      fetchLinks(selectedCategory.id)
+      if (editLink.category_id === selectedCategory?.id) {
+        fetchLinks(selectedCategory.id)
+      } else if (oldCategoryId === selectedCategory?.id) {
+        fetchLinks(selectedCategory.id)
+      }
     }
+  }
+
+  const flattenCategories = (items, parentId = null, level = 0) => {
+    const result = []
+    items
+      .filter(item => item.parent_id === parentId)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .forEach(item => {
+        result.push({ ...item, level })
+        result.push(...flattenCategories(items, item.id, level + 1))
+      })
+    return result
   }
 
   const deleteLink = async (id) => {
@@ -588,6 +606,18 @@ function Dashboard({ user, onLogout }) {
                 >
                   {editingLink === link.id ? (
                     <div className="edit-form link-edit-form">
+                      <select
+                        value={editLink.category_id || ''}
+                        onChange={(e) => setEditLink({ ...editLink, category_id: e.target.value })}
+                        className="edit-category-select"
+                      >
+                        <option value="">카테고리 선택</option>
+                        {flattenCategories(categories).map(cat => (
+                          <option key={cat.id} value={cat.id}>
+                            {'  '.repeat(cat.level)}{cat.name}
+                          </option>
+                        ))}
+                      </select>
                       <input
                         type="text"
                         value={editLink.title}
@@ -627,7 +657,7 @@ function Dashboard({ user, onLogout }) {
                       <div className="item-actions">
                         {canMoveUp && <button title="위로" onClick={() => moveLink(link, 'up')}>⬆️</button>}
                         {canMoveDown && <button title="아래로" onClick={() => moveLink(link, 'down')}>⬇️</button>}
-                        <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '' }) }}>✏️</button>
+                        <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '', category_id: link.category_id }) }}>✏️</button>
                         <button onClick={() => deleteLink(link.id)}>🗑️</button>
                       </div>
                     </>

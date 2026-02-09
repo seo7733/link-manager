@@ -476,7 +476,8 @@
   }
   
   .edit-form input,
-  .edit-form textarea {
+  .edit-form textarea,
+  .edit-form select {
     flex: 1;
     padding: 7px 10px;
     background: #ffffff;
@@ -485,6 +486,11 @@
     color: #1a1a2e;
     font-size: 13px;
     outline: none;
+  }
+
+  .edit-category-select {
+    min-width: 0;
+    cursor: pointer;
   }
   
   .edit-buttons {
