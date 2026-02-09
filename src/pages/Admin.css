@@ -173,3 +173,21 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.admin-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-badge-category {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.admin-badge-access {
+  background: #334155;
+  color: #94a3b8;
+}

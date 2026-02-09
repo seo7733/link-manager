@@ -6,6 +6,8 @@ import './Admin.css'
 function Admin({ user, onLogout }) {
   const [stats, setStats] = useState({
     users: 0,
+    usersWithCategory: 0,
+    usersOnlyAccess: 0,
     categories: 0,
     links: 0,
     memos: 0
@@ -24,20 +26,24 @@ function Admin({ user, onLogout }) {
     setLoading(true)
     setError(null)
     try {
-      const [logsRes, catRes, linkRes, memoRes] = await Promise.all([
+      const [logsRes, catRowsRes, catCountRes, linkRes, memoRes] = await Promise.all([
         supabase.from('access_logs').select('id, user_id, email, accessed_at').order('accessed_at', { ascending: false }).limit(200),
+        supabase.from('categories').select('user_id'),
         supabase.from('categories').select('id', { count: 'exact', head: true }),
         supabase.from('links').select('id', { count: 'exact', head: true }),
         supabase.from('memos').select('id', { count: 'exact', head: true })
       ])
 
       if (logsRes.error) throw logsRes.error
-      if (catRes.error) throw catRes.error
+      if (catRowsRes.error) throw catRowsRes.error
+      if (catCountRes.error) throw catCountRes.error
       if (linkRes.error) throw linkRes.error
       if (memoRes.error) throw memoRes.error
 
       const logs = logsRes.data || []
       setAccessLogs(logs)
+
+      const categoryUserIds = new Set((catRowsRes.data || []).map(r => r.user_id).filter(Boolean))
 
       const byUser = {}
       logs.forEach(row => {
@@ -49,11 +55,27 @@ function Admin({ user, onLogout }) {
           byUser[row.user_id].last_at = row.accessed_at
         }
       })
-      setUserList(Object.values(byUser).sort((a, b) => new Date(b.last_at) - new Date(a.last_at)))
+      categoryUserIds.forEach(uid => {
+        if (!byUser[uid]) {
+          byUser[uid] = { user_id: uid, email: '(접속 기록 없음)', last_at: null, count: 0 }
+        }
+      })
+      const list = Object.values(byUser).map(u => ({
+        ...u,
+        hasCategory: categoryUserIds.has(u.user_id)
+      })).sort((a, b) => {
+        if (!a.last_at) return 1
+        if (!b.last_at) return -1
+        return new Date(b.last_at) - new Date(a.last_at)
+      })
+      setUserList(list)
 
+      const usersOnlyAccess = list.filter(u => !u.hasCategory).length
       setStats({
-        users: Object.keys(byUser).length,
-        categories: catRes.count ?? 0,
+        users: list.length,
+        usersWithCategory: categoryUserIds.size,
+        usersOnlyAccess,
+        categories: catCountRes.count ?? 0,
         links: linkRes.count ?? 0,
         memos: memoRes.count ?? 0
       })
@@ -121,10 +143,19 @@ function Admin({ user, onLogout }) {
 
             <section className="admin-section admin-stats">
               <h2>현황 요약</h2>
+              <p className="admin-hint">카테고리 보유 = 카테고리를 1개 이상 만든 사용자, 접속만 = 접속 기록만 있고 카테고리는 없는 사용자입니다.</p>
               <div className="admin-stat-cards">
                 <div className="admin-stat-card">
                   <span className="admin-stat-value">{stats.users}</span>
-                  <span className="admin-stat-label">사용자 수</span>
+                  <span className="admin-stat-label">사용자 수(총)</span>
+                </div>
+                <div className="admin-stat-card">
+                  <span className="admin-stat-value">{stats.usersWithCategory}</span>
+                  <span className="admin-stat-label">카테고리 보유</span>
+                </div>
+                <div className="admin-stat-card">
+                  <span className="admin-stat-value">{stats.usersOnlyAccess}</span>
+                  <span className="admin-stat-label">접속만</span>
                 </div>
                 <div className="admin-stat-card">
                   <span className="admin-stat-value">{stats.categories}</span>
@@ -149,6 +180,7 @@ function Admin({ user, onLogout }) {
                   <thead>
                     <tr>
                       <th>이메일</th>
+                      <th>구분</th>
                       <th>접속 횟수</th>
                       <th>마지막 접속</th>
                       <th>동작</th>
@@ -158,6 +190,11 @@ function Admin({ user, onLogout }) {
                     {userList.map(u => (
                       <tr key={u.user_id}>
                         <td>{u.email}</td>
+                        <td>
+                          <span className={`admin-badge ${u.hasCategory ? 'admin-badge-category' : 'admin-badge-access'}`}>
+                            {u.hasCategory ? '카테고리 보유' : '접속만'}
+                          </span>
+                        </td>
                         <td>{u.count}</td>
                         <td>{formatDate(u.last_at)}</td>
                         <td>
