@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Admin from './pages/Admin'
+
+const BASE = '/link-manager/'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -42,7 +46,28 @@ function App() {
     )
   }
 
-  return user ? <Dashboard user={user} onLogout={handleLogout} /> : <Login />
+  if (!user) {
+    return <Login />
+  }
+
+  return (
+    <BrowserRouter basename={BASE}>
+      <Routes>
+        <Route path="/" element={<Dashboard user={user} onLogout={handleLogout} />} />
+        <Route
+          path="/admin"
+          element={
+            user.email === 'jkseo1974@gmail.com' ? (
+              <Admin user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App

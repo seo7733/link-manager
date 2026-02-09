@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import './Dashboard.css'
 
@@ -55,6 +56,14 @@ function Dashboard({ user, onLogout }) {
   useEffect(() => {
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    if (!user?.id || !user?.email) return
+    supabase.from('access_logs').insert({
+      user_id: user.id,
+      email: user.email
+    }).then(() => {})
+  }, [user?.id, user?.email])
 
   useEffect(() => {
     const el = linksPanelRef.current
@@ -449,7 +458,12 @@ function Dashboard({ user, onLogout }) {
           </div>
         </div>
         <div className="header-right">
-          <span className="user-email">{user.email}</span>
+          <div className="header-user-block">
+            <span className="user-email">{user.email}</span>
+            {user.email === 'jkseo1974@gmail.com' && (
+              <Link to="/admin" className="admin-link">ADMIN</Link>
+            )}
+          </div>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
         </div>
       </header>
