@@ -99,6 +99,7 @@ function Dashboard({ user, onLogout }) {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
+      .eq('user_id', user.id)
       .order('sort_order', { ascending: true })
     if (!error) setCategories(data || [])
     setLoading(false)
@@ -108,6 +109,7 @@ function Dashboard({ user, onLogout }) {
     const { data, error } = await supabase
       .from('links')
       .select('*')
+      .eq('user_id', user.id)
       .eq('category_id', categoryId)
       .order('sort_order', { ascending: true })
     if (!error) setLinks(data || [])
@@ -117,6 +119,7 @@ function Dashboard({ user, onLogout }) {
     const { data, error } = await supabase
       .from('memos')
       .select('*')
+      .eq('user_id', user.id)
       .eq('link_id', linkId)
       .order('created_at', { ascending: false })
     if (!error) setMemos(data || [])
