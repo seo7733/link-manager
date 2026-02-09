@@ -14,8 +14,11 @@ function Admin({ user, onLogout }) {
   })
   const [accessLogs, setAccessLogs] = useState([])
   const [userList, setUserList] = useState([])
+  const [allCategories, setAllCategories] = useState([])
+  const [allLinks, setAllLinks] = useState([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState(null)
+  const [detailUserId, setDetailUserId] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -26,19 +29,26 @@ function Admin({ user, onLogout }) {
     setLoading(true)
     setError(null)
     try {
-      const [logsRes, catRowsRes, catCountRes, linkRes, memoRes] = await Promise.all([
+      const [logsRes, catRowsRes, catCountRes, catFullRes, linkCountRes, linkFullRes, memoRes] = await Promise.all([
         supabase.from('access_logs').select('id, user_id, email, accessed_at').order('accessed_at', { ascending: false }).limit(200),
         supabase.from('categories').select('user_id'),
         supabase.from('categories').select('id', { count: 'exact', head: true }),
+        supabase.from('categories').select('id, user_id, name, parent_id, sort_order').order('sort_order', { ascending: true }),
         supabase.from('links').select('id', { count: 'exact', head: true }),
+        supabase.from('links').select('id, category_id, user_id, title, url, sort_order').order('sort_order', { ascending: true }),
         supabase.from('memos').select('id', { count: 'exact', head: true })
       ])
 
       if (logsRes.error) throw logsRes.error
       if (catRowsRes.error) throw catRowsRes.error
       if (catCountRes.error) throw catCountRes.error
-      if (linkRes.error) throw linkRes.error
+      if (catFullRes.error) throw catFullRes.error
+      if (linkCountRes.error) throw linkCountRes.error
+      if (linkFullRes.error) throw linkFullRes.error
       if (memoRes.error) throw memoRes.error
+
+      setAllCategories(catFullRes.data || [])
+      setAllLinks(linkFullRes.data || [])
 
       const logs = logsRes.data || []
       setAccessLogs(logs)
@@ -76,7 +86,7 @@ function Admin({ user, onLogout }) {
         usersWithCategory: categoryUserIds.size,
         usersOnlyAccess,
         categories: catCountRes.count ?? 0,
-        links: linkRes.count ?? 0,
+        links: linkCountRes.count ?? 0,
         memos: memoRes.count ?? 0
       })
     } catch (e) {
@@ -116,6 +126,22 @@ function Admin({ user, onLogout }) {
     const d = new Date(iso)
     return d.toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })
   }
+
+  function getUserDetail(userId) {
+    const cats = allCategories.filter(c => c.user_id === userId).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    const linksByCat = {}
+    allLinks.filter(l => l.user_id === userId).forEach(l => {
+      if (!linksByCat[l.category_id]) linksByCat[l.category_id] = []
+      linksByCat[l.category_id].push(l)
+    })
+    Object.keys(linksByCat).forEach(cid => {
+      linksByCat[cid].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    })
+    return { categories: cats, linksByCat }
+  }
+
+  const detailUser = detailUserId ? userList.find(u => u.user_id === detailUserId) : null
+  const userDetail = detailUserId ? getUserDetail(detailUserId) : null
 
   if (user?.email !== 'jkseo1974@gmail.com') {
     return null
@@ -198,14 +224,23 @@ function Admin({ user, onLogout }) {
                         <td>{u.count}</td>
                         <td>{formatDate(u.last_at)}</td>
                         <td>
-                          <button
-                            type="button"
-                            className="admin-btn-delete"
-                            disabled={deletingId === u.user_id || u.user_id === user.id}
-                            onClick={() => deleteUserData(u.user_id)}
-                          >
-                            {deletingId === u.user_id ? '삭제 중…' : '회원 삭제'}
-                          </button>
+                          <div className="admin-actions">
+                            <button
+                              type="button"
+                              className="admin-btn-detail"
+                              onClick={() => setDetailUserId(u.user_id)}
+                            >
+                              내역 보기
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-btn-delete"
+                              disabled={deletingId === u.user_id || u.user_id === user.id}
+                              onClick={() => deleteUserData(u.user_id)}
+                            >
+                              {deletingId === u.user_id ? '삭제 중…' : '회원 삭제'}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -235,6 +270,43 @@ function Admin({ user, onLogout }) {
                 </table>
               </div>
             </section>
+
+            {detailUser && userDetail && (
+              <div className="admin-modal-overlay" onClick={() => setDetailUserId(null)} role="presentation">
+                <div className="admin-modal" onClick={e => e.stopPropagation()}>
+                  <div className="admin-modal-header">
+                    <h3>카테고리·링크 내역 — {detailUser.email}</h3>
+                    <button type="button" className="admin-modal-close" onClick={() => setDetailUserId(null)} aria-label="닫기">×</button>
+                  </div>
+                  <div className="admin-modal-body">
+                    {userDetail.categories.length === 0 ? (
+                      <p className="admin-modal-empty">카테고리·링크 없음</p>
+                    ) : (
+                      <ul className="admin-detail-list">
+                        {userDetail.categories.map(cat => (
+                          <li key={cat.id} className="admin-detail-category">
+                            <span className="admin-detail-cat-name">📁 {cat.name}</span>
+                            <ul className="admin-detail-links">
+                              {(userDetail.linksByCat[cat.id] || []).map(link => (
+                                <li key={link.id}>
+                                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="admin-detail-link">
+                                    {link.title || '(제목 없음)'}
+                                  </a>
+                                  {link.url && <span className="admin-detail-url">{link.url}</span>}
+                                </li>
+                              ))}
+                              {(userDetail.linksByCat[cat.id] || []).length === 0 && (
+                                <li className="admin-detail-empty">링크 없음</li>
+                              )}
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </main>
