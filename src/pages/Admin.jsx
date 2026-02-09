@@ -74,9 +74,13 @@ function Admin({ user, onLogout }) {
           byUser[uid] = { user_id: uid, email: '(접속 기록 없음)', last_at: null, count: 0 }
         }
       })
+      const catData = catFullRes.data || []
+      const linkData = linkFullRes.data || []
       const list = Object.values(byUser).map(u => ({
         ...u,
-        hasCategory: categoryUserIds.has(u.user_id)
+        hasCategory: categoryUserIds.has(u.user_id),
+        categoryCount: catData.filter(c => c.user_id === u.user_id).length,
+        linkCount: linkData.filter(l => l.user_id === u.user_id).length
       })).sort((a, b) => {
         if (!a.last_at) return 1
         if (!b.last_at) return -1
@@ -270,6 +274,8 @@ function Admin({ user, onLogout }) {
                     <tr>
                       <th>이메일</th>
                       <th>구분</th>
+                      <th>카테고리 수</th>
+                      <th>링크 수</th>
                       <th>접속 횟수</th>
                       <th>마지막 접속</th>
                       <th>동작</th>
@@ -284,6 +290,8 @@ function Admin({ user, onLogout }) {
                             {u.hasCategory ? '카테고리 보유' : '접속만'}
                           </span>
                         </td>
+                        <td>{u.categoryCount ?? 0}</td>
+                        <td>{u.linkCount ?? 0}</td>
                         <td>{u.count}</td>
                         <td>{formatDate(u.last_at)}</td>
                         <td>
