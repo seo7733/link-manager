@@ -34,7 +34,7 @@ function Admin({ user, onLogout }) {
     setError(null)
     try {
       const [logsRes, catRowsRes, catCountRes, catFullRes, linkCountRes, linkFullRes, memoRes] = await Promise.all([
-        supabase.from('access_logs').select('id, user_id, email, accessed_at').order('accessed_at', { ascending: false }).limit(200),
+        supabase.from('access_logs').select('id, user_id, email, ip, accessed_at').order('accessed_at', { ascending: false }).limit(200),
         supabase.from('categories').select('user_id'),
         supabase.from('categories').select('id', { count: 'exact', head: true }),
         supabase.from('categories').select('id, user_id, name, parent_id, sort_order').order('sort_order', { ascending: true }),
@@ -338,6 +338,7 @@ function Admin({ user, onLogout }) {
                   <thead>
                     <tr>
                       <th>이메일</th>
+                      <th>접속 IP</th>
                       <th>접속 시각</th>
                     </tr>
                   </thead>
@@ -345,6 +346,7 @@ function Admin({ user, onLogout }) {
                     {accessLogsPaginated.map(log => (
                       <tr key={log.id}>
                         <td>{log.email || '-'}</td>
+                        <td>{log.ip || '-'}</td>
                         <td>{formatDate(log.accessed_at)}</td>
                       </tr>
                     ))}

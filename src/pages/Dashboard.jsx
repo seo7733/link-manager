@@ -59,10 +59,25 @@ function Dashboard({ user, onLogout }) {
 
   useEffect(() => {
     if (!user?.id || !user?.email) return
-    supabase.from('access_logs').insert({
-      user_id: user.id,
-      email: user.email
-    }).then(() => {})
+    let cancelled = false
+    async function logAccess() {
+      let ip = null
+      try {
+        const res = await fetch('https://api.ipify.org?format=json')
+        if (res.ok) {
+          const data = await res.json()
+          ip = data.ip || null
+        }
+      } catch (_) {}
+      if (cancelled) return
+      await supabase.from('access_logs').insert({
+        user_id: user.id,
+        email: user.email,
+        ip: ip
+      })
+    }
+    logAccess()
+    return () => { cancelled = true }
   }, [user?.id, user?.email])
 
   useEffect(() => {
