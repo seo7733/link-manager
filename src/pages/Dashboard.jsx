@@ -590,7 +590,8 @@ function Dashboard({ user, onLogout }) {
             )}
           </ul>
           <footer className="panel-links-footer">
-            © 2026 Seo Jongkeun. All rights reserved.
+            <a href={`${import.meta.env.BASE_URL}manual.html`} target="_blank" rel="noopener noreferrer" className="footer-manual-link">매뉴얼 PDF</a>
+            <span>© 2026 Seo Jongkeun. All rights reserved.</span>
           </footer>
         </section>
 

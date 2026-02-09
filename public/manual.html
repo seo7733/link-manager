@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>즐순이 - 즐겨찾기 매니저 사용자 매뉴얼</title>
+  <style>
+    body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; max-width: 800px; margin: 0 auto; padding: 24px; line-height: 1.7; color: #333; }
+    h1 { font-size: 1.75rem; border-bottom: 2px solid #6366f1; padding-bottom: 8px; }
+    h2 { font-size: 1.25rem; margin-top: 28px; color: #4338ca; }
+    h3 { font-size: 1.1rem; margin-top: 18px; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; }
+    th { background: #f3f4f6; font-weight: 600; }
+    strong { font-weight: 600; }
+    hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+    .no-print { margin-bottom: 20px; }
+    .btn-pdf { display: inline-block; padding: 12px 24px; background: #6366f1; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 500; }
+    .btn-pdf:hover { background: #4f46e5; }
+    @media print { .no-print { display: none !important; } body { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <button type="button" class="btn-pdf" onclick="window.print()">📄 PDF로 저장</button>
+    <p style="margin-top:10px; color:#6b7280; font-size:14px;">위 버튼을 누른 뒤 인쇄 대화상자에서 <strong>「대상: PDF로 저장」</strong> 또는 <strong>「Microsoft Print to PDF」</strong>를 선택하면 PDF로 저장할 수 있습니다.</p>
+  </div>
+
+  <h1>즐순이 - 즐겨찾기 매니저 사용자 매뉴얼</h1>
+  <p>나만의 즐겨찾기를 카테고리별로 정리하고, 링크마다 메모를 남길 수 있는 웹 앱입니다.</p>
+
+  <hr>
+  <h2>1. 시작하기</h2>
+  <h3>1.1 로그인</h3>
+  <ol>
+    <li>사이트에 접속합니다.</li>
+    <li><strong>「Google로 로그인」</strong> 버튼을 클릭합니다.</li>
+    <li>Google 계정으로 로그인하면 메인 화면(대시보드)으로 이동합니다.</li>
+  </ol>
+  <h3>1.2 로그아웃</h3>
+  <p>화면 오른쪽 상단의 <strong>「로그아웃」</strong> 버튼을 클릭하면 로그아웃됩니다.</p>
+
+  <hr>
+  <h2>2. 화면 구성</h2>
+  <p>메인 화면은 <strong>헤더</strong>와 <strong>세 개의 패널</strong>로 이루어져 있습니다.</p>
+  <table>
+    <tr><th>영역</th><th>설명</th></tr>
+    <tr><td>헤더</td><td>로고, 구글 검색·앱 검색, 이메일·로그아웃</td></tr>
+    <tr><td>왼쪽 패널</td><td>카테고리 목록 (폴더 구조)</td></tr>
+    <tr><td>가운데 패널</td><td>링크 목록 (선택한 카테고리의 링크)</td></tr>
+    <tr><td>오른쪽 패널</td><td>메모 목록 (선택한 링크의 메모)</td></tr>
+  </table>
+
+  <hr>
+  <h2>3. 헤더</h2>
+  <h3>3.1 로고</h3>
+  <p><strong>즐순이</strong> 로고를 클릭하면 <strong>처음 화면</strong>으로 돌아갑니다. (카테고리·링크 선택이 해제되고, 가운데에 명언이 다시 표시됩니다.)</p>
+  <h3>3.2 구글 검색</h3>
+  <p>입력창에 검색어를 입력한 뒤 <strong>🔍 버튼</strong>을 누르거나 <strong>Enter</strong>를 치면, Google 검색 결과가 새 탭에서 열립니다.</p>
+  <h3>3.3 카테고리·링크·메모 검색</h3>
+  <p>입력창에 단어를 입력한 뒤 🔍 또는 Enter를 치면, <strong>카테고리 이름</strong>, <strong>링크(제목·URL·설명)</strong>, <strong>메모 내용</strong> 중 해당 단어가 포함된 링크만 가운데 패널에 표시됩니다. <strong>「검색 해제」</strong> 버튼으로 검색을 취소할 수 있습니다.</p>
+
+  <hr>
+  <h2>4. 카테고리 (왼쪽 패널)</h2>
+  <p><strong>추가:</strong> 「새 카테고리 이름」 입력 후 「추가」 클릭 또는 Enter.<br>
+  <strong>하위 카테고리:</strong> 카테고리 옆 ➕ 클릭 후 이름 입력·추가.<br>
+  <strong>수정:</strong> 카테고리에 마우스 올린 뒤 ✏️ 클릭 → 이름 수정 후 「저장」.<br>
+  <strong>삭제:</strong> 🗑️ 클릭 후 확인 (하위 카테고리·링크·메모 모두 삭제됨).<br>
+  <strong>순서 변경:</strong> ⬆️ / ⬇️ 버튼으로 같은 레벨에서 이동.<br>
+  <strong>선택·펼치기/접기:</strong> 카테고리 이름 클릭 시 링크 목록 표시, ▶/▼로 하위 목록 접기·펼치기.</p>
+
+  <hr>
+  <h2>5. 링크 (가운데 패널)</h2>
+  <p><strong>추가:</strong> 카테고리 선택 → 「+ 링크 추가」 → 제목·URL·설명 입력 후 「링크 저장」.<br>
+  <strong>수정/삭제:</strong> 링크에 마우스 올리면 ✏️·🗑️ 표시.<br>
+  <strong>순서 변경:</strong> ⬆️ / ⬇️ 사용 (검색 결과 화면에서는 비표시).<br>
+  <strong>선택·열기:</strong> 링크 제목·URL 영역 클릭 시 메모 패널 표시, URL 클릭 시 새 탭에서 사이트 열기.</p>
+
+  <hr>
+  <h2>6. 메모 (오른쪽 패널)</h2>
+  <p><strong>추가:</strong> 링크 선택 후 메모 입력창에 입력 → 「메모 추가」.<br>
+  <strong>수정/삭제:</strong> 메모에 마우스 올리면 ✏️·🗑️ 표시.</p>
+
+  <hr>
+  <h2>7. 처음 화면 / 명언</h2>
+  <p>카테고리를 선택하지 않으면 가운데 패널에 명언이 표시됩니다. 로고를 클릭해 처음 화면으로 돌아가면 다른 명언이 랜덤으로 보일 수 있습니다.</p>
+
+  <hr>
+  <h2>8. 요약</h2>
+  <table>
+    <tr><th>하고 싶은 일</th><th>방법</th></tr>
+    <tr><td>로그인</td><td>Google로 로그인 버튼 클릭</td></tr>
+    <tr><td>카테고리 만들기</td><td>왼쪽 「새 카테고리 이름」 입력 후 추가</td></tr>
+    <tr><td>하위 카테고리</td><td>카테고리 옆 ➕ 클릭 후 이름 입력·추가</td></tr>
+    <tr><td>링크 추가</td><td>카테고리 선택 → + 링크 추가 → 제목·URL 입력 후 저장</td></tr>
+    <tr><td>메모 추가</td><td>링크 선택 → 메모 입력 후 메모 추가</td></tr>
+    <tr><td>검색 (앱 안)</td><td>헤더 「카테고리·링크·메모 검색」 입력 후 🔍 또는 Enter</td></tr>
+    <tr><td>Google 검색</td><td>헤더 「Google 검색」 입력 후 🔍 또는 Enter</td></tr>
+    <tr><td>처음 화면으로</td><td>헤더 로고(즐순이) 클릭</td></tr>
+    <tr><td>순서 바꾸기</td><td>카테고리/링크에 마우스 올린 뒤 ⬆️ ⬇️ 사용</td></tr>
+  </table>
+
+  <p style="margin-top:24px; color:#6b7280; font-size:14px;">© 2026 Seo Jongkeun. All rights reserved.</p>
+</body>
+</html>

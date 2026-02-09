@@ -2,6 +2,8 @@
 
 React + Vite 기반 즐겨찾기/링크 매니저. Supabase 백엔드 사용.
 
+📖 **사용자 매뉴얼**: [사용자_매뉴얼.md](./사용자_매뉴얼.md)
+
 ## 링크 순서 기능 (sort_order)
 
 링크 순서를 변경하려면 Supabase에 `sort_order` 컬럼이 필요합니다.  
