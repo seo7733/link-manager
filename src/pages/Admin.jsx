@@ -29,6 +29,29 @@ function Admin({ user, onLogout }) {
     loadAll()
   }, [])
 
+  useEffect(() => {
+    if (!user?.id || !user?.email) return
+    async function logAccess() {
+      let ip = null
+      const tryIp = async (url, getIp) => {
+        try {
+          const res = await fetch(url)
+          if (res.ok) return getIp(await res.json())
+        } catch (_) {}
+        return null
+      }
+      ip = await tryIp('https://api.ipify.org?format=json', d => d.ip)
+      if (!ip) ip = await tryIp('https://api64.ipify.org?format=json', d => d.ip)
+      await supabase.from('access_logs').insert({
+        user_id: user.id,
+        email: user.email,
+        ip: ip
+      })
+      loadAll()
+    }
+    logAccess()
+  }, [user?.id, user?.email])
+
   async function loadAll() {
     setLoading(true)
     setError(null)
