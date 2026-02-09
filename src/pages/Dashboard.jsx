@@ -52,6 +52,12 @@ function Dashboard({ user, onLogout }) {
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
   const [searchAreaWidth, setSearchAreaWidth] = useState(null)
   const linksPanelRef = useRef(null)
+  const [memoPanelWidth, setMemoPanelWidth] = useState(() => {
+    const saved = localStorage.getItem('memoPanelWidth')
+    return saved ? parseInt(saved, 10) : 320
+  })
+  const [isResizing, setIsResizing] = useState(false)
+  const resizerRef = useRef(null)
 
   useEffect(() => {
     fetchCategories()
@@ -88,6 +94,31 @@ function Dashboard({ user, onLogout }) {
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('memoPanelWidth', memoPanelWidth.toString())
+  }, [memoPanelWidth])
+
+  useEffect(() => {
+    if (!isResizing) return
+    const handleMouseMove = (e) => {
+      const newWidth = window.innerWidth - e.clientX
+      const minWidth = 200
+      const maxWidth = Math.min(800, window.innerWidth - 300)
+      if (newWidth >= minWidth && newWidth <= maxWidth) {
+        setMemoPanelWidth(newWidth)
+      }
+    }
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing])
 
   useEffect(() => {
     setSearchResults(null)
@@ -626,7 +657,19 @@ function Dashboard({ user, onLogout }) {
           </footer>
         </section>
 
-        <aside className="panel panel-memos">
+        <div
+          ref={resizerRef}
+          className={`panel-resizer ${isResizing ? 'resizing' : ''}`}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            setIsResizing(true)
+          }}
+          role="separator"
+          aria-label="메모 패널 너비 조절"
+          aria-orientation="vertical"
+        />
+
+        <aside className="panel panel-memos" style={{ width: `${memoPanelWidth}px`, minWidth: `${memoPanelWidth}px` }}>
           <div className="panel-header">
             <h2>📝 {selectedLink ? selectedLink.title : '링크를 선택하세요'}</h2>
           </div>

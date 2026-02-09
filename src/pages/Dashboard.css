@@ -265,9 +265,24 @@
     text-decoration: underline;
   }
   
+  .panel-resizer {
+    width: 4px;
+    background: #e5e7eb;
+    cursor: col-resize;
+    flex-shrink: 0;
+    user-select: none;
+    transition: background-color 0.2s;
+  }
+
+  .panel-resizer:hover,
+  .panel-resizer.resizing {
+    background: #3b82f6;
+  }
+
   .panel-memos {
     width: 320px;
-    min-width: 320px;
+    min-width: 200px;
+    max-width: 800px;
     background: #ffffff;
     border-left: 1px solid #e5e7eb;
   }
@@ -763,17 +778,6 @@
   .item-actions button[title="하위 카테고리 추가"] {
     font-size: 11px;
   }
-  ```
-  
-  **→ Ctrl+S 저장!**
-  
-  ---
-  
-  ## 사용 방법
-  ```
-  📁 AI모음     [➕] [✏️] [🗑️]    ← 마우스 올리면 ➕ 버튼 표시
-    ▶ 챗봇                          ← ➕ 클릭하면 하위 카테고리 추가
-    ▶ 이미지생성                     ← ▶ 클릭하면 펼치기/접기
   
   @media (max-width: 900px) {
     .dashboard-body {
@@ -785,6 +789,9 @@
       width: 100%;
       min-width: 100%;
       max-height: 300px;
+    }
+    .panel-resizer {
+      display: none;
     }
     .panel-links .item-list {
       padding: 8px 12px;
