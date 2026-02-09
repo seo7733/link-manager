@@ -325,3 +325,70 @@
   color: #64748b;
   font-style: italic;
 }
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.admin-pagination-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-pagination-size select {
+  padding: 6px 10px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-pagination-info {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.admin-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.admin-page-btn {
+  min-width: 32px;
+  padding: 6px 8px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-page-btn:hover:not(:disabled) {
+  background: #334155;
+}
+
+.admin-page-btn.active {
+  background: #475569;
+  border-color: #64748b;
+}
+
+.admin-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-page-ellipsis {
+  padding: 0 4px;
+  color: #64748b;
+  font-size: 13px;
+}

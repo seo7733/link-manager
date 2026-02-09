@@ -20,6 +20,10 @@ function Admin({ user, onLogout }) {
   const [deletingId, setDeletingId] = useState(null)
   const [detailUserId, setDetailUserId] = useState(null)
   const [error, setError] = useState(null)
+  const [userPageSize, setUserPageSize] = useState(10)
+  const [userPage, setUserPage] = useState(1)
+  const [logPageSize, setLogPageSize] = useState(10)
+  const [logPage, setLogPage] = useState(1)
 
   useEffect(() => {
     loadAll()
@@ -143,6 +147,54 @@ function Admin({ user, onLogout }) {
   const detailUser = detailUserId ? userList.find(u => u.user_id === detailUserId) : null
   const userDetail = detailUserId ? getUserDetail(detailUserId) : null
 
+  const PAGE_SIZE_OPTS = [10, 20, 30]
+  const totalUserPages = Math.max(1, Math.ceil(userList.length / userPageSize))
+  const totalLogPages = Math.max(1, Math.ceil(accessLogs.length / logPageSize))
+  const effectiveUserPage = Math.min(userPage, totalUserPages)
+  const effectiveLogPage = Math.min(logPage, totalLogPages)
+  const userListPaginated = userList.slice((effectiveUserPage - 1) * userPageSize, effectiveUserPage * userPageSize)
+  const accessLogsPaginated = accessLogs.slice((effectiveLogPage - 1) * logPageSize, effectiveLogPage * logPageSize)
+
+  function Pagination({ current, total, onPageChange, pageSize, pageSizeOpts, onPageSizeChange, totalItems, label, unit = '명' }) {
+    const start = totalItems === 0 ? 0 : (current - 1) * pageSize + 1
+    const end = Math.min(current * pageSize, totalItems)
+    const totalLabel = unit === '명' ? `${totalItems}명` : `${totalItems}건`
+    const pageNumbers = []
+    if (total <= 7) {
+      for (let p = 1; p <= total; p++) pageNumbers.push(p)
+    } else {
+      pageNumbers.push(1)
+      if (current > 3) pageNumbers.push('...')
+      for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+        if (!pageNumbers.includes(p)) pageNumbers.push(p)
+      }
+      if (current < total - 2) pageNumbers.push('...')
+      if (total > 1) pageNumbers.push(total)
+    }
+    return (
+      <div className="admin-pagination">
+        <div className="admin-pagination-size">
+          <span>{label} 표시:</span>
+          <select value={pageSize} onChange={e => { onPageSizeChange(Number(e.target.value)); onPageChange(1) }} aria-label="페이지당 개수">
+            {pageSizeOpts.map(n => <option key={n} value={n}>{n}{unit}</option>)}
+          </select>
+        </div>
+        <div className="admin-pagination-info">
+          {totalItems === 0 ? (unit === '명' ? '0명' : '0건') : `${start}–${end} / 전체 ${totalLabel}`}
+        </div>
+        <div className="admin-pagination-pages">
+          <button type="button" className="admin-page-btn" disabled={current <= 1} onClick={() => onPageChange(current - 1)} aria-label="이전 페이지">◀</button>
+          {pageNumbers.map((p, i) =>
+            p === '...' ? <span key={`ellipsis-${i}`} className="admin-page-ellipsis">…</span> : (
+              <button key={p} type="button" className={`admin-page-btn ${p === current ? 'active' : ''}`} onClick={() => onPageChange(p)}>{p}</button>
+            )
+          )}
+          <button type="button" className="admin-page-btn" disabled={current >= total} onClick={() => onPageChange(current + 1)} aria-label="다음 페이지">▶</button>
+        </div>
+      </div>
+    )
+  }
+
   if (user?.email !== 'jkseo1974@gmail.com') {
     return null
   }
@@ -201,6 +253,17 @@ function Admin({ user, onLogout }) {
             <section className="admin-section">
               <h2>사용자 현황</h2>
               <p className="admin-hint">회원 삭제 시 해당 사용자의 모든 카테고리·링크·메모가 삭제됩니다. Supabase Auth 계정 삭제는 Supabase 대시보드에서 진행하세요.</p>
+              <Pagination
+                current={effectiveUserPage}
+                total={totalUserPages}
+                onPageChange={setUserPage}
+                pageSize={userPageSize}
+                pageSizeOpts={PAGE_SIZE_OPTS}
+                onPageSizeChange={setUserPageSize}
+                totalItems={userList.length}
+                label="한 페이지에"
+                unit="명"
+              />
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
@@ -213,7 +276,7 @@ function Admin({ user, onLogout }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {userList.map(u => (
+                    {userListPaginated.map(u => (
                       <tr key={u.user_id}>
                         <td>{u.email}</td>
                         <td>
@@ -251,6 +314,17 @@ function Admin({ user, onLogout }) {
 
             <section className="admin-section">
               <h2>접속 로그</h2>
+              <Pagination
+                current={effectiveLogPage}
+                total={totalLogPages}
+                onPageChange={setLogPage}
+                pageSize={logPageSize}
+                pageSizeOpts={PAGE_SIZE_OPTS}
+                onPageSizeChange={setLogPageSize}
+                totalItems={accessLogs.length}
+                label="한 페이지에"
+                unit="건"
+              />
               <div className="admin-table-wrap admin-log-wrap">
                 <table className="admin-table">
                   <thead>
@@ -260,7 +334,7 @@ function Admin({ user, onLogout }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {accessLogs.map(log => (
+                    {accessLogsPaginated.map(log => (
                       <tr key={log.id}>
                         <td>{log.email || '-'}</td>
                         <td>{formatDate(log.accessed_at)}</td>
