@@ -71,14 +71,14 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
+    gap: 4px;
+    padding: 8px 6px;
   }
 
   .header-search-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     flex: 1;
     min-width: 0;
   }
