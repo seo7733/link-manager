@@ -631,7 +631,7 @@ function Dashboard({ user, onLogout }) {
 
         <section ref={linksPanelRef} className="panel panel-links">
           <div className="panel-header">
-            <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : '카테고리를 선택하세요'}</h2>
+            <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : '즐겨찾기'}</h2>
             {searchResults !== null ? (
               <button type="button" className="btn-cancel" onClick={() => setSearchResults(null)}>검색 해제</button>
             ) : selectedCategory ? (
