@@ -59,7 +59,7 @@ function Dashboard({ user, onLogout }) {
   const [editTodoContent, setEditTodoContent] = useState('')
   const [todoPageSize, setTodoPageSize] = useState(() => {
     const saved = localStorage.getItem('todoPageSize')
-    return saved ? parseInt(saved, 10) : 10
+    return saved ? parseInt(saved, 10) : 5
   })
   const [todoPage, setTodoPage] = useState(1)
 
@@ -228,6 +228,7 @@ function Dashboard({ user, onLogout }) {
       .from('todos')
       .select('*')
       .eq('user_id', user.id)
+      .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
     if (!error) setTodos(data || [])
   }
@@ -518,9 +519,11 @@ function Dashboard({ user, onLogout }) {
   // 할일 목록 CRUD
   const addTodo = async () => {
     if (!newTodo.trim()) return
+    const maxSortOrder = todos.length > 0 ? Math.max(...todos.map(t => t.sort_order ?? 0)) : -1
     const { error } = await supabase.from('todos').insert({
       content: newTodo.trim(),
-      user_id: user.id
+      user_id: user.id,
+      sort_order: maxSortOrder + 1
     })
     if (!error) {
       setNewTodo('')
@@ -558,6 +561,20 @@ function Dashboard({ user, onLogout }) {
     if (!error) {
       fetchTodos()
     }
+  }
+
+  const moveTodo = async (todo, direction) => {
+    const sortedTodos = [...todos].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    const idx = sortedTodos.findIndex(t => t.id === todo.id)
+    if (idx < 0) return
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= sortedTodos.length) return
+    const other = sortedTodos[swapIdx]
+    const todoOrder = todo.sort_order ?? 0
+    const otherOrder = other.sort_order ?? 0
+    const { error: e1 } = await supabase.from('todos').update({ sort_order: otherOrder }).eq('id', todo.id)
+    const { error: e2 } = await supabase.from('todos').update({ sort_order: todoOrder }).eq('id', other.id)
+    if (!e1 && !e2) fetchTodos()
   }
 
   // 메모 CRUD
@@ -910,6 +927,7 @@ function Dashboard({ user, onLogout }) {
                             }}
                             className="todo-page-size-select"
                           >
+                            <option value={5}>5개</option>
                             <option value={10}>10개</option>
                             <option value={20}>20개</option>
                             <option value={30}>30개</option>
@@ -919,49 +937,57 @@ function Dashboard({ user, onLogout }) {
                           </span>
                         </div>
                         <ul className="todo-list">
-                          {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo) => (
-                            <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                              {editingTodoId === todo.id ? (
-                                <div className="todo-edit-form">
-                                  <input
-                                    type="text"
-                                    value={editTodoContent}
-                                    onChange={(e) => setEditTodoContent(e.target.value)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        e.preventDefault()
-                                        updateTodo(todo.id)
-                                      } else if (e.key === 'Escape') {
-                                        setEditingTodoId(null)
-                                        setEditTodoContent('')
-                                      }
-                                    }}
-                                    autoFocus
-                                  />
-                                  <button className="btn-save" onClick={() => updateTodo(todo.id)}>저장</button>
-                                  <button className="btn-cancel" onClick={() => { setEditingTodoId(null); setEditTodoContent('') }}>취소</button>
-                                </div>
-                              ) : (
-                                <>
-                                  <div className="todo-content-row">
+                          {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo, pageIdx) => {
+                            const sortedTodos = [...todos].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+                            const globalIdx = sortedTodos.findIndex(t => t.id === todo.id)
+                            const canMoveUp = globalIdx > 0
+                            const canMoveDown = globalIdx < sortedTodos.length - 1
+                            return (
+                              <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                                {editingTodoId === todo.id ? (
+                                  <div className="todo-edit-form">
                                     <input
-                                      type="checkbox"
-                                      checked={todo.completed}
-                                      onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
-                                      className="todo-checkbox"
+                                      type="text"
+                                      value={editTodoContent}
+                                      onChange={(e) => setEditTodoContent(e.target.value)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault()
+                                          updateTodo(todo.id)
+                                        } else if (e.key === 'Escape') {
+                                          setEditingTodoId(null)
+                                          setEditTodoContent('')
+                                        }
+                                      }}
+                                      autoFocus
                                     />
-                                    <span className="todo-text" onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>
-                                      {todo.content}
-                                    </span>
+                                    <button className="btn-save" onClick={() => updateTodo(todo.id)}>저장</button>
+                                    <button className="btn-cancel" onClick={() => { setEditingTodoId(null); setEditTodoContent('') }}>취소</button>
                                   </div>
-                                  <div className="todo-actions">
-                                    <button onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>✏️</button>
-                                    <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
-                                  </div>
-                                </>
-                              )}
-                            </li>
-                          ))}
+                                ) : (
+                                  <>
+                                    <div className="todo-content-row">
+                                      <input
+                                        type="checkbox"
+                                        checked={todo.completed}
+                                        onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
+                                        className="todo-checkbox"
+                                      />
+                                      <span className="todo-text" onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>
+                                        {todo.content}
+                                      </span>
+                                    </div>
+                                    <div className="todo-actions">
+                                      {canMoveUp && <button title="위로" onClick={() => moveTodo(todo, 'up')}>⬆️</button>}
+                                      {canMoveDown && <button title="아래로" onClick={() => moveTodo(todo, 'down')}>⬇️</button>}
+                                      <button onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>✏️</button>
+                                      <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
+                                    </div>
+                                  </>
+                                )}
+                              </li>
+                            )
+                          })}
                         </ul>
                         {Math.ceil(todos.length / todoPageSize) > 1 && (
                           <div className="todo-pagination">
