@@ -986,12 +986,17 @@
   
   .link-edit-form {
     flex-direction: column;
-    align-items: flex-start;
   }
 
   .link-edit-form .link-form-checkbox {
     align-self: flex-start;
     margin-bottom: 4px;
+  }
+
+  .link-edit-form input,
+  .link-edit-form textarea,
+  .link-edit-form select {
+    width: 100%;
   }
   
   .memo-form {

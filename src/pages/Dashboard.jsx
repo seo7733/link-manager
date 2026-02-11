@@ -137,8 +137,10 @@ function Dashboard({ user, onLogout }) {
     } else {
       setLinks([])
     }
+    // 카테고리 변경 시 선택된 링크/메모와 링크 등록 폼 초기화
     setSelectedLink(null)
     setMemos([])
+    setShowLinkForm(false)
   }, [selectedCategory])
 
   useEffect(() => {
