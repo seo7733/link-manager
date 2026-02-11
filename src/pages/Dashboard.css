@@ -461,12 +461,17 @@
     cursor: pointer;
     justify-content: flex-start;
     width: 100%;
+    white-space: nowrap;
   }
 
   .link-form-checkbox input {
     width: auto;
     flex: none;
     margin: 0;
+  }
+
+  .link-form-checkbox span {
+    white-space: nowrap;
   }
 
   .link-form-actions {
@@ -996,6 +1001,11 @@
     justify-content: flex-start;
     width: auto;
     margin-bottom: 4px;
+    white-space: nowrap;
+  }
+
+  .link-edit-form .link-form-checkbox span {
+    white-space: nowrap;
   }
 
   .link-edit-form input,
