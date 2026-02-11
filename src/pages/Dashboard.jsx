@@ -156,6 +156,7 @@ function Dashboard({ user, onLogout }) {
       .from('links')
       .select('*')
       .eq('user_id', user.id)
+      .order('main_sort_order', { ascending: true, nullsFirst: false })
       .order('sort_order', { ascending: true })
     if (!error) setAllLinks(data || [])
   }
@@ -326,9 +327,47 @@ function Dashboard({ user, onLogout }) {
   }
 
   const linksForGrid = searchResults === null
-    ? (selectedCategory ? links : allLinks).filter(l => l.show_on_main !== false)
+    ? (selectedCategory ? links : allLinks)
+        .filter(l => l.show_on_main !== false)
+        .sort((a, b) => (a.main_sort_order ?? 999999) - (b.main_sort_order ?? 999999))
     : []
   const showShortcutGrid = searchResults === null && linksForGrid.length > 0
+
+  const updateMainSortOrder = async (orderedIds) => {
+    const updates = orderedIds.map((id, index) => supabase.from('links').update({ main_sort_order: index }).eq('id', id))
+    await Promise.all(updates)
+    fetchAllLinks()
+    if (selectedCategory) fetchLinks(selectedCategory.id)
+  }
+
+  const handleShortcutDragStart = (e, linkId) => {
+    e.dataTransfer.setData('text/plain', linkId)
+    e.dataTransfer.effectAllowed = 'move'
+    e.currentTarget.classList.add('link-shortcut-dragging')
+  }
+
+  const handleShortcutDragEnd = (e) => {
+    e.currentTarget.classList.remove('link-shortcut-dragging')
+  }
+
+  const handleShortcutDragOver = (e) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleShortcutDrop = (e, targetLinkId) => {
+    e.preventDefault()
+    const sourceId = e.dataTransfer.getData('text/plain')
+    if (!sourceId || sourceId === targetLinkId) return
+    const ids = linksForGrid.map(l => l.id)
+    const fromIdx = ids.indexOf(sourceId)
+    const toIdx = ids.indexOf(targetLinkId)
+    if (fromIdx === -1 || toIdx === -1) return
+    const reordered = [...ids]
+    reordered.splice(fromIdx, 1)
+    reordered.splice(toIdx, 0, sourceId)
+    updateMainSortOrder(reordered)
+  }
 
   const flattenCategories = (items, parentId = null, level = 0) => {
     const result = []
@@ -648,7 +687,16 @@ function Dashboard({ user, onLogout }) {
               {showShortcutGrid && (
             <div className="link-shortcut-grid">
               {linksForGrid.map((link) => (
-                <div key={link.id} className="link-shortcut-tile-wrap">
+                <div
+                  key={link.id}
+                  className="link-shortcut-tile-wrap"
+                  data-link-id={link.id}
+                  draggable
+                  onDragStart={(e) => handleShortcutDragStart(e, link.id)}
+                  onDragEnd={handleShortcutDragEnd}
+                  onDragOver={handleShortcutDragOver}
+                  onDrop={(e) => handleShortcutDrop(e, link.id)}
+                >
                   <a
                     href={link.url}
                     target="_blank"

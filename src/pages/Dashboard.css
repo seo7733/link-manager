@@ -644,6 +644,20 @@
 
   .link-shortcut-tile-wrap {
     position: relative;
+    cursor: grab;
+  }
+
+  .link-shortcut-tile-wrap:active {
+    cursor: grabbing;
+  }
+
+  .link-shortcut-tile-wrap.link-shortcut-dragging {
+    opacity: 0.6;
+    cursor: grabbing;
+  }
+
+  .link-shortcut-tile-wrap.link-shortcut-dragging .link-shortcut-remove {
+    display: none;
   }
 
   .link-shortcut-tile {
