@@ -803,12 +803,6 @@ function Dashboard({ user, onLogout }) {
               )}
               {!selectedCategory && (
                 <>
-                  <div className="main-quote-block">
-                    <div className="welcome-quote">
-                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
-                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
-                    </div>
-                  </div>
                   <div className="main-calendar-placeholder">
                     {calendarEmbedUrl ? (
                       <iframe
@@ -823,6 +817,12 @@ function Dashboard({ user, onLogout }) {
                         구글 캘린더 임베드 URL(VITE_GOOGLE_CALENDAR_EMBED_URL)을 설정하면 여기에 표시됩니다.
                       </span>
                     )}
+                  </div>
+                  <div className="main-quote-block">
+                    <div className="welcome-quote">
+                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                    </div>
                   </div>
                   <div className="schedule-section">
                     <div className="schedule-form">
