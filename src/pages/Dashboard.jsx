@@ -939,7 +939,7 @@ function Dashboard({ user, onLogout }) {
                   className={`item link-item ${selectedLink?.id === link.id ? 'active' : ''}`}
                 >
                   {editingLink === link.id ? (
-                    <div className="edit-form link-edit-form">
+                    <div className="link-form link-edit-form">
                       <label className="link-form-checkbox">
                         <input
                           type="checkbox"
