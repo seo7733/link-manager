@@ -986,8 +986,9 @@
   
   .link-edit-form {
     flex-direction: column;
+    flex-wrap: nowrap;
     width: 100%;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   .link-edit-form .link-form-checkbox {
@@ -1000,9 +1001,10 @@
   .link-edit-form input,
   .link-edit-form textarea,
   .link-edit-form select {
-    flex: 0 0 100%;
+    flex: 0 0 auto;
     width: 100%;
     box-sizing: border-box;
+    padding: 6px 10px;
   }
   
   .memo-form {
