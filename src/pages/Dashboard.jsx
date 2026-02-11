@@ -677,13 +677,6 @@ function Dashboard({ user, onLogout }) {
 
           {searchResults === null && (
             <>
-              <div className="main-quote-block">
-                <div className="welcome-quote">
-                  <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
-                  <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
-                </div>
-                {!selectedCategory && <p className="welcome-quote-hint">왼쪽에서 카테고리를 선택하세요</p>}
-              </div>
               {showShortcutGrid && (
             <div className="link-shortcut-grid">
               {linksForGrid.map((link) => (
@@ -734,9 +727,20 @@ function Dashboard({ user, onLogout }) {
               ))}
             </div>
               )}
-              <div className="main-calendar-placeholder" aria-hidden>
-                <span className="main-calendar-label">구글 캘린더 (예정)</span>
-              </div>
+              {!selectedCategory && (
+                <>
+                  <div className="main-quote-block">
+                    <div className="welcome-quote">
+                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                    </div>
+                    <p className="welcome-quote-hint">왼쪽에서 카테고리를 선택하세요</p>
+                  </div>
+                  <div className="main-calendar-placeholder" aria-hidden>
+                    <span className="main-calendar-label">구글 캘린더 (예정)</span>
+                  </div>
+                </>
+              )}
             </>
           )}
 
