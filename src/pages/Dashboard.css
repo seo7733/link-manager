@@ -75,12 +75,28 @@
     padding: 8px 0;
   }
 
+  .header-search-center form,
+  .header-search-center .header-search-row {
+    margin: 0;
+    padding: 0;
+  }
+
   .header-search-row {
     display: flex;
     align-items: center;
     gap: 4px;
     flex: 1;
     min-width: 0;
+  }
+
+  .header-search-center .header-search-row:first-child .btn-search-icon {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .header-search-center .header-search-row:last-child input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
 
   .header-search-row input {
@@ -439,15 +455,18 @@
   .link-form-checkbox {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     font-size: 13px;
     color: #374151;
     cursor: pointer;
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .link-form-checkbox input {
     width: auto;
     flex: none;
+    margin: 0;
   }
 
   .link-form-actions {
