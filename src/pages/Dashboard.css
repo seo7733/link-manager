@@ -491,19 +491,157 @@
   }
 
   .main-calendar-placeholder {
-    min-height: 120px;
+    min-height: 260px;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     background: #f8fafc;
     border: 1px dashed #e2e8f0;
     border-radius: 12px;
-    margin: 16px 20px;
+    margin: 16px 20px 8px;
+    overflow: hidden;
   }
 
   .main-calendar-label {
     font-size: 13px;
     color: #94a3b8;
+  }
+
+  .main-calendar-iframe {
+    border: 0;
+    width: 100%;
+    min-height: 260px;
+  }
+
+  .schedule-section {
+    margin: 0 20px 16px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 14px 16px;
+  }
+
+  .schedule-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .schedule-form input,
+  .schedule-form textarea {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 13px;
+  }
+
+  .schedule-form-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .schedule-form-row input[type="date"],
+  .schedule-form-row input[type="time"] {
+    flex: 1;
+  }
+
+  .schedule-form textarea {
+    resize: vertical;
+  }
+
+  .schedule-form-actions {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .schedule-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .schedule-item {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .schedule-display {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .schedule-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .schedule-date {
+    color: #4b5563;
+  }
+
+  .schedule-title {
+    flex: 1;
+    text-align: right;
+  }
+
+  .schedule-desc {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .schedule-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .schedule-actions button {
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .schedule-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .schedule-edit input,
+  .schedule-edit textarea {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 13px;
+  }
+
+  .schedule-edit-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .schedule-empty {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    padding: 8px 0;
   }
 
   .welcome-quote-wrap {

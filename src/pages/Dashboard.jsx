@@ -46,6 +46,13 @@ function Dashboard({ user, onLogout }) {
   const [editingMemo, setEditingMemo] = useState(null)
   const [editMemoContent, setEditMemoContent] = useState('')
 
+  const [schedules, setSchedules] = useState([])
+  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+  const [editingScheduleId, setEditingScheduleId] = useState(null)
+  const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+
+  const calendarEmbedUrl = import.meta.env.VITE_GOOGLE_CALENDAR_EMBED_URL || ''
+
   const [googleSearchQuery, setGoogleSearchQuery] = useState('')
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -184,6 +191,21 @@ function Dashboard({ user, onLogout }) {
       .order('created_at', { ascending: false })
     if (!error) setMemos(data || [])
   }
+
+  const fetchSchedules = async () => {
+    if (!user?.id) return
+    const { data, error } = await supabase
+      .from('schedules')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('event_date', { ascending: true })
+      .order('event_time', { ascending: true })
+    if (!error) setSchedules(data || [])
+  }
+
+  useEffect(() => {
+    fetchSchedules()
+  }, [user?.id])
 
   // 트리 구조 만들기 (형제는 sort_order로 정렬)
   const buildTree = (items, parentId = null) => {
@@ -402,6 +424,58 @@ function Dashboard({ user, onLogout }) {
     const { error: e1 } = await supabase.from('links').update({ sort_order: otherOrder }).eq('id', link.id)
     const { error: e2 } = await supabase.from('links').update({ sort_order: linkOrder }).eq('id', other.id)
     if (!e1 && !e2) fetchLinks(selectedCategory.id)
+  }
+
+  // 일정 CRUD
+  const addSchedule = async () => {
+    if (!newSchedule.title.trim() || !newSchedule.event_date) return
+    const { error } = await supabase.from('schedules').insert({
+      user_id: user.id,
+      title: newSchedule.title.trim(),
+      event_date: newSchedule.event_date,
+      event_time: newSchedule.event_time.trim() || null,
+      description: newSchedule.description.trim() || null
+    })
+    if (!error) {
+      setNewSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      fetchSchedules()
+    }
+  }
+
+  const startEditSchedule = (schedule) => {
+    setEditingScheduleId(schedule.id)
+    setEditSchedule({
+      title: schedule.title || '',
+      event_date: schedule.event_date || '',
+      event_time: schedule.event_time || '',
+      description: schedule.description || ''
+    })
+  }
+
+  const updateSchedule = async (id) => {
+    if (!editSchedule.title.trim() || !editSchedule.event_date) return
+    const { error } = await supabase
+      .from('schedules')
+      .update({
+        title: editSchedule.title.trim(),
+        event_date: editSchedule.event_date,
+        event_time: editSchedule.event_time.trim() || null,
+        description: editSchedule.description.trim() || null
+      })
+      .eq('id', id)
+    if (!error) {
+      setEditingScheduleId(null)
+      setEditSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      fetchSchedules()
+    }
+  }
+
+  const deleteSchedule = async (id) => {
+    if (!confirm('이 일정을 삭제할까요?')) return
+    const { error } = await supabase.from('schedules').delete().eq('id', id)
+    if (!error) {
+      fetchSchedules()
+    }
   }
 
   // 메모 CRUD
@@ -735,8 +809,105 @@ function Dashboard({ user, onLogout }) {
                       <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
                     </div>
                   </div>
-                  <div className="main-calendar-placeholder" aria-hidden>
-                    <span className="main-calendar-label">구글 캘린더 (예정)</span>
+                  <div className="main-calendar-placeholder">
+                    {calendarEmbedUrl ? (
+                      <iframe
+                        src={calendarEmbedUrl}
+                        title="Google Calendar"
+                        className="main-calendar-iframe"
+                        frameBorder="0"
+                        scrolling="no"
+                      />
+                    ) : (
+                      <span className="main-calendar-label">
+                        구글 캘린더 임베드 URL(VITE_GOOGLE_CALENDAR_EMBED_URL)을 설정하면 여기에 표시됩니다.
+                      </span>
+                    )}
+                  </div>
+                  <div className="schedule-section">
+                    <div className="schedule-form">
+                      <input
+                        type="text"
+                        placeholder="일정 제목"
+                        value={newSchedule.title}
+                        onChange={(e) => setNewSchedule({ ...newSchedule, title: e.target.value })}
+                      />
+                      <div className="schedule-form-row">
+                        <input
+                          type="date"
+                          value={newSchedule.event_date}
+                          onChange={(e) => setNewSchedule({ ...newSchedule, event_date: e.target.value })}
+                        />
+                        <input
+                          type="time"
+                          value={newSchedule.event_time}
+                          onChange={(e) => setNewSchedule({ ...newSchedule, event_time: e.target.value })}
+                        />
+                      </div>
+                      <textarea
+                        placeholder="메모 (선택 사항)"
+                        rows={2}
+                        value={newSchedule.description}
+                        onChange={(e) => setNewSchedule({ ...newSchedule, description: e.target.value })}
+                      />
+                      <div className="schedule-form-actions">
+                        <button type="button" className="btn-add" onClick={addSchedule}>일정 추가</button>
+                      </div>
+                    </div>
+                    <ul className="schedule-list">
+                      {schedules.map((sch) => (
+                        <li key={sch.id} className="schedule-item">
+                          {editingScheduleId === sch.id ? (
+                            <div className="schedule-edit">
+                              <input
+                                type="text"
+                                value={editSchedule.title}
+                                onChange={(e) => setEditSchedule({ ...editSchedule, title: e.target.value })}
+                              />
+                              <div className="schedule-form-row">
+                                <input
+                                  type="date"
+                                  value={editSchedule.event_date}
+                                  onChange={(e) => setEditSchedule({ ...editSchedule, event_date: e.target.value })}
+                                />
+                                <input
+                                  type="time"
+                                  value={editSchedule.event_time}
+                                  onChange={(e) => setEditSchedule({ ...editSchedule, event_time: e.target.value })}
+                                />
+                              </div>
+                              <textarea
+                                rows={2}
+                                value={editSchedule.description}
+                                onChange={(e) => setEditSchedule({ ...editSchedule, description: e.target.value })}
+                              />
+                              <div className="schedule-edit-actions">
+                                <button type="button" className="btn-save" onClick={() => updateSchedule(sch.id)}>저장</button>
+                                <button type="button" className="btn-cancel" onClick={() => setEditingScheduleId(null)}>취소</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="schedule-display">
+                              <div className="schedule-main">
+                                <span className="schedule-date">
+                                  {sch.event_date}
+                                  {sch.event_time && ` ${sch.event_time}`}
+                                </span>
+                                <span className="schedule-title">{sch.title}</span>
+                              </div>
+                              {sch.description && <p className="schedule-desc">{sch.description}</p>}
+                              <div className="schedule-actions">
+                                <button type="button" onClick={() => startEditSchedule(sch)}>✏️</button>
+                                <button type="button" onClick={() => deleteSchedule(sch.id)}>🗑️</button>
+                              </div>
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                      {schedules.length === 0 && (
+                        <li className="schedule-empty">등록된 일정이 없습니다. 일정을 추가해 보세요.</li>
+                      )}
+                    </ul>
                   </div>
                 </>
               )}
