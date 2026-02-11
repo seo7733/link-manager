@@ -604,6 +604,14 @@ function Dashboard({ user, onLogout }) {
 
           {showLinkForm && selectedCategory && (
             <div className="link-form">
+              <label className="link-form-checkbox">
+                <input
+                  type="checkbox"
+                  checked={!!newLink.showOnMain}
+                  onChange={(e) => setNewLink({ ...newLink, showOnMain: e.target.checked })}
+                />
+                <span>메인 표출</span>
+              </label>
               <input
                 type="text"
                 placeholder="링크 제목"
@@ -622,15 +630,9 @@ function Dashboard({ user, onLogout }) {
                 value={newLink.description}
                 onChange={(e) => setNewLink({ ...newLink, description: e.target.value })}
               />
-              <label className="link-form-checkbox">
-                <input
-                  type="checkbox"
-                  checked={!!newLink.showOnMain}
-                  onChange={(e) => setNewLink({ ...newLink, showOnMain: e.target.checked })}
-                />
-                <span>메인 표출</span>
-              </label>
-              <button className="btn-add" onClick={addLink}>링크 저장</button>
+              <div className="link-form-actions">
+                <button className="btn-add" onClick={addLink}>링크 저장</button>
+              </div>
             </div>
           )}
 
@@ -682,6 +684,14 @@ function Dashboard({ user, onLogout }) {
                 >
                   {editingLink === link.id ? (
                     <div className="edit-form link-edit-form">
+                      <label className="link-form-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={!!editLink.show_on_main}
+                          onChange={(e) => setEditLink({ ...editLink, show_on_main: e.target.checked })}
+                        />
+                        <span>메인 표출</span>
+                      </label>
                       <select
                         value={editLink.category_id || ''}
                         onChange={(e) => setEditLink({ ...editLink, category_id: e.target.value })}
@@ -713,15 +723,7 @@ function Dashboard({ user, onLogout }) {
                         onChange={(e) => setEditLink({ ...editLink, description: e.target.value })}
                         placeholder="설명"
                       />
-                      <label className="link-form-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={!!editLink.show_on_main}
-                          onChange={(e) => setEditLink({ ...editLink, show_on_main: e.target.checked })}
-                        />
-                        <span>메인 표출</span>
-                      </label>
-                      <div className="edit-buttons">
+                      <div className="edit-buttons edit-buttons-left">
                         <button className="btn-save" onClick={() => updateLink(link.id)}>저장</button>
                         <button className="btn-cancel" onClick={() => setEditingLink(null)}>취소</button>
                       </div>
