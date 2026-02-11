@@ -665,9 +665,20 @@ function Dashboard({ user, onLogout }) {
                   <button
                     type="button"
                     className="link-shortcut-remove"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (confirm('이 링크를 삭제할까요?')) deleteLink(link.id) }}
-                    title="링크 제거"
-                    aria-label="링크 제거"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      if (confirm('메인 화면에서만 제거합니다. 링크는 카테고리에 그대로 남습니다.')) {
+                        supabase.from('links').update({ show_on_main: false }).eq('id', link.id).then(({ error }) => {
+                          if (!error) {
+                            fetchAllLinks()
+                            if (selectedCategory?.id === link.category_id) fetchLinks(selectedCategory.id)
+                          }
+                        })
+                      }
+                    }}
+                    title="메인에서 제거"
+                    aria-label="메인 화면에서 제거"
                   >
                     제거
                   </button>
