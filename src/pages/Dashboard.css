@@ -480,18 +480,18 @@
   }
 
   .main-quote-block {
-    padding: 24px 20px 16px;
+    padding: 16px 20px 10px;
     text-align: center;
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(180deg, #fafbfc 0%, #f5f7fb 100%);
   }
 
   .main-quote-block .welcome-quote {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   .main-calendar-placeholder {
-    min-height: 260px;
+    min-height: 338px;
     display: flex;
     align-items: stretch;
     justify-content: center;
@@ -510,7 +510,7 @@
   .main-calendar-iframe {
     border: 0;
     width: 100%;
-    min-height: 260px;
+    min-height: 338px;
   }
 
   .schedule-section {
