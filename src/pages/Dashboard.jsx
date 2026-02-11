@@ -831,123 +831,6 @@ function Dashboard({ user, onLogout }) {
             </div>
           )}
 
-          {!selectedCategory && searchResults === null && (
-            <div className="todo-section">
-              <div className="todo-header">
-                <h3>할일 목록 (ToDo List)</h3>
-              </div>
-              <div className="todo-form">
-                <input
-                  type="text"
-                  placeholder="할일을 입력하세요..."
-                  value={newTodo}
-                  onChange={(e) => setNewTodo(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTodo())}
-                />
-                <button className="btn-add" onClick={addTodo}>추가</button>
-              </div>
-              {todos.length > 0 && (
-                <>
-                  <div className="todo-pagination-controls">
-                    <select
-                      value={todoPageSize}
-                      onChange={(e) => {
-                        setTodoPageSize(parseInt(e.target.value, 10))
-                        setTodoPage(1)
-                      }}
-                      className="todo-page-size-select"
-                    >
-                      <option value={10}>10개</option>
-                      <option value={20}>20개</option>
-                      <option value={30}>30개</option>
-                    </select>
-                    <span className="todo-pagination-info">
-                      {todos.length}개 중 {Math.min((todoPage - 1) * todoPageSize + 1, todos.length)}-{Math.min(todoPage * todoPageSize, todos.length)}개 표시
-                    </span>
-                  </div>
-                  <ul className="todo-list">
-                    {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo) => (
-                      <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                        {editingTodoId === todo.id ? (
-                          <div className="todo-edit-form">
-                            <input
-                              type="text"
-                              value={editTodoContent}
-                              onChange={(e) => setEditTodoContent(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault()
-                                  updateTodo(todo.id)
-                                } else if (e.key === 'Escape') {
-                                  setEditingTodoId(null)
-                                  setEditTodoContent('')
-                                }
-                              }}
-                              autoFocus
-                            />
-                            <button className="btn-save" onClick={() => updateTodo(todo.id)}>저장</button>
-                            <button className="btn-cancel" onClick={() => { setEditingTodoId(null); setEditTodoContent('') }}>취소</button>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="todo-content-row">
-                              <input
-                                type="checkbox"
-                                checked={todo.completed}
-                                onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
-                                className="todo-checkbox"
-                              />
-                              <span className="todo-text" onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>
-                                {todo.content}
-                              </span>
-                            </div>
-                            <div className="todo-actions">
-                              <button onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>✏️</button>
-                              <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
-                            </div>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  {Math.ceil(todos.length / todoPageSize) > 1 && (
-                    <div className="todo-pagination">
-                      <button
-                        type="button"
-                        className="todo-page-btn"
-                        disabled={todoPage <= 1}
-                        onClick={() => setTodoPage(todoPage - 1)}
-                      >
-                        ◀
-                      </button>
-                      {Array.from({ length: Math.ceil(todos.length / todoPageSize) }, (_, i) => i + 1).map((p) => (
-                        <button
-                          key={p}
-                          type="button"
-                          className={`todo-page-btn ${p === todoPage ? 'active' : ''}`}
-                          onClick={() => setTodoPage(p)}
-                        >
-                          {p}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        className="todo-page-btn"
-                        disabled={todoPage >= Math.ceil(todos.length / todoPageSize)}
-                        onClick={() => setTodoPage(todoPage + 1)}
-                      >
-                        ▶
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-              {todos.length === 0 && (
-                <div className="todo-empty">할일을 추가해보세요!</div>
-              )}
-            </div>
-          )}
-
           {searchResults === null && (
             <>
               {showShortcutGrid && (
@@ -1002,6 +885,120 @@ function Dashboard({ user, onLogout }) {
               )}
               {!selectedCategory && (
                 <>
+                  <div className="todo-section">
+                    <div className="todo-header">
+                      <h3>할일 목록 (ToDo List)</h3>
+                    </div>
+                    <div className="todo-form">
+                      <input
+                        type="text"
+                        placeholder="할일을 입력하세요..."
+                        value={newTodo}
+                        onChange={(e) => setNewTodo(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTodo())}
+                      />
+                      <button className="btn-add" onClick={addTodo}>추가</button>
+                    </div>
+                    {todos.length > 0 && (
+                      <>
+                        <div className="todo-pagination-controls">
+                          <select
+                            value={todoPageSize}
+                            onChange={(e) => {
+                              setTodoPageSize(parseInt(e.target.value, 10))
+                              setTodoPage(1)
+                            }}
+                            className="todo-page-size-select"
+                          >
+                            <option value={10}>10개</option>
+                            <option value={20}>20개</option>
+                            <option value={30}>30개</option>
+                          </select>
+                          <span className="todo-pagination-info">
+                            {todos.length}개 중 {Math.min((todoPage - 1) * todoPageSize + 1, todos.length)}-{Math.min(todoPage * todoPageSize, todos.length)}개 표시
+                          </span>
+                        </div>
+                        <ul className="todo-list">
+                          {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo) => (
+                            <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                              {editingTodoId === todo.id ? (
+                                <div className="todo-edit-form">
+                                  <input
+                                    type="text"
+                                    value={editTodoContent}
+                                    onChange={(e) => setEditTodoContent(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        updateTodo(todo.id)
+                                      } else if (e.key === 'Escape') {
+                                        setEditingTodoId(null)
+                                        setEditTodoContent('')
+                                      }
+                                    }}
+                                    autoFocus
+                                  />
+                                  <button className="btn-save" onClick={() => updateTodo(todo.id)}>저장</button>
+                                  <button className="btn-cancel" onClick={() => { setEditingTodoId(null); setEditTodoContent('') }}>취소</button>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="todo-content-row">
+                                    <input
+                                      type="checkbox"
+                                      checked={todo.completed}
+                                      onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
+                                      className="todo-checkbox"
+                                    />
+                                    <span className="todo-text" onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>
+                                      {todo.content}
+                                    </span>
+                                  </div>
+                                  <div className="todo-actions">
+                                    <button onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>✏️</button>
+                                    <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
+                                  </div>
+                                </>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                        {Math.ceil(todos.length / todoPageSize) > 1 && (
+                          <div className="todo-pagination">
+                            <button
+                              type="button"
+                              className="todo-page-btn"
+                              disabled={todoPage <= 1}
+                              onClick={() => setTodoPage(todoPage - 1)}
+                            >
+                              ◀
+                            </button>
+                            {Array.from({ length: Math.ceil(todos.length / todoPageSize) }, (_, i) => i + 1).map((p) => (
+                              <button
+                                key={p}
+                                type="button"
+                                className={`todo-page-btn ${p === todoPage ? 'active' : ''}`}
+                                onClick={() => setTodoPage(p)}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              className="todo-page-btn"
+                              disabled={todoPage >= Math.ceil(todos.length / todoPageSize)}
+                              onClick={() => setTodoPage(todoPage + 1)}
+                            >
+                              ▶
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {todos.length === 0 && (
+                      <div className="todo-empty">할일을 추가해보세요!</div>
+                    )}
+                  </div>
                   <div className="main-calendar-placeholder">
                     {calendarEmbedUrl ? (
                       <iframe
