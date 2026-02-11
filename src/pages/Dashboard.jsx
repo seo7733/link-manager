@@ -818,12 +818,6 @@ function Dashboard({ user, onLogout }) {
                       </span>
                     )}
                   </div>
-                  <div className="main-quote-block">
-                    <div className="welcome-quote">
-                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
-                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
-                    </div>
-                  </div>
                   <div className="schedule-section">
                     <div className="schedule-form">
                       <input
@@ -908,6 +902,12 @@ function Dashboard({ user, onLogout }) {
                         <li className="schedule-empty">등록된 일정이 없습니다. 일정을 추가해 보세요.</li>
                       )}
                     </ul>
+                  </div>
+                  <div className="main-quote-block">
+                    <div className="welcome-quote">
+                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                    </div>
                   </div>
                 </>
               )}
