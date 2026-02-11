@@ -53,6 +53,16 @@ function Dashboard({ user, onLogout }) {
   const [editingScheduleId, setEditingScheduleId] = useState(null)
   const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
 
+  const [todos, setTodos] = useState([])
+  const [newTodo, setNewTodo] = useState('')
+  const [editingTodoId, setEditingTodoId] = useState(null)
+  const [editTodoContent, setEditTodoContent] = useState('')
+  const [todoPageSize, setTodoPageSize] = useState(() => {
+    const saved = localStorage.getItem('todoPageSize')
+    return saved ? parseInt(saved, 10) : 10
+  })
+  const [todoPage, setTodoPage] = useState(1)
+
   const calendarEmbedUrl = import.meta.env.VITE_GOOGLE_CALENDAR_EMBED_URL || ''
 
   const [googleSearchQuery, setGoogleSearchQuery] = useState('')
@@ -211,6 +221,24 @@ function Dashboard({ user, onLogout }) {
     if (!ENABLE_LOCAL_SCHEDULES) return
     fetchSchedules()
   }, [user?.id])
+
+  const fetchTodos = async () => {
+    if (!user?.id) return
+    const { data, error } = await supabase
+      .from('todos')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    if (!error) setTodos(data || [])
+  }
+
+  useEffect(() => {
+    fetchTodos()
+  }, [user?.id])
+
+  useEffect(() => {
+    localStorage.setItem('todoPageSize', todoPageSize.toString())
+  }, [todoPageSize])
 
   // 트리 구조 만들기 (형제는 sort_order로 정렬)
   const buildTree = (items, parentId = null) => {
@@ -487,6 +515,51 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
+  // 할일 목록 CRUD
+  const addTodo = async () => {
+    if (!newTodo.trim()) return
+    const { error } = await supabase.from('todos').insert({
+      content: newTodo.trim(),
+      user_id: user.id
+    })
+    if (!error) {
+      setNewTodo('')
+      fetchTodos()
+      setTodoPage(1)
+    }
+  }
+
+  const updateTodo = async (id) => {
+    if (!editTodoContent.trim()) return
+    const { error } = await supabase
+      .from('todos')
+      .update({ content: editTodoContent.trim(), updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (!error) {
+      setEditingTodoId(null)
+      setEditTodoContent('')
+      fetchTodos()
+    }
+  }
+
+  const deleteTodo = async (id) => {
+    if (!confirm('이 할일을 삭제하시겠습니까?')) return
+    const { error } = await supabase.from('todos').delete().eq('id', id)
+    if (!error) {
+      fetchTodos()
+    }
+  }
+
+  const toggleTodoCompleted = async (id, completed) => {
+    const { error } = await supabase
+      .from('todos')
+      .update({ completed: !completed, updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (!error) {
+      fetchTodos()
+    }
+  }
+
   // 메모 CRUD
   const addMemo = async () => {
     if (!newMemo.trim()) return
@@ -755,6 +828,123 @@ function Dashboard({ user, onLogout }) {
               <div className="link-form-actions">
                 <button className="btn-add" onClick={addLink}>링크 저장</button>
               </div>
+            </div>
+          )}
+
+          {!selectedCategory && searchResults === null && (
+            <div className="todo-section">
+              <div className="todo-header">
+                <h3>할일 목록 (ToDo List)</h3>
+              </div>
+              <div className="todo-form">
+                <input
+                  type="text"
+                  placeholder="할일을 입력하세요..."
+                  value={newTodo}
+                  onChange={(e) => setNewTodo(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTodo())}
+                />
+                <button className="btn-add" onClick={addTodo}>추가</button>
+              </div>
+              {todos.length > 0 && (
+                <>
+                  <div className="todo-pagination-controls">
+                    <select
+                      value={todoPageSize}
+                      onChange={(e) => {
+                        setTodoPageSize(parseInt(e.target.value, 10))
+                        setTodoPage(1)
+                      }}
+                      className="todo-page-size-select"
+                    >
+                      <option value={10}>10개</option>
+                      <option value={20}>20개</option>
+                      <option value={30}>30개</option>
+                    </select>
+                    <span className="todo-pagination-info">
+                      {todos.length}개 중 {Math.min((todoPage - 1) * todoPageSize + 1, todos.length)}-{Math.min(todoPage * todoPageSize, todos.length)}개 표시
+                    </span>
+                  </div>
+                  <ul className="todo-list">
+                    {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo) => (
+                      <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                        {editingTodoId === todo.id ? (
+                          <div className="todo-edit-form">
+                            <input
+                              type="text"
+                              value={editTodoContent}
+                              onChange={(e) => setEditTodoContent(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  updateTodo(todo.id)
+                                } else if (e.key === 'Escape') {
+                                  setEditingTodoId(null)
+                                  setEditTodoContent('')
+                                }
+                              }}
+                              autoFocus
+                            />
+                            <button className="btn-save" onClick={() => updateTodo(todo.id)}>저장</button>
+                            <button className="btn-cancel" onClick={() => { setEditingTodoId(null); setEditTodoContent('') }}>취소</button>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="todo-content-row">
+                              <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => toggleTodoCompleted(todo.id, todo.completed)}
+                                className="todo-checkbox"
+                              />
+                              <span className="todo-text" onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>
+                                {todo.content}
+                              </span>
+                            </div>
+                            <div className="todo-actions">
+                              <button onClick={() => { setEditingTodoId(todo.id); setEditTodoContent(todo.content) }}>✏️</button>
+                              <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  {Math.ceil(todos.length / todoPageSize) > 1 && (
+                    <div className="todo-pagination">
+                      <button
+                        type="button"
+                        className="todo-page-btn"
+                        disabled={todoPage <= 1}
+                        onClick={() => setTodoPage(todoPage - 1)}
+                      >
+                        ◀
+                      </button>
+                      {Array.from({ length: Math.ceil(todos.length / todoPageSize) }, (_, i) => i + 1).map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          className={`todo-page-btn ${p === todoPage ? 'active' : ''}`}
+                          onClick={() => setTodoPage(p)}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="todo-page-btn"
+                        disabled={todoPage >= Math.ceil(todos.length / todoPageSize)}
+                        onClick={() => setTodoPage(todoPage + 1)}
+                      >
+                        ▶
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+              {todos.length === 0 && (
+                <div className="todo-empty">할일을 추가해보세요!</div>
+              )}
             </div>
           )}
 
