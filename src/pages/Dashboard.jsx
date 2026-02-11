@@ -38,9 +38,9 @@ function Dashboard({ user, onLogout }) {
   const [expandedCategories, setExpandedCategories] = useState({})
 
   const [showLinkForm, setShowLinkForm] = useState(false)
-  const [newLink, setNewLink] = useState({ title: '', url: '', description: '' })
+  const [newLink, setNewLink] = useState({ title: '', url: '', description: '', showOnMain: true })
   const [editingLink, setEditingLink] = useState(null)
-  const [editLink, setEditLink] = useState({ title: '', url: '', description: '', category_id: null })
+  const [editLink, setEditLink] = useState({ title: '', url: '', description: '', category_id: null, show_on_main: true })
 
   const [newMemo, setNewMemo] = useState('')
   const [editingMemo, setEditingMemo] = useState(null)
@@ -281,10 +281,11 @@ function Dashboard({ user, onLogout }) {
       description: newLink.description.trim(),
       category_id: selectedCategory.id,
       user_id: user.id,
-      sort_order: nextOrder
+      sort_order: nextOrder,
+      show_on_main: !!newLink.showOnMain
     })
     if (!error) {
-      setNewLink({ title: '', url: '', description: '' })
+      setNewLink({ title: '', url: '', description: '', showOnMain: true })
       setShowLinkForm(false)
       fetchLinks(selectedCategory.id)
       fetchAllLinks()
@@ -300,7 +301,8 @@ function Dashboard({ user, onLogout }) {
         title: editLink.title.trim(),
         url: editLink.url.trim(),
         description: editLink.description.trim(),
-        category_id: editLink.category_id
+        category_id: editLink.category_id,
+        show_on_main: !!editLink.show_on_main
       })
       .eq('id', id)
     if (!error) {
@@ -323,7 +325,9 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
-  const linksForGrid = searchResults === null ? (selectedCategory ? links : allLinks) : []
+  const linksForGrid = searchResults === null
+    ? (selectedCategory ? links : allLinks).filter(l => l.show_on_main !== false)
+    : []
   const showShortcutGrid = searchResults === null && linksForGrid.length > 0
 
   const flattenCategories = (items, parentId = null, level = 0) => {
@@ -618,11 +622,28 @@ function Dashboard({ user, onLogout }) {
                 value={newLink.description}
                 onChange={(e) => setNewLink({ ...newLink, description: e.target.value })}
               />
+              <label className="link-form-checkbox">
+                <input
+                  type="checkbox"
+                  checked={!!newLink.showOnMain}
+                  onChange={(e) => setNewLink({ ...newLink, showOnMain: e.target.checked })}
+                />
+                <span>메인 표출</span>
+              </label>
               <button className="btn-add" onClick={addLink}>링크 저장</button>
             </div>
           )}
 
-          {showShortcutGrid && (
+          {searchResults === null && (
+            <>
+              <div className="main-quote-block">
+                <div className="welcome-quote">
+                  <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                  <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                </div>
+                {!selectedCategory && <p className="welcome-quote-hint">왼쪽에서 카테고리를 선택하세요</p>}
+              </div>
+              {showShortcutGrid && (
             <div className="link-shortcut-grid">
               {linksForGrid.map((link) => (
                 <a
@@ -641,6 +662,11 @@ function Dashboard({ user, onLogout }) {
                 </a>
               ))}
             </div>
+              )}
+              <div className="main-calendar-placeholder" aria-hidden>
+                <span className="main-calendar-label">구글 캘린더 (예정)</span>
+              </div>
+            </>
           )}
 
           <ul className="item-list">
@@ -687,6 +713,14 @@ function Dashboard({ user, onLogout }) {
                         onChange={(e) => setEditLink({ ...editLink, description: e.target.value })}
                         placeholder="설명"
                       />
+                      <label className="link-form-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={!!editLink.show_on_main}
+                          onChange={(e) => setEditLink({ ...editLink, show_on_main: e.target.checked })}
+                        />
+                        <span>메인 표출</span>
+                      </label>
                       <div className="edit-buttons">
                         <button className="btn-save" onClick={() => updateLink(link.id)}>저장</button>
                         <button className="btn-cancel" onClick={() => setEditingLink(null)}>취소</button>
@@ -707,7 +741,7 @@ function Dashboard({ user, onLogout }) {
                       <div className="item-actions">
                         {canMoveUp && <button title="위로" onClick={() => moveLink(link, 'up')}>⬆️</button>}
                         {canMoveDown && <button title="아래로" onClick={() => moveLink(link, 'down')}>⬇️</button>}
-                        <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '', category_id: link.category_id }) }}>✏️</button>
+                        <button onClick={() => { setEditingLink(link.id); setEditLink({ title: link.title, url: link.url, description: link.description || '', category_id: link.category_id, show_on_main: link.show_on_main !== false }) }}>✏️</button>
                         <button onClick={() => deleteLink(link.id)}>🗑️</button>
                       </div>
                     </>
@@ -720,15 +754,6 @@ function Dashboard({ user, onLogout }) {
             )}
             {searchResults === null && selectedCategory && links.length === 0 && (
               <li className="empty-message">링크를 추가해보세요!</li>
-            )}
-            {searchResults === null && !selectedCategory && !showShortcutGrid && (
-              <li className="welcome-quote-wrap">
-                <div className="welcome-quote">
-                  <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
-                  <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
-                </div>
-                <p className="welcome-quote-hint">왼쪽에서 카테고리를 선택하세요</p>
-              </li>
             )}
           </ul>
           <footer className="panel-links-footer">
