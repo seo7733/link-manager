@@ -21,6 +21,8 @@ const WELCOME_QUOTES = [
   { text: '오늘의 나는 어제의 나보다 나은 사람이 되자.', author: '칼 로저스' },
 ]
 
+const ENABLE_LOCAL_SCHEDULES = false
+
 function Dashboard({ user, onLogout }) {
   const [categories, setCategories] = useState([])
   const [links, setLinks] = useState([])
@@ -193,7 +195,7 @@ function Dashboard({ user, onLogout }) {
   }
 
   const fetchSchedules = async () => {
-    if (!user?.id) return
+    if (!ENABLE_LOCAL_SCHEDULES || !user?.id) return
     const { data, error } = await supabase
       .from('schedules')
       .select('*')
@@ -204,6 +206,7 @@ function Dashboard({ user, onLogout }) {
   }
 
   useEffect(() => {
+    if (!ENABLE_LOCAL_SCHEDULES) return
     fetchSchedules()
   }, [user?.id])
 
@@ -428,6 +431,7 @@ function Dashboard({ user, onLogout }) {
 
   // 일정 CRUD
   const addSchedule = async () => {
+    if (!ENABLE_LOCAL_SCHEDULES) return
     if (!newSchedule.title.trim() || !newSchedule.event_date) return
     const { error } = await supabase.from('schedules').insert({
       user_id: user.id,
@@ -443,6 +447,7 @@ function Dashboard({ user, onLogout }) {
   }
 
   const startEditSchedule = (schedule) => {
+    if (!ENABLE_LOCAL_SCHEDULES) return
     setEditingScheduleId(schedule.id)
     setEditSchedule({
       title: schedule.title || '',
@@ -453,6 +458,7 @@ function Dashboard({ user, onLogout }) {
   }
 
   const updateSchedule = async (id) => {
+    if (!ENABLE_LOCAL_SCHEDULES) return
     if (!editSchedule.title.trim() || !editSchedule.event_date) return
     const { error } = await supabase
       .from('schedules')
@@ -471,6 +477,7 @@ function Dashboard({ user, onLogout }) {
   }
 
   const deleteSchedule = async (id) => {
+    if (!ENABLE_LOCAL_SCHEDULES) return
     if (!confirm('이 일정을 삭제할까요?')) return
     const { error } = await supabase.from('schedules').delete().eq('id', id)
     if (!error) {
@@ -818,91 +825,93 @@ function Dashboard({ user, onLogout }) {
                       </span>
                     )}
                   </div>
-                  <div className="schedule-section">
-                    <div className="schedule-form">
-                      <input
-                        type="text"
-                        placeholder="일정 제목"
-                        value={newSchedule.title}
-                        onChange={(e) => setNewSchedule({ ...newSchedule, title: e.target.value })}
-                      />
-                      <div className="schedule-form-row">
+                  {ENABLE_LOCAL_SCHEDULES && (
+                    <div className="schedule-section">
+                      <div className="schedule-form">
                         <input
-                          type="date"
-                          value={newSchedule.event_date}
-                          onChange={(e) => setNewSchedule({ ...newSchedule, event_date: e.target.value })}
+                          type="text"
+                          placeholder="일정 제목"
+                          value={newSchedule.title}
+                          onChange={(e) => setNewSchedule({ ...newSchedule, title: e.target.value })}
                         />
-                        <input
-                          type="time"
-                          value={newSchedule.event_time}
-                          onChange={(e) => setNewSchedule({ ...newSchedule, event_time: e.target.value })}
+                        <div className="schedule-form-row">
+                          <input
+                            type="date"
+                            value={newSchedule.event_date}
+                            onChange={(e) => setNewSchedule({ ...newSchedule, event_date: e.target.value })}
+                          />
+                          <input
+                            type="time"
+                            value={newSchedule.event_time}
+                            onChange={(e) => setNewSchedule({ ...newSchedule, event_time: e.target.value })}
+                          />
+                        </div>
+                        <textarea
+                          placeholder="메모 (선택 사항)"
+                          rows={2}
+                          value={newSchedule.description}
+                          onChange={(e) => setNewSchedule({ ...newSchedule, description: e.target.value })}
                         />
+                        <div className="schedule-form-actions">
+                          <button type="button" className="btn-add" onClick={addSchedule}>일정 추가</button>
+                        </div>
                       </div>
-                      <textarea
-                        placeholder="메모 (선택 사항)"
-                        rows={2}
-                        value={newSchedule.description}
-                        onChange={(e) => setNewSchedule({ ...newSchedule, description: e.target.value })}
-                      />
-                      <div className="schedule-form-actions">
-                        <button type="button" className="btn-add" onClick={addSchedule}>일정 추가</button>
-                      </div>
+                      <ul className="schedule-list">
+                        {schedules.map((sch) => (
+                          <li key={sch.id} className="schedule-item">
+                            {editingScheduleId === sch.id ? (
+                              <div className="schedule-edit">
+                                <input
+                                  type="text"
+                                  value={editSchedule.title}
+                                  onChange={(e) => setEditSchedule({ ...editSchedule, title: e.target.value })}
+                                />
+                                <div className="schedule-form-row">
+                                  <input
+                                    type="date"
+                                    value={editSchedule.event_date}
+                                    onChange={(e) => setEditSchedule({ ...editSchedule, event_date: e.target.value })}
+                                  />
+                                  <input
+                                    type="time"
+                                    value={editSchedule.event_time}
+                                    onChange={(e) => setEditSchedule({ ...editSchedule, event_time: e.target.value })}
+                                  />
+                                </div>
+                                <textarea
+                                  rows={2}
+                                  value={editSchedule.description}
+                                  onChange={(e) => setEditSchedule({ ...editSchedule, description: e.target.value })}
+                                />
+                                <div className="schedule-edit-actions">
+                                  <button type="button" className="btn-save" onClick={() => updateSchedule(sch.id)}>저장</button>
+                                  <button type="button" className="btn-cancel" onClick={() => setEditingScheduleId(null)}>취소</button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="schedule-display">
+                                <div className="schedule-main">
+                                  <span className="schedule-date">
+                                    {sch.event_date}
+                                    {sch.event_time && ` ${sch.event_time}`}
+                                  </span>
+                                  <span className="schedule-title">{sch.title}</span>
+                                </div>
+                                {sch.description && <p className="schedule-desc">{sch.description}</p>}
+                                <div className="schedule-actions">
+                                  <button type="button" onClick={() => startEditSchedule(sch)}>✏️</button>
+                                  <button type="button" onClick={() => deleteSchedule(sch.id)}>🗑️</button>
+                                </div>
+                              </div>
+                            )}
+                          </li>
+                        ))}
+                        {schedules.length === 0 && (
+                          <li className="schedule-empty">등록된 일정이 없습니다. 일정을 추가해 보세요.</li>
+                        )}
+                      </ul>
                     </div>
-                    <ul className="schedule-list">
-                      {schedules.map((sch) => (
-                        <li key={sch.id} className="schedule-item">
-                          {editingScheduleId === sch.id ? (
-                            <div className="schedule-edit">
-                              <input
-                                type="text"
-                                value={editSchedule.title}
-                                onChange={(e) => setEditSchedule({ ...editSchedule, title: e.target.value })}
-                              />
-                              <div className="schedule-form-row">
-                                <input
-                                  type="date"
-                                  value={editSchedule.event_date}
-                                  onChange={(e) => setEditSchedule({ ...editSchedule, event_date: e.target.value })}
-                                />
-                                <input
-                                  type="time"
-                                  value={editSchedule.event_time}
-                                  onChange={(e) => setEditSchedule({ ...editSchedule, event_time: e.target.value })}
-                                />
-                              </div>
-                              <textarea
-                                rows={2}
-                                value={editSchedule.description}
-                                onChange={(e) => setEditSchedule({ ...editSchedule, description: e.target.value })}
-                              />
-                              <div className="schedule-edit-actions">
-                                <button type="button" className="btn-save" onClick={() => updateSchedule(sch.id)}>저장</button>
-                                <button type="button" className="btn-cancel" onClick={() => setEditingScheduleId(null)}>취소</button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="schedule-display">
-                              <div className="schedule-main">
-                                <span className="schedule-date">
-                                  {sch.event_date}
-                                  {sch.event_time && ` ${sch.event_time}`}
-                                </span>
-                                <span className="schedule-title">{sch.title}</span>
-                              </div>
-                              {sch.description && <p className="schedule-desc">{sch.description}</p>}
-                              <div className="schedule-actions">
-                                <button type="button" onClick={() => startEditSchedule(sch)}>✏️</button>
-                                <button type="button" onClick={() => deleteSchedule(sch.id)}>🗑️</button>
-                              </div>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                      {schedules.length === 0 && (
-                        <li className="schedule-empty">등록된 일정이 없습니다. 일정을 추가해 보세요.</li>
-                      )}
-                    </ul>
-                  </div>
+                  )}
                   <div className="main-quote-block">
                     <div className="welcome-quote">
                       <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
