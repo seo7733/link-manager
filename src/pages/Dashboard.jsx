@@ -519,11 +519,11 @@ function Dashboard({ user, onLogout }) {
   // 할일 목록 CRUD
   const addTodo = async () => {
     if (!newTodo.trim()) return
-    const maxSortOrder = todos.length > 0 ? Math.max(...todos.map(t => t.sort_order ?? 0)) : -1
+    const minSortOrder = todos.length > 0 ? Math.min(...todos.map(t => t.sort_order ?? 0)) : 0
     const { error } = await supabase.from('todos').insert({
       content: newTodo.trim(),
       user_id: user.id,
-      sort_order: maxSortOrder + 1
+      sort_order: minSortOrder - 1
     })
     if (!error) {
       setNewTodo('')
