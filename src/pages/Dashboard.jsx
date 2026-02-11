@@ -59,7 +59,7 @@ function Dashboard({ user, onLogout }) {
   const [editTodoContent, setEditTodoContent] = useState('')
   const [todoPageSize, setTodoPageSize] = useState(() => {
     const saved = localStorage.getItem('todoPageSize')
-    return saved ? parseInt(saved, 10) : 5
+    return saved ? parseInt(saved, 10) : 3
   })
   const [todoPage, setTodoPage] = useState(1)
 
@@ -927,6 +927,7 @@ function Dashboard({ user, onLogout }) {
                             }}
                             className="todo-page-size-select"
                           >
+                            <option value={3}>3개</option>
                             <option value={5}>5개</option>
                             <option value={10}>10개</option>
                             <option value={20}>20개</option>
