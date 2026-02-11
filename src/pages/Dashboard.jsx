@@ -24,6 +24,7 @@ const WELCOME_QUOTES = [
 function Dashboard({ user, onLogout }) {
   const [categories, setCategories] = useState([])
   const [links, setLinks] = useState([])
+  const [allLinks, setAllLinks] = useState([])
   const [memos, setMemos] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedLink, setSelectedLink] = useState(null)
@@ -150,6 +151,19 @@ function Dashboard({ user, onLogout }) {
     setLoading(false)
   }
 
+  const fetchAllLinks = async () => {
+    const { data, error } = await supabase
+      .from('links')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true })
+    if (!error) setAllLinks(data || [])
+  }
+
+  useEffect(() => {
+    fetchAllLinks()
+  }, [user?.id])
+
   const fetchLinks = async (categoryId) => {
     const { data, error } = await supabase
       .from('links')
@@ -273,6 +287,7 @@ function Dashboard({ user, onLogout }) {
       setNewLink({ title: '', url: '', description: '' })
       setShowLinkForm(false)
       fetchLinks(selectedCategory.id)
+      fetchAllLinks()
     }
   }
 
@@ -290,6 +305,7 @@ function Dashboard({ user, onLogout }) {
       .eq('id', id)
     if (!error) {
       setEditingLink(null)
+      fetchAllLinks()
       if (editLink.category_id === selectedCategory?.id) {
         fetchLinks(selectedCategory.id)
       } else if (oldCategoryId === selectedCategory?.id) {
@@ -297,6 +313,18 @@ function Dashboard({ user, onLogout }) {
       }
     }
   }
+
+  const getFaviconUrl = (url) => {
+    try {
+      const host = new URL(url).hostname
+      return `https://www.google.com/s2/favicons?domain=${host}&sz=64`
+    } catch {
+      return ''
+    }
+  }
+
+  const linksForGrid = searchResults === null ? (selectedCategory ? links : allLinks) : []
+  const showShortcutGrid = searchResults === null && linksForGrid.length > 0
 
   const flattenCategories = (items, parentId = null, level = 0) => {
     const result = []
@@ -316,6 +344,7 @@ function Dashboard({ user, onLogout }) {
     if (!error) {
       if (selectedLink?.id === id) setSelectedLink(null)
       fetchLinks(selectedCategory.id)
+      fetchAllLinks()
     }
   }
 
@@ -593,6 +622,27 @@ function Dashboard({ user, onLogout }) {
             </div>
           )}
 
+          {showShortcutGrid && (
+            <div className="link-shortcut-grid">
+              {linksForGrid.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-shortcut-tile"
+                  title={link.title}
+                >
+                  <span className="link-shortcut-icon">
+                    <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
+                    <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
+                  </span>
+                  <span className="link-shortcut-label">{link.title || '링크'}</span>
+                </a>
+              ))}
+            </div>
+          )}
+
           <ul className="item-list">
             {(searchResults !== null ? searchResults : links).map((link, idx) => {
               const list = searchResults !== null ? searchResults : links
@@ -671,7 +721,7 @@ function Dashboard({ user, onLogout }) {
             {searchResults === null && selectedCategory && links.length === 0 && (
               <li className="empty-message">링크를 추가해보세요!</li>
             )}
-            {searchResults === null && !selectedCategory && (
+            {searchResults === null && !selectedCategory && !showShortcutGrid && (
               <li className="welcome-quote-wrap">
                 <div className="welcome-quote">
                   <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
