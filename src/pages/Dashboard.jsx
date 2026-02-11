@@ -648,20 +648,30 @@ function Dashboard({ user, onLogout }) {
               {showShortcutGrid && (
             <div className="link-shortcut-grid">
               {linksForGrid.map((link) => (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-shortcut-tile"
-                  title={link.title}
-                >
-                  <span className="link-shortcut-icon">
-                    <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
-                    <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
-                  </span>
-                  <span className="link-shortcut-label">{link.title || '링크'}</span>
-                </a>
+                <div key={link.id} className="link-shortcut-tile-wrap">
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-shortcut-tile"
+                    title={link.title}
+                  >
+                    <span className="link-shortcut-icon">
+                      <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
+                      <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
+                    </span>
+                    <span className="link-shortcut-label">{link.title || '링크'}</span>
+                  </a>
+                  <button
+                    type="button"
+                    className="link-shortcut-remove"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (confirm('이 링크를 삭제할까요?')) deleteLink(link.id) }}
+                    title="링크 제거"
+                    aria-label="링크 제거"
+                  >
+                    제거
+                  </button>
+                </div>
               ))}
             </div>
               )}

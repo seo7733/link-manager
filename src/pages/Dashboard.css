@@ -642,6 +642,10 @@
     border-bottom: 1px solid #e5e7eb;
   }
 
+  .link-shortcut-tile-wrap {
+    position: relative;
+  }
+
   .link-shortcut-tile {
     display: flex;
     flex-direction: column;
@@ -654,9 +658,34 @@
     transition: background 0.2s, transform 0.15s;
   }
 
-  .link-shortcut-tile:hover {
+  .link-shortcut-tile-wrap:hover .link-shortcut-tile {
     background: #f1f5f9;
     transform: translateY(-2px);
+  }
+
+  .link-shortcut-remove {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .link-shortcut-tile-wrap:hover .link-shortcut-remove {
+    opacity: 1;
+  }
+
+  .link-shortcut-remove:hover {
+    background: #fee2e2;
   }
 
   .link-shortcut-icon {
