@@ -3,10 +3,11 @@ import './Login.css'
 
 function Login() {
   const handleGoogleLogin = async () => {
+    const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL || '/'}`
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://seo7733.github.io/link-manager/'
+      redirectTo
       }
     })
     if (error) {
