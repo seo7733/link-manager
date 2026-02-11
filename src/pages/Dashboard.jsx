@@ -912,13 +912,15 @@ function Dashboard({ user, onLogout }) {
                       </ul>
                     </div>
                   )}
-                  <div className="main-quote-block">
-                    <div className="welcome-quote">
-                      <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
-                      <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
-                    </div>
-                  </div>
                 </>
+              )}
+              {!selectedCategory && (
+                <div className="main-quote-block">
+                  <div className="welcome-quote">
+                    <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>
+                    <p className="welcome-quote-author">— {WELCOME_QUOTES[quoteIndex].author}</p>
+                  </div>
+                </div>
               )}
             </>
           )}
