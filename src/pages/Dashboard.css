@@ -1275,6 +1275,103 @@
     width: 100%;
     min-width: 0;
   }
+
+  .sticker-memo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fefce8;
+  }
+
+  .sticker-memo-form textarea {
+    padding: 11px 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #1a1a2e;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  .sticker-memo-form textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .sticker-memo-file-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sticker-memo-file-label {
+    font-size: 12px;
+    color: #6366f1;
+    cursor: pointer;
+  }
+
+  .sticker-memo-file-input {
+    font-size: 12px;
+    max-width: 180px;
+  }
+
+  .sticker-memo-file-names {
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .sticker-memo-item {
+    background: #fefce8;
+    border-left: 3px solid #eab308;
+  }
+
+  .sticker-memo-files {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .sticker-memo-file-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sticker-memo-file-link {
+    font-size: 12px;
+    color: #6366f1;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sticker-memo-file-link:hover {
+    text-decoration: underline;
+  }
+
+  .sticker-memo-file-remove {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .sticker-memo-file-remove:hover {
+    background: #fee2e2;
+  }
   
 /* ===== 카테고리 트리 ===== */
 .category-name-row {
