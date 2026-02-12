@@ -1416,14 +1416,15 @@ function Dashboard({ user, onLogout }) {
                   rows={3}
                 />
                 <div className="sticker-memo-file-row">
-                  <label className="sticker-memo-file-label">
-                    📎 파일 첨부
+                  <label className="sticker-memo-file-label" title="파일 첨부">
+                    <span className="sticker-memo-file-icon" aria-hidden>📎</span>
                     <input
                       id="sticker-memo-file-input"
                       type="file"
                       multiple
                       onChange={(e) => setNewStickerMemoFileList(Array.from(e.target.files || []))}
                       className="sticker-memo-file-input"
+                      aria-label="파일 첨부"
                     />
                   </label>
                   {newStickerMemoFileList.length > 0 && (
