@@ -238,7 +238,7 @@
     max-width: 960px;
     margin: 0 auto;
     width: 100%;
-    background: #f5f7fb;
+    background: #ffffff;
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -500,7 +500,7 @@
     display: flex;
     align-items: stretch;
     justify-content: center;
-    background: #f8fafc;
+    background: #ffffff;
     border: 1px dashed #e2e8f0;
     border-radius: 12px;
     margin: 16px 20px 8px;
@@ -1003,7 +1003,7 @@
     grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
     gap: 16px;
     padding: 16px 20px;
-    background: #fafbfc;
+    background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
   }
 
@@ -1282,7 +1282,7 @@
     gap: 8px;
     padding: 14px 16px;
     border-bottom: 1px solid #e5e7eb;
-    background: #fefce8;
+    background: #ffffff;
   }
 
   .sticker-memo-form textarea {
@@ -1352,7 +1352,7 @@
   }
 
   .sticker-memo-item {
-    background: #fefce8;
+    background: #ffffff;
     border-left: 3px solid #eab308;
   }
 
