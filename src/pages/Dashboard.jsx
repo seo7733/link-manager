@@ -1418,7 +1418,11 @@ function Dashboard({ user, onLogout }) {
                 <div className="sticker-memo-file-row">
                   <label className="sticker-memo-file-label" title="파일 첨부">
                     <span className="sticker-memo-file-icon" aria-hidden>📎</span>
-                    <span className="sticker-memo-file-text">첨부할 파일을 선택합니다.</span>
+                    <span className="sticker-memo-file-text">
+                      {newStickerMemoFileList.length > 0 
+                        ? `${newStickerMemoFileList.length}개의 첨부 파일을 선택하셨습니다`
+                        : '첨부할 파일을 선택합니다.'}
+                    </span>
                     <input
                       id="sticker-memo-file-input"
                       type="file"
@@ -1428,9 +1432,6 @@ function Dashboard({ user, onLogout }) {
                       aria-label="파일 첨부"
                     />
                   </label>
-                  {newStickerMemoFileList.length > 0 && (
-                    <span className="sticker-memo-file-names">{newStickerMemoFileList.length}개 파일 선택</span>
-                  )}
                 </div>
                 <button className="btn-add" onClick={addStickerMemo}>스티커 메모 추가</button>
               </div>
