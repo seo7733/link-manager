@@ -23,6 +23,31 @@ const WELCOME_QUOTES = [
 
 const ENABLE_LOCAL_SCHEDULES = false
 
+// URL을 링크로 변환하는 함수
+const convertUrlsToLinks = (text) => {
+  if (!text) return null
+  
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+  const parts = text.split(urlRegex)
+  
+  return parts.map((part, index) => {
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#6366f1', textDecoration: 'underline' }}
+        >
+          {part}
+        </a>
+      )
+    }
+    return <span key={index}>{part}</span>
+  })
+}
+
 function Dashboard({ user, onLogout }) {
   const [categories, setCategories] = useState([])
   const [links, setLinks] = useState([])
@@ -1452,7 +1477,7 @@ function Dashboard({ user, onLogout }) {
                       </div>
                     ) : (
                       <>
-                        {sm.content && <p className="memo-content">{sm.content}</p>}
+                        {sm.content && <p className="memo-content">{convertUrlsToLinks(sm.content)}</p>}
                         {(stickerMemoFilesMap[sm.id] || []).length > 0 && (
                           <div className="sticker-memo-files">
                             {(stickerMemoFilesMap[sm.id] || []).map((f) => (
