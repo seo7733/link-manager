@@ -910,16 +910,18 @@ function Dashboard({ user, onLogout }) {
         </aside>
 
         <section ref={linksPanelRef} className="panel panel-links">
-          <div className="panel-header">
-            <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : '즐겨찾기'}</h2>
-            {searchResults !== null ? (
-              <button type="button" className="btn-cancel" onClick={() => setSearchResults(null)}>검색 해제</button>
-            ) : selectedCategory ? (
-              <button className="btn-add-link" onClick={() => setShowLinkForm(!showLinkForm)}>
-                {showLinkForm ? '취소' : '+ 링크 추가'}
-              </button>
-            ) : null}
-          </div>
+          {(searchResults !== null || selectedCategory) && (
+            <div className="panel-header">
+              <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : ''}</h2>
+              {searchResults !== null ? (
+                <button type="button" className="btn-cancel" onClick={() => setSearchResults(null)}>검색 해제</button>
+              ) : selectedCategory ? (
+                <button className="btn-add-link" onClick={() => setShowLinkForm(!showLinkForm)}>
+                  {showLinkForm ? '취소' : '+ 링크 추가'}
+                </button>
+              ) : null}
+            </div>
+          )}
 
           {showLinkForm && selectedCategory && (
             <div className="link-form">
