@@ -1411,7 +1411,7 @@ function Dashboard({ user, onLogout }) {
                       </div>
                     ) : (
                       <>
-                        <p className="memo-content">{memo.content}</p>
+                        <p className="memo-content">{convertUrlsToLinks(memo.content)}</p>
                         <div className="memo-footer">
                           <span className="memo-date">
                             {new Date(memo.created_at).toLocaleDateString('ko-KR')}
