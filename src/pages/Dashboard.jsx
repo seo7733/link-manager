@@ -1418,6 +1418,7 @@ function Dashboard({ user, onLogout }) {
                 <div className="sticker-memo-file-row">
                   <label className="sticker-memo-file-label" title="파일 첨부">
                     <span className="sticker-memo-file-icon" aria-hidden>📎</span>
+                    <span className="sticker-memo-file-text">첨부할 파일을 선택합니다.</span>
                     <input
                       id="sticker-memo-file-input"
                       type="file"
