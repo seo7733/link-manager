@@ -1287,7 +1287,6 @@
     flex-direction: column;
     gap: 8px;
     padding: 14px 16px;
-    border-bottom: 1px solid #e5e7eb;
     background: #ffffff;
   }
 
@@ -1366,8 +1365,9 @@
   }
 
   .sticker-memo-list {
-    padding: 8px;
+    padding: 8px 8px 8px 16px;
     gap: 8px;
+    margin-top: 8px;
   }
 
   .sticker-memo-list .sticker-memo-item {
