@@ -652,7 +652,7 @@ function Dashboard({ user, onLogout }) {
       .from('sticker_memos')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .order('sort_order', { ascending: true })
     if (memosError) return
     setStickerMemos(memosData || [])
     const memoIds = (memosData || []).map(m => m.id)
@@ -685,9 +685,10 @@ function Dashboard({ user, onLogout }) {
 
   const addStickerMemo = async () => {
     if (!newStickerMemoContent.trim() && newStickerMemoFileList.length === 0) return
+    const minSortOrder = stickerMemos.length > 0 ? Math.min(...stickerMemos.map(m => m.sort_order ?? 0)) : 0
     const { data: inserted, error: insertError } = await supabase
       .from('sticker_memos')
-      .insert({ user_id: user.id, content: newStickerMemoContent.trim() || '' })
+      .insert({ user_id: user.id, content: newStickerMemoContent.trim() || '', sort_order: minSortOrder - 1 })
       .select('id')
       .single()
     if (insertError || !inserted) return
@@ -724,6 +725,20 @@ function Dashboard({ user, onLogout }) {
       setEditStickerMemoContent('')
       fetchStickerMemos()
     }
+  }
+
+  const moveStickerMemo = async (memo, direction) => {
+    const sortedMemos = [...stickerMemos].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    const idx = sortedMemos.findIndex(m => m.id === memo.id)
+    if (idx < 0) return
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= sortedMemos.length) return
+    const other = sortedMemos[swapIdx]
+    const memoOrder = memo.sort_order ?? 0
+    const otherOrder = other.sort_order ?? 0
+    const { error: e1 } = await supabase.from('sticker_memos').update({ sort_order: otherOrder }).eq('id', memo.id)
+    const { error: e2 } = await supabase.from('sticker_memos').update({ sort_order: memoOrder }).eq('id', other.id)
+    if (!e1 && !e2) fetchStickerMemos()
   }
 
   const deleteStickerMemo = async (id) => {
@@ -1460,47 +1475,56 @@ function Dashboard({ user, onLogout }) {
                 <button className="btn-add" onClick={addStickerMemo}>스티커 메모 추가</button>
               </div>
               <ul className="item-list memo-list sticker-memo-list">
-                {stickerMemos.map((sm) => (
-                  <li key={sm.id} className="item memo-item sticker-memo-item">
-                    {editingStickerMemoId === sm.id ? (
-                      <div className="edit-form">
-                        <textarea
-                          value={editStickerMemoContent}
-                          onChange={(e) => setEditStickerMemoContent(e.target.value)}
-                          rows={3}
-                          autoFocus
-                        />
-                        <div className="edit-buttons">
-                          <button className="btn-save" onClick={() => updateStickerMemo(sm.id)}>저장</button>
-                          <button className="btn-cancel" onClick={() => { setEditingStickerMemoId(null); setEditStickerMemoContent('') }}>취소</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {sm.content && <p className="memo-content">{convertUrlsToLinks(sm.content)}</p>}
-                        {(stickerMemoFilesMap[sm.id] || []).length > 0 && (
-                          <div className="sticker-memo-files">
-                            {(stickerMemoFilesMap[sm.id] || []).map((f) => (
-                              <div key={f.id} className="sticker-memo-file-item">
-                                <a href={stickerMemoFileUrls[f.id]} target="_blank" rel="noopener noreferrer" className="sticker-memo-file-link">
-                                  📎 {f.file_name}
-                                </a>
-                                <button type="button" className="sticker-memo-file-remove" onClick={() => removeStickerMemoFile(f.id, f.storage_path)} title="첨부 삭제">×</button>
+                {(() => {
+                  const sortedMemos = [...stickerMemos].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+                  return sortedMemos.map((sm, idx) => {
+                    const canMoveUp = idx > 0
+                    const canMoveDown = idx < sortedMemos.length - 1
+                    return (
+                      <li key={sm.id} className="item memo-item sticker-memo-item">
+                        {editingStickerMemoId === sm.id ? (
+                          <div className="edit-form">
+                            <textarea
+                              value={editStickerMemoContent}
+                              onChange={(e) => setEditStickerMemoContent(e.target.value)}
+                              rows={3}
+                              autoFocus
+                            />
+                            <div className="edit-buttons">
+                              <button className="btn-save" onClick={() => updateStickerMemo(sm.id)}>저장</button>
+                              <button className="btn-cancel" onClick={() => { setEditingStickerMemoId(null); setEditStickerMemoContent('') }}>취소</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            {sm.content && <p className="memo-content">{convertUrlsToLinks(sm.content)}</p>}
+                            {(stickerMemoFilesMap[sm.id] || []).length > 0 && (
+                              <div className="sticker-memo-files">
+                                {(stickerMemoFilesMap[sm.id] || []).map((f) => (
+                                  <div key={f.id} className="sticker-memo-file-item">
+                                    <a href={stickerMemoFileUrls[f.id]} target="_blank" rel="noopener noreferrer" className="sticker-memo-file-link">
+                                      📎 {f.file_name}
+                                    </a>
+                                    <button type="button" className="sticker-memo-file-remove" onClick={() => removeStickerMemoFile(f.id, f.storage_path)} title="첨부 삭제">×</button>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            )}
+                            <div className="memo-footer">
+                              <span className="memo-date">{new Date(sm.created_at).toLocaleDateString('ko-KR')}</span>
+                              <div className="item-actions">
+                                {canMoveUp && <button onClick={() => moveStickerMemo(sm, 'up')} title="위로">⬆️</button>}
+                                {canMoveDown && <button onClick={() => moveStickerMemo(sm, 'down')} title="아래로">⬇️</button>}
+                                <button onClick={() => { setEditingStickerMemoId(sm.id); setEditStickerMemoContent(sm.content || '') }}>✏️</button>
+                                <button onClick={() => deleteStickerMemo(sm.id)}>🗑️</button>
+                              </div>
+                            </div>
+                          </>
                         )}
-                        <div className="memo-footer">
-                          <span className="memo-date">{new Date(sm.created_at).toLocaleDateString('ko-KR')}</span>
-                          <div className="item-actions">
-                            <button onClick={() => { setEditingStickerMemoId(sm.id); setEditStickerMemoContent(sm.content || '') }}>✏️</button>
-                            <button onClick={() => deleteStickerMemo(sm.id)}>🗑️</button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </li>
-                ))}
+                      </li>
+                    )
+                  })
+                })()}
                 {stickerMemos.length === 0 && (
                   <li className="empty-message">스티커 메모를 추가해보세요. 파일도 첨부할 수 있습니다.</li>
                 )}
