@@ -959,6 +959,56 @@ function Dashboard({ user, onLogout }) {
             <>
               {!selectedCategory && (
                 <>
+                  {showShortcutGrid && (
+                    <div className="link-shortcut-grid">
+                      {linksForGrid.map((link) => (
+                        <div
+                          key={link.id}
+                          className="link-shortcut-tile-wrap"
+                          data-link-id={link.id}
+                          draggable
+                          onDragStart={(e) => handleShortcutDragStart(e, link.id)}
+                          onDragEnd={handleShortcutDragEnd}
+                          onDragOver={handleShortcutDragOver}
+                          onDrop={(e) => handleShortcutDrop(e, link.id)}
+                        >
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link-shortcut-tile"
+                            title={link.title}
+                          >
+                            <span className="link-shortcut-icon">
+                              <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
+                              <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
+                            </span>
+                            <span className="link-shortcut-label">{link.title || '링크'}</span>
+                          </a>
+                          <button
+                            type="button"
+                            className="link-shortcut-remove"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              if (confirm('메인 화면에서만 제거합니다. 링크는 카테고리에 그대로 남습니다.')) {
+                                supabase.from('links').update({ show_on_main: false }).eq('id', link.id).then(({ error }) => {
+                                  if (!error) {
+                                    fetchAllLinks()
+                                    if (selectedCategory?.id === link.category_id) fetchLinks(selectedCategory.id)
+                                  }
+                                })
+                              }
+                            }}
+                            title="메인에서 제거"
+                            aria-label="메인 화면에서 제거"
+                          >
+                            제거
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="todo-section">
                     <div className="todo-header">
                       <h3>✏️ 할일 목록 (ToDo List)</h3>
@@ -1083,56 +1133,6 @@ function Dashboard({ user, onLogout }) {
                       <div className="todo-empty">할일을 추가해보세요!</div>
                     )}
                   </div>
-                  {showShortcutGrid && (
-                    <div className="link-shortcut-grid">
-                      {linksForGrid.map((link) => (
-                        <div
-                          key={link.id}
-                          className="link-shortcut-tile-wrap"
-                          data-link-id={link.id}
-                          draggable
-                          onDragStart={(e) => handleShortcutDragStart(e, link.id)}
-                          onDragEnd={handleShortcutDragEnd}
-                          onDragOver={handleShortcutDragOver}
-                          onDrop={(e) => handleShortcutDrop(e, link.id)}
-                        >
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link-shortcut-tile"
-                            title={link.title}
-                          >
-                            <span className="link-shortcut-icon">
-                              <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
-                              <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
-                            </span>
-                            <span className="link-shortcut-label">{link.title || '링크'}</span>
-                          </a>
-                          <button
-                            type="button"
-                            className="link-shortcut-remove"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              if (confirm('메인 화면에서만 제거합니다. 링크는 카테고리에 그대로 남습니다.')) {
-                                supabase.from('links').update({ show_on_main: false }).eq('id', link.id).then(({ error }) => {
-                                  if (!error) {
-                                    fetchAllLinks()
-                                    if (selectedCategory?.id === link.category_id) fetchLinks(selectedCategory.id)
-                                  }
-                                })
-                              }
-                            }}
-                            title="메인에서 제거"
-                            aria-label="메인 화면에서 제거"
-                          >
-                            제거
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                   <div className="main-calendar-placeholder">
                     {calendarEmbedUrl ? (
                       <iframe
