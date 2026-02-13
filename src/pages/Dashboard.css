@@ -487,8 +487,10 @@
   .main-quote-block {
     padding: 16px 20px 10px;
     text-align: center;
-    border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(180deg, #fafbfc 0%, #f5f7fb 100%);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin: 0 20px 16px;
+    background: #ffffff;
   }
 
   .main-quote-block .welcome-quote {
@@ -501,7 +503,7 @@
     align-items: stretch;
     justify-content: center;
     background: #ffffff;
-    border: 1px dashed #e2e8f0;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     margin: 16px 20px 8px;
     overflow: hidden;
