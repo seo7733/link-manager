@@ -75,6 +75,16 @@
     padding: 8px 0;
   }
 
+  .header-search-center > form:first-child,
+  .header-search-center > .header-search-row:first-child {
+    margin-right: 0;
+  }
+
+  .header-search-center > form:last-child,
+  .header-search-center > .header-search-row:last-child {
+    margin-left: 0;
+  }
+
   .header-search-center form,
   .header-search-center .header-search-row {
     margin: 0;
@@ -89,14 +99,22 @@
     min-width: 0;
   }
 
+  .header-search-center .header-search-row:first-child {
+    margin-right: 0;
+  }
+
+  .header-search-center .header-search-row:last-child {
+    margin-left: 0;
+  }
+
   .header-search-center .header-search-row:first-child .btn-search-icon {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: 8px;
+    margin-right: 0;
   }
 
   .header-search-center .header-search-row:last-child input {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 8px;
+    margin-left: 0;
   }
 
   .header-search-row input {
