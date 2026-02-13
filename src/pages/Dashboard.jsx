@@ -928,7 +928,7 @@ function Dashboard({ user, onLogout }) {
 
       <div className="dashboard-body">
         <aside className="panel panel-categories">
-          <div className="panel-header">
+          <div className="panel-header" style={{ display: 'none' }}>
             <h2>📁 카테고리</h2>
           </div>
           <div className="add-form">
@@ -1393,9 +1393,11 @@ function Dashboard({ user, onLogout }) {
         />
 
         <aside className="panel panel-memos" style={{ width: `${memoPanelWidth}px`, minWidth: `${memoPanelWidth}px` }}>
-          <div className="panel-header">
-            <h2>📝 {selectedLink ? selectedLink.title : '스티커 메모'}</h2>
-          </div>
+          {selectedLink && (
+            <div className="panel-header">
+              <h2>📝 {selectedLink.title}</h2>
+            </div>
+          )}
 
           {selectedLink ? (
             <>
