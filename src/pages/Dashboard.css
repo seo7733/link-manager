@@ -71,22 +71,24 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0;
+    gap: 0 !important;
     padding: 8px 0;
   }
 
   .header-search-center form,
   .header-search-center .header-search-row {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .header-search-center form {
     margin-right: 0 !important;
+    margin-left: 0 !important;
   }
 
   .header-search-center .header-search-row:last-child {
-    margin-left: 0 !important;
+    margin-left: -4px !important;
+    margin-right: 0 !important;
   }
 
   .header-search-center > * {
@@ -95,7 +97,11 @@
   }
 
   .header-search-center > form + .header-search-row {
-    margin-left: 0 !important;
+    margin-left: -4px !important;
+  }
+
+  .header-search-center form.header-search-row {
+    margin-right: -4px !important;
   }
 
   .header-search-row {
