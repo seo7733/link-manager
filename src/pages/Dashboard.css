@@ -1485,3 +1485,221 @@
       padding: 8px 12px;
     }
   }
+
+  /* 모바일 반응형 디자인 (768px 이하) */
+  @media (max-width: 768px) {
+    .dashboard-header {
+      flex-wrap: wrap;
+      padding: 8px 12px;
+      min-height: auto;
+    }
+
+    .dashboard-logo {
+      width: 180px;
+    }
+
+    .dashboard-logo-btn img {
+      max-height: 36px;
+    }
+
+    .header-search-center {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-top: 8px;
+      order: 3;
+    }
+
+    .header-search-row {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-search-row input {
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .btn-search-icon {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .header-right {
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .header-user-block {
+      font-size: 12px;
+    }
+
+    .btn-logout {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .dashboard-body {
+      height: auto;
+      min-height: calc(100vh - 120px);
+    }
+
+    .panel-categories {
+      width: 100%;
+      min-width: 100%;
+      max-height: 250px;
+      border-right: none;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .panel-links {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .panel-memos {
+      width: 100%;
+      min-width: 100%;
+      max-height: 300px;
+      border-left: none;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+    }
+
+    .panel-header h2 {
+      font-size: 14px;
+    }
+
+    .link-shortcut-grid {
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .link-shortcut-tile {
+      padding: 8px 4px;
+    }
+
+    .link-shortcut-label {
+      font-size: 11px;
+    }
+
+    .todo-section {
+      margin: 0 12px 12px;
+      padding: 12px 14px;
+    }
+
+    .todo-form {
+      flex-direction: column;
+    }
+
+    .todo-form input {
+      width: 100%;
+    }
+
+    .todo-form .btn-add {
+      width: 100%;
+    }
+
+    .main-calendar-placeholder {
+      margin: 12px 12px 8px;
+      min-height: 300px;
+    }
+
+    .main-calendar-iframe {
+      min-height: 300px;
+    }
+
+    .main-quote-block {
+      margin: 0 12px 12px;
+      padding: 12px 16px 8px;
+    }
+
+    .welcome-quote-text {
+      font-size: 14px;
+    }
+
+    .welcome-quote-author {
+      font-size: 12px;
+    }
+
+    .link-form,
+    .link-edit-form {
+      padding: 12px 16px;
+    }
+
+    .memo-form,
+    .sticker-memo-form {
+      padding: 12px 14px;
+    }
+
+    .btn-add,
+    .btn-add-link {
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+
+    .item {
+      padding: 10px 12px;
+    }
+
+    .item-name {
+      font-size: 13px;
+    }
+
+    .memo-content {
+      font-size: 12px;
+    }
+
+    .sticker-memo-item {
+      padding: 10px 12px;
+    }
+  }
+
+  /* 작은 모바일 (480px 이하) */
+  @media (max-width: 480px) {
+    .dashboard-logo {
+      width: 140px;
+    }
+
+    .link-shortcut-grid {
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    .link-shortcut-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .link-shortcut-label {
+      font-size: 10px;
+    }
+
+    .panel-header {
+      padding: 10px 12px;
+    }
+
+    .panel-header h2 {
+      font-size: 13px;
+    }
+
+    .todo-section,
+    .main-calendar-placeholder,
+    .main-quote-block {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
+    .main-calendar-placeholder {
+      min-height: 250px;
+    }
+
+    .main-calendar-iframe {
+      min-height: 250px;
+    }
+  }
