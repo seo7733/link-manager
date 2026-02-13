@@ -1359,9 +1359,18 @@
     color: #6b7280;
   }
 
-  .sticker-memo-item {
+  .sticker-memo-list {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .sticker-memo-list .sticker-memo-item {
     background: #ffffff;
-    border-left: 3px solid #eab308;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px;
+    padding: 11px 14px !important;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb !important;
   }
 
   .sticker-memo-files {
