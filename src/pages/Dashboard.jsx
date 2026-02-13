@@ -1012,9 +1012,6 @@ function Dashboard({ user, onLogout }) {
                     </div>
                   )}
                   <div className="todo-section">
-                    <div className="todo-header">
-                      <h3>✏️ 할일 목록 (ToDo List)</h3>
-                    </div>
                     <div className="todo-form">
                       <input
                         type="text"
