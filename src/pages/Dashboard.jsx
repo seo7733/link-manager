@@ -892,14 +892,16 @@ function Dashboard({ user, onLogout }) {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1 className="dashboard-logo">
-          <button type="button" className="dashboard-logo-btn" onClick={goToFirstScreen} title="처음 화면으로">
-            <span className="dashboard-logo-icon" aria-hidden>⭐</span>
-            <span className="dashboard-logo-text">즐순이 즐겨찾기 매니저</span>
-          </button>
-        </h1>
-        {user.email === 'jkseo1974@gmail.com' && (
-          <div className="header-tabs">
+        <div className="header-left-wrap">
+          <h1 className="dashboard-logo">
+            <button type="button" className="dashboard-logo-btn" onClick={goToFirstScreen} title="처음 화면으로">
+              <span className="dashboard-logo-icon" aria-hidden>⭐</span>
+              <span className="dashboard-logo-title">즐순이</span>
+              <span className="dashboard-logo-sub"> 즐겨찾기 매니저</span>
+            </button>
+          </h1>
+          {user.email === 'jkseo1974@gmail.com' && (
+            <div className="header-tabs">
             <button
               type="button"
               className={`header-tab ${!showBoardInMain ? 'active' : ''}`}
@@ -915,7 +917,8 @@ function Dashboard({ user, onLogout }) {
               일지
             </button>
           </div>
-        )}
+          )}
+        </div>
         <div className="header-search-center" style={searchAreaWidth != null ? { width: `${searchAreaWidth}px`, maxWidth: `${searchAreaWidth}px` } : undefined}>
           <form className="header-search-row" onSubmit={handleGoogleSearch}>
             <input
@@ -943,10 +946,7 @@ function Dashboard({ user, onLogout }) {
           <div className="header-user-block">
             <span className="user-email">{user.email}</span>
             {user.email === 'jkseo1974@gmail.com' && (
-              <>
-                <Link to="/admin" className="admin-link">ADMIN</Link>
-                <Link to="/board" className="admin-link">BOARD</Link>
-              </>
+              <Link to="/admin" className="admin-link">ADMIN</Link>
             )}
           </div>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
@@ -1038,14 +1038,6 @@ function Dashboard({ user, onLogout }) {
                     </div>
                   ) : (
                     <>
-                  {user.email === 'jkseo1974@gmail.com' && (
-                    <div className="board-entry-row">
-                      <button type="button" className="board-entry-tile" onClick={() => setShowBoardInMain(true)}>
-                        <span className="board-entry-icon">📋</span>
-                        <span className="board-entry-label">BOARD</span>
-                      </button>
-                    </div>
-                  )}
                   {showShortcutGrid && (
                     <div className="link-shortcut-grid">
                       {linksForGrid.map((link) => (
