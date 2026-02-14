@@ -1179,20 +1179,23 @@ function Dashboard({ user, onLogout }) {
                       <div className="todo-empty">할일을 추가해보세요!</div>
                     )}
                   </div>
-                  <div className="main-calendar-placeholder">
-                    {calendarEmbedUrl ? (
-                      <iframe
-                        src={calendarEmbedUrl}
-                        title="Google Calendar"
-                        className="main-calendar-iframe"
-                        frameBorder="0"
-                        scrolling="no"
-                      />
-                    ) : (
-                      <span className="main-calendar-label">
-                        구글 캘린더 임베드 URL(VITE_GOOGLE_CALENDAR_EMBED_URL)을 설정하면 여기에 표시됩니다.
-                      </span>
-                    )}
+                  <div className="main-calendar-wrap">
+                    <h3 className="main-calendar-title">구글 캘린더</h3>
+                    <div className="main-calendar-placeholder">
+                      {calendarEmbedUrl ? (
+                        <iframe
+                          src={calendarEmbedUrl}
+                          title="Google Calendar"
+                          className="main-calendar-iframe"
+                          frameBorder="0"
+                          scrolling="no"
+                        />
+                      ) : (
+                        <span className="main-calendar-label">
+                          .env에 VITE_GOOGLE_CALENDAR_EMBED_URL 을 설정하면 여기에 캘린더가 표시됩니다.
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {ENABLE_LOCAL_SCHEDULES && (
                     <div className="schedule-section">
