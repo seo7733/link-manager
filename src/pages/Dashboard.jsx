@@ -926,6 +926,24 @@ function Dashboard({ user, onLogout }) {
               <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
             </div>
           </div>
+          {user.email === 'jkseo1974@gmail.com' && (
+            <div className="category-panel-tabs">
+              <button
+                type="button"
+                className={`category-panel-tab ${!showBoardInMain ? 'active' : ''}`}
+                onClick={() => setShowBoardInMain(false)}
+              >
+                북마크
+              </button>
+              <button
+                type="button"
+                className={`category-panel-tab ${showBoardInMain ? 'active' : ''}`}
+                onClick={() => setShowBoardInMain(true)}
+              >
+                일지
+              </button>
+            </div>
+          )}
         </aside>
 
         <section ref={linksPanelRef} className="panel panel-links">
