@@ -869,6 +869,7 @@ function Dashboard({ user, onLogout }) {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-left-wrap">
+          {/* 헤더: 로고만 표시. 구글검색/북마크·일지 탭 없음 */}
           <h1 className="dashboard-logo">
             <button type="button" className="dashboard-logo-btn" onClick={goToFirstScreen} title="처음 화면으로">
               <span className="dashboard-logo-icon" aria-hidden>⭐</span>
