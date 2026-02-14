@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import BoardContent from '../components/BoardContent'
 import './Dashboard.css'
+import './Board.css'
 
 const WELCOME_QUOTES = [
   { text: '오늘 할 일을 내일로 미루지 마라.', author: '벤자민 프랭클린' },
@@ -95,6 +97,8 @@ function Dashboard({ user, onLogout }) {
     return saved ? parseInt(saved, 10) : 3
   })
   const [todoPage, setTodoPage] = useState(1)
+
+  const [showBoardInMain, setShowBoardInMain] = useState(false)
 
   const calendarEmbedUrl = import.meta.env.VITE_GOOGLE_CALENDAR_EMBED_URL || ''
 
@@ -766,6 +770,7 @@ function Dashboard({ user, onLogout }) {
     setSearchResults(null)
     setSelectedCategory(null)
     setSelectedLink(null)
+    setShowBoardInMain(false)
     setQuoteIndex(Math.floor(Math.random() * WELCOME_QUOTES.length))
   }
 
@@ -921,7 +926,7 @@ function Dashboard({ user, onLogout }) {
             {user.email === 'jkseo1974@gmail.com' && (
               <>
                 <Link to="/admin" className="admin-link">ADMIN</Link>
-                <Link to="/board" className="admin-link"> : BOARD</Link>
+                <Link to="/board" className="admin-link">BOARD</Link>
               </>
             )}
           </div>
@@ -1004,6 +1009,24 @@ function Dashboard({ user, onLogout }) {
             <>
               {!selectedCategory && (
                 <>
+                  {showBoardInMain && user.email === 'jkseo1974@gmail.com' ? (
+                    <div className="board-in-main-wrap">
+                      <BoardContent
+                        user={user}
+                        onBack={() => setShowBoardInMain(false)}
+                        embedded
+                      />
+                    </div>
+                  ) : (
+                    <>
+                  {user.email === 'jkseo1974@gmail.com' && (
+                    <div className="board-entry-row">
+                      <button type="button" className="board-entry-tile" onClick={() => setShowBoardInMain(true)}>
+                        <span className="board-entry-icon">📋</span>
+                        <span className="board-entry-label">BOARD</span>
+                      </button>
+                    </div>
+                  )}
                   {showShortcutGrid && (
                     <div className="link-shortcut-grid">
                       {linksForGrid.map((link) => (
@@ -1277,9 +1300,11 @@ function Dashboard({ user, onLogout }) {
                       </ul>
                     </div>
                   )}
+                    </>
+                  )}
                 </>
               )}
-              {!selectedCategory && (
+              {!selectedCategory && !showBoardInMain && (
                 <div className="main-quote-block">
                   <div className="welcome-quote">
                     <p className="welcome-quote-text">"{WELCOME_QUOTES[quoteIndex].text}"</p>

@@ -5,6 +5,29 @@
   flex-direction: column;
 }
 
+.board-content-embedded {
+  width: 100%;
+  max-width: 100%;
+}
+
+.board-back-row {
+  margin-bottom: 12px;
+}
+
+.board-back-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+  color: #374151;
+}
+
+.board-back-btn:hover {
+  background: #e5e7eb;
+}
+
 .board-forbidden {
   min-height: 100vh;
   display: flex;
