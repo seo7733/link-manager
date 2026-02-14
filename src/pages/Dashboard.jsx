@@ -941,16 +941,6 @@ function Dashboard({ user, onLogout }) {
             )}
           </ul>
           <div className="category-panel-search">
-            <form className="category-search-row" onSubmit={handleGoogleSearch}>
-              <input
-                type="text"
-                placeholder="Google 검색..."
-                value={googleSearchQuery}
-                onChange={(e) => setGoogleSearchQuery(e.target.value)}
-                aria-label="Google 검색"
-              />
-              <button type="submit" className="btn-search-icon" title="Google에서 검색">🔍</button>
-            </form>
             <div className="category-search-row">
               <input
                 type="text"
@@ -1197,6 +1187,18 @@ function Dashboard({ user, onLogout }) {
                     {todos.length === 0 && (
                       <div className="todo-empty">할일을 추가해보세요!</div>
                     )}
+                  </div>
+                  <div className="google-search-section">
+                    <form className="todo-form" onSubmit={handleGoogleSearch}>
+                      <input
+                        type="text"
+                        placeholder="Google 검색..."
+                        value={googleSearchQuery}
+                        onChange={(e) => setGoogleSearchQuery(e.target.value)}
+                        aria-label="Google 검색"
+                      />
+                      <button type="submit" className="btn-add" title="Google에서 검색">🔍</button>
+                    </form>
                   </div>
                   <div className="main-calendar-placeholder">
                     {calendarEmbedUrl ? (
