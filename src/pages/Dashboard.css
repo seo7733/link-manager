@@ -708,18 +708,6 @@
     box-shadow: none;
   }
 
-  .google-search-section {
-    margin: 0 20px 16px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-
-  .google-search-section .todo-form {
-    margin-bottom: 0;
-  }
-
   .main-calendar-placeholder {
     min-height: 473px;
     display: flex;
@@ -1809,11 +1797,6 @@
       padding: 12px 14px;
     }
 
-    .google-search-section {
-      margin: 0 12px 16px;
-      padding: 12px 14px;
-    }
-
     .todo-form {
       flex-direction: column;
     }
@@ -1911,7 +1894,6 @@
     }
 
     .todo-section,
-    .google-search-section,
     .main-calendar-placeholder,
     .main-quote-block {
       margin-left: 8px;

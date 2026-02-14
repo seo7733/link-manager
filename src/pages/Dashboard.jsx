@@ -102,8 +102,6 @@ function Dashboard({ user, onLogout }) {
 
   const calendarEmbedUrl = import.meta.env.VITE_GOOGLE_CALENDAR_EMBED_URL || ''
 
-  const [googleSearchQuery, setGoogleSearchQuery] = useState('')
-
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
@@ -763,13 +761,6 @@ function Dashboard({ user, onLogout }) {
     setQuoteIndex(Math.floor(Math.random() * WELCOME_QUOTES.length))
   }
 
-  const handleGoogleSearch = (e) => {
-    e?.preventDefault()
-    const q = googleSearchQuery?.trim()
-    if (!q) return
-    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer')
-  }
-
   const runSearch = async () => {
     const q = searchQuery?.trim().toLowerCase()
     if (!q) {
@@ -1187,18 +1178,6 @@ function Dashboard({ user, onLogout }) {
                     {todos.length === 0 && (
                       <div className="todo-empty">할일을 추가해보세요!</div>
                     )}
-                  </div>
-                  <div className="google-search-section" aria-label="Google 검색 영역">
-                    <form className="todo-form" onSubmit={handleGoogleSearch}>
-                      <input
-                        type="text"
-                        placeholder="Google 검색..."
-                        value={googleSearchQuery}
-                        onChange={(e) => setGoogleSearchQuery(e.target.value)}
-                        aria-label="Google 검색"
-                      />
-                      <button type="submit" className="btn-add" title="Google에서 검색">🔍</button>
-                    </form>
                   </div>
                   <div className="main-calendar-placeholder">
                     {calendarEmbedUrl ? (
