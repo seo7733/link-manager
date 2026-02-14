@@ -351,7 +351,8 @@ function Dashboard({ user, onLogout }) {
   // 링크 CRUD
   const addLink = async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) return
-    const nextOrder = links.length > 0 ? Math.max(...links.map(l => l.sort_order ?? 0)) + 1 : 0
+    const minOrder = links.length > 0 ? Math.min(...links.map(l => l.sort_order ?? 0)) : 0
+    const nextOrder = minOrder - 1
     const { error } = await supabase.from('links').insert({
       title: newLink.title.trim(),
       url: newLink.url.trim(),
