@@ -710,6 +710,10 @@
 
   .google-search-section {
     margin: 0 20px 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 18px;
   }
 
   .google-search-section .todo-form {
@@ -1807,6 +1811,7 @@
 
     .google-search-section {
       margin: 0 12px 16px;
+      padding: 12px 14px;
     }
 
     .todo-form {

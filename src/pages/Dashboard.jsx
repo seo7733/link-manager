@@ -1188,7 +1188,7 @@ function Dashboard({ user, onLogout }) {
                       <div className="todo-empty">할일을 추가해보세요!</div>
                     )}
                   </div>
-                  <div className="google-search-section">
+                  <div className="google-search-section" aria-label="Google 검색 영역">
                     <form className="todo-form" onSubmit={handleGoogleSearch}>
                       <input
                         type="text"
