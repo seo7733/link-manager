@@ -880,24 +880,6 @@ function Dashboard({ user, onLogout }) {
               <span className="dashboard-logo-sub"> 즐겨찾기 매니저</span>
             </button>
           </h1>
-          {user.email === 'jkseo1974@gmail.com' && (
-            <div className="header-tabs">
-            <button
-              type="button"
-              className={`header-tab ${!showBoardInMain ? 'active' : ''}`}
-              onClick={() => setShowBoardInMain(false)}
-            >
-              북마크
-            </button>
-            <button
-              type="button"
-              className={`header-tab ${showBoardInMain ? 'active' : ''}`}
-              onClick={() => setShowBoardInMain(true)}
-            >
-              일지
-            </button>
-          </div>
-          )}
         </div>
         <div className="header-right">
           <div className="header-user-block">
