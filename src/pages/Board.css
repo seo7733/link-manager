@@ -1,0 +1,448 @@
+.board-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-forbidden {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #f5f7fb;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px 0 0;
+  min-height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.board-logo {
+  margin: 0;
+  width: 200px;
+}
+
+.board-logo-btn {
+  display: block;
+  padding: 8px 0;
+}
+
+.board-logo-btn img {
+  max-height: 40px;
+  display: block;
+}
+
+.board-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.board-user-email {
+  font-size: 13px;
+  color: #374151;
+}
+
+.board-admin-link {
+  font-size: 13px;
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.board-admin-link:hover {
+  text-decoration: underline;
+}
+
+.board-board-link {
+  font-size: 13px;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.board-logout {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.board-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.board-center {
+  flex: 1;
+  min-width: 0;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.board-toolbar {
+  margin-bottom: 16px;
+}
+
+.board-calendar-wrap {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.board-calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.board-calendar-nav button {
+  padding: 4px 8px;
+  border: none;
+  background: #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.board-calendar-nav span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.board-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.board-calendar-dow {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  padding: 4px 0;
+}
+
+.board-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+}
+
+.board-calendar-day:hover {
+  background: #e5e7eb;
+}
+
+.board-calendar-day.selected {
+  background: #6366f1;
+  color: #fff;
+}
+
+.board-calendar-day.empty {
+  cursor: default;
+  background: transparent;
+}
+
+.board-list-wrap {
+  flex: 1;
+}
+
+.board-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.board-list-header span {
+  font-size: 14px;
+  color: #374151;
+}
+
+.board-post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.board-post-item {
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.board-post-item:hover {
+  background: #f9fafb;
+}
+
+.board-post-item-title {
+  font-size: 14px;
+  color: #1a1a2e;
+}
+
+.board-post-item-date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.board-empty {
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.board-editor-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.board-editor-toolbar {
+  display: flex;
+  gap: 4px;
+}
+
+.board-editor-toolbar button {
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.board-editor-title {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.board-editor-content {
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+}
+
+.board-editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+}
+
+.board-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.board-editor-actions .btn-save,
+.board-editor-actions .btn-cancel,
+.board-editor-actions .btn-delete {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.board-editor-actions .btn-save {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+}
+
+.board-editor-actions .btn-cancel {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.board-editor-actions .btn-delete {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  margin-left: auto;
+}
+
+.board-post-detail {
+  flex: 1;
+}
+
+.board-post-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.board-post-detail-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #1a1a2e;
+  flex: 1;
+}
+
+.board-post-date {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.board-post-detail-header button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.board-post-body {
+  padding: 16px 0;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.board-post-body ul,
+.board-post-body ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.board-comments-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.board-comments-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.board-comment-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.board-comment-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.board-comment-form button {
+  padding: 8px 12px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.board-comment-list {
+  margin-top: 12px;
+}
+
+.board-comment {
+  margin-bottom: 8px;
+}
+
+.board-comment[data-depth="1"] {
+  margin-left: 24px;
+  padding-left: 12px;
+  border-left: 2px solid #e5e7eb;
+}
+
+.board-comment-body {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.board-comment-content {
+  font-size: 13px;
+  color: #374151;
+}
+
+.board-comment-meta {
+  font-size: 11px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.board-comment-reply,
+.board-comment-delete {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: #6366f1;
+}
+
+.board-comment-delete {
+  color: #dc2626;
+}
+
+.board-comment-children {
+  margin-top: 4px;
+}
+
+.btn-add {
+  padding: 8px 14px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-add:hover {
+  background: #4f46e5;
+}

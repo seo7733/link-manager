@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Admin from './pages/Admin'
+import Board from './pages/Board'
 
 const BASE = '/link-manager/'
 
@@ -59,6 +60,16 @@ function App() {
           element={
             user.email === 'jkseo1974@gmail.com' ? (
               <Admin user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/board"
+          element={
+            user.email === 'jkseo1974@gmail.com' ? (
+              <Board user={user} onLogout={handleLogout} />
             ) : (
               <Navigate to="/" replace />
             )

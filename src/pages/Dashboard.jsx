@@ -919,7 +919,10 @@ function Dashboard({ user, onLogout }) {
           <div className="header-user-block">
             <span className="user-email">{user.email}</span>
             {user.email === 'jkseo1974@gmail.com' && (
-              <Link to="/admin" className="admin-link">ADMIN</Link>
+              <>
+                <Link to="/admin" className="admin-link">ADMIN</Link>
+                <Link to="/board" className="admin-link"> : BOARD</Link>
+              </>
             )}
           </div>
           <button className="btn-logout" onClick={onLogout}>로그아웃</button>
