@@ -23,9 +23,9 @@
     justify-content: space-between;
     min-height: 64px;
     padding: 0 28px 0 0;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
   }
 
   .dashboard-header h1 {
@@ -39,21 +39,69 @@
   .dashboard-logo {
     line-height: 0;
     margin: 0;
-    width: 260px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
   }
 
   .dashboard-logo-btn {
-    display: block;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     height: 100%;
-    padding: 0;
+    padding: 0 16px 0 20px;
     margin: 0;
     border: none;
     background: none;
     cursor: pointer;
+  }
+
+  .dashboard-logo-icon {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .dashboard-logo-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+
+  .dashboard-logo-btn:hover .dashboard-logo-text {
+    color: #e0e7ff;
+  }
+
+  .header-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .header-tab {
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    border-radius: 10px;
+    margin: 10px 4px;
+  }
+
+  .header-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .header-tab.active {
+    color: #1e40af;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   .dashboard-logo-btn img {
@@ -170,16 +218,29 @@
     font-size: 13px;
   }
 
+  .dashboard-header .user-email {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
   .admin-link {
     font-size: 11px;
     font-weight: 600;
     color: #7c3aed;
     text-decoration: none;
   }
+
+  .dashboard-header .admin-link {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
   .admin-link:hover {
     text-decoration: underline;
   }
-  
+
+  .dashboard-header .admin-link:hover {
+    color: #fff;
+  }
+
   .btn-logout {
     padding: 8px 18px;
     background: #fff0f0;
@@ -191,11 +252,23 @@
     font-weight: 500;
     transition: all 0.2s;
   }
-  
+
+  .dashboard-header .btn-logout {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e40af;
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
   .btn-logout:hover {
     background: #dc2626;
     color: #ffffff;
     border-color: #dc2626;
+  }
+
+  .dashboard-header .btn-logout:hover {
+    background: #fff;
+    color: #1e40af;
+    border-color: #fff;
   }
   
   .dashboard-body {

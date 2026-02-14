@@ -894,9 +894,28 @@ function Dashboard({ user, onLogout }) {
       <header className="dashboard-header">
         <h1 className="dashboard-logo">
           <button type="button" className="dashboard-logo-btn" onClick={goToFirstScreen} title="처음 화면으로">
-            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="즐순이 즐겨찾기 매니저" />
+            <span className="dashboard-logo-icon" aria-hidden>⭐</span>
+            <span className="dashboard-logo-text">즐순이 즐겨찾기 매니저</span>
           </button>
         </h1>
+        {user.email === 'jkseo1974@gmail.com' && (
+          <div className="header-tabs">
+            <button
+              type="button"
+              className={`header-tab ${!showBoardInMain ? 'active' : ''}`}
+              onClick={() => setShowBoardInMain(false)}
+            >
+              북마크
+            </button>
+            <button
+              type="button"
+              className={`header-tab ${showBoardInMain ? 'active' : ''}`}
+              onClick={() => setShowBoardInMain(true)}
+            >
+              일지
+            </button>
+          </div>
+        )}
         <div className="header-search-center" style={searchAreaWidth != null ? { width: `${searchAreaWidth}px`, maxWidth: `${searchAreaWidth}px` } : undefined}>
           <form className="header-search-row" onSubmit={handleGoogleSearch}>
             <input
