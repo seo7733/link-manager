@@ -471,6 +471,49 @@
   .add-form input::placeholder {
     color: #9ca3af;
   }
+
+  .category-panel-search {
+    padding: 10px 12px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .category-search-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .category-search-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 10px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #1a1a2e;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .category-search-row input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .category-panel-search .btn-search-icon {
+    padding: 9px 12px;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
   
   .btn-add {
     padding: 9px 14px;

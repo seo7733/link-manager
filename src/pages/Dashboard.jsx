@@ -107,7 +107,6 @@ function Dashboard({ user, onLogout }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
-  const [searchAreaWidth, setSearchAreaWidth] = useState(null)
   const linksPanelRef = useRef(null)
   const [memoPanelWidth, setMemoPanelWidth] = useState(() => {
     const saved = localStorage.getItem('memoPanelWidth')
@@ -141,16 +140,6 @@ function Dashboard({ user, onLogout }) {
     }
     logAccess()
   }, [user?.id, user?.email])
-
-  useEffect(() => {
-    const el = linksPanelRef.current
-    if (!el) return
-    const update = () => setSearchAreaWidth(el.offsetWidth * 0.8)
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
 
   useEffect(() => {
     localStorage.setItem('memoPanelWidth', memoPanelWidth.toString())
@@ -919,29 +908,6 @@ function Dashboard({ user, onLogout }) {
           </div>
           )}
         </div>
-        <div className="header-search-center" style={searchAreaWidth != null ? { width: `${searchAreaWidth}px`, maxWidth: `${searchAreaWidth}px` } : undefined}>
-          <form className="header-search-row" onSubmit={handleGoogleSearch}>
-            <input
-              type="text"
-              placeholder="Google 검색..."
-              value={googleSearchQuery}
-              onChange={(e) => setGoogleSearchQuery(e.target.value)}
-              aria-label="Google 검색"
-            />
-            <button type="submit" className="btn-search-icon" title="Google에서 검색">🔍</button>
-          </form>
-          <div className="header-search-row">
-            <input
-              type="text"
-              placeholder="카테고리·링크·메모 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
-              aria-label="카테고리 링크 메모 검색"
-            />
-            <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
-          </div>
-        </div>
         <div className="header-right">
           <div className="header-user-block">
             <span className="user-email">{user.email}</span>
@@ -974,6 +940,29 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">카테고리를 추가해보세요!</li>
             )}
           </ul>
+          <div className="category-panel-search">
+            <form className="category-search-row" onSubmit={handleGoogleSearch}>
+              <input
+                type="text"
+                placeholder="Google 검색..."
+                value={googleSearchQuery}
+                onChange={(e) => setGoogleSearchQuery(e.target.value)}
+                aria-label="Google 검색"
+              />
+              <button type="submit" className="btn-search-icon" title="Google에서 검색">🔍</button>
+            </form>
+            <div className="category-search-row">
+              <input
+                type="text"
+                placeholder="카테고리·링크·메모 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
+                aria-label="카테고리 링크 메모 검색"
+              />
+              <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
+            </div>
+          </div>
         </aside>
 
         <section ref={linksPanelRef} className="panel panel-links">
