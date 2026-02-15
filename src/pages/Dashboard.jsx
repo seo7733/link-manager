@@ -108,6 +108,12 @@ function Dashboard({ user, onLogout }) {
     return saved ? parseInt(saved, 10) : 10
   })
   const [linkPage, setLinkPage] = useState(1)
+  const [favLinkPageSize, setFavLinkPageSize] = useState(() => {
+    const saved = localStorage.getItem('favLinkPageSize')
+    const n = saved ? parseInt(saved, 10) : 20
+    return [20, 30, 40, 0].includes(n) ? n : 20
+  })
+  const [favLinkPage, setFavLinkPage] = useState(1)
   const linksPanelRef = useRef(null)
   const [memoPanelWidth, setMemoPanelWidth] = useState(() => {
     const saved = localStorage.getItem('memoPanelWidth')
@@ -276,6 +282,14 @@ function Dashboard({ user, onLogout }) {
     setLinkPage(1)
   }, [selectedCategory?.id, searchResults, linkPageSize])
 
+  useEffect(() => {
+    localStorage.setItem('favLinkPageSize', favLinkPageSize.toString())
+  }, [favLinkPageSize])
+
+  useEffect(() => {
+    setFavLinkPage(1)
+  }, [favLinkPageSize])
+
   // 트리 구조 만들기 (형제는 sort_order로 정렬)
   const buildTree = (items, parentId = null) => {
     return items
@@ -424,6 +438,13 @@ function Dashboard({ user, onLogout }) {
         .sort((a, b) => (a.main_sort_order ?? 999999) - (b.main_sort_order ?? 999999))
     : []
   const showShortcutGrid = searchResults === null && linksForGrid.length > 0
+  const favTotalPages = favLinkPageSize === 0 ? 1 : Math.max(1, Math.ceil(linksForGrid.length / favLinkPageSize))
+  const paginatedFavLinks = favLinkPageSize === 0 ? linksForGrid : linksForGrid.slice((favLinkPage - 1) * favLinkPageSize, favLinkPage * favLinkPageSize)
+
+  useEffect(() => {
+    const total = favLinkPageSize === 0 ? 1 : Math.max(1, Math.ceil(linksForGrid.length / favLinkPageSize))
+    if (favLinkPage > total) setFavLinkPage(total)
+  }, [linksForGrid.length, favLinkPageSize])
 
   const updateMainSortOrder = async (orderedIds) => {
     const updates = orderedIds.map((id, index) => supabase.from('links').update({ main_sort_order: index }).eq('id', id))
@@ -1012,8 +1033,9 @@ function Dashboard({ user, onLogout }) {
               {!selectedCategory && (
                 <>
                   {showShortcutGrid && (
+                    <>
                     <div className="link-shortcut-grid">
-                      {linksForGrid.map((link) => (
+                      {paginatedFavLinks.map((link) => (
                         <div
                           key={link.id}
                           className="link-shortcut-tile-wrap"
@@ -1060,6 +1082,57 @@ function Dashboard({ user, onLogout }) {
                         </div>
                       ))}
                     </div>
+                    <div className="fav-pagination-row">
+                      <select
+                        value={favLinkPageSize}
+                        onChange={(e) => { setFavLinkPageSize(parseInt(e.target.value, 10)); setFavLinkPage(1) }}
+                        className="fav-page-size-select"
+                        aria-label="한 페이지에 표시할 개수"
+                      >
+                        <option value={20}>20개</option>
+                        <option value={30}>30개</option>
+                        <option value={40}>40개</option>
+                        <option value={0}>전체</option>
+                      </select>
+                      <span className="fav-pagination-info">
+                        {favLinkPageSize === 0
+                          ? `${linksForGrid.length}개 표시`
+                          : `${linksForGrid.length}개 중 ${Math.min((favLinkPage - 1) * favLinkPageSize + 1, linksForGrid.length)}-${Math.min(favLinkPage * favLinkPageSize, linksForGrid.length)}개 표시`}
+                      </span>
+                      {favTotalPages > 1 && (
+                        <span className="fav-pagination-btns">
+                          <button
+                            type="button"
+                            className="fav-page-btn"
+                            disabled={favLinkPage <= 1}
+                            onClick={() => setFavLinkPage(favLinkPage - 1)}
+                            aria-label="이전 페이지"
+                          >
+                            ◀
+                          </button>
+                          {Array.from({ length: favTotalPages }, (_, i) => i + 1).map((p) => (
+                            <button
+                              key={p}
+                              type="button"
+                              className={`fav-page-btn ${p === favLinkPage ? 'active' : ''}`}
+                              onClick={() => setFavLinkPage(p)}
+                            >
+                              {p}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            className="fav-page-btn"
+                            disabled={favLinkPage >= favTotalPages}
+                            onClick={() => setFavLinkPage(favLinkPage + 1)}
+                            aria-label="다음 페이지"
+                          >
+                            ▶
+                          </button>
+                        </span>
+                      )}
+                    </div>
+                    </>
                   )}
                   <div className="todo-section">
                     <div className="todo-form">

@@ -1161,6 +1161,65 @@
     background: #ffffff !important;
   }
 
+  .fav-pagination-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 20px 12px;
+    padding: 8px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    flex-wrap: wrap;
+  }
+
+  .fav-pagination-row .fav-pagination-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fav-page-size-select {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 12px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .fav-pagination-btns {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .fav-page-btn {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .fav-page-btn:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #6366f1;
+  }
+
+  .fav-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .fav-page-btn.active {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+  }
+
   .link-shortcut-tile-wrap {
     position: relative;
     cursor: grab;
@@ -1800,6 +1859,10 @@
       padding: 12px 16px;
     }
 
+    .fav-pagination-row {
+      margin: 0 12px 12px;
+    }
+
     .link-shortcut-tile {
       padding: 8px 4px;
     }
@@ -1914,6 +1977,10 @@
 
     .panel-header h2 {
       font-size: 13px;
+    }
+
+    .fav-pagination-row {
+      margin: 0 8px 12px;
     }
 
     .todo-section,
