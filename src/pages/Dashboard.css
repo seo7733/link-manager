@@ -839,13 +839,19 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 
-  .todo-pagination-controls {
+  .todo-pagination-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 8px;
+    margin-top: 12px;
     font-size: 12px;
     color: #6b7280;
+    flex-wrap: wrap;
+  }
+
+  .todo-pagination-row .todo-pagination-info {
+    flex: 1;
+    min-width: 0;
   }
 
   .todo-page-size-select {
@@ -956,12 +962,11 @@
     outline: none;
   }
 
-  .todo-pagination {
+  .todo-pagination-btns {
     display: flex;
-    justify-content: center;
     align-items: center;
     gap: 4px;
-    margin-top: 12px;
+    flex-shrink: 0;
   }
 
   .todo-page-btn {

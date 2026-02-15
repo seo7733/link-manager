@@ -1074,25 +1074,6 @@ function Dashboard({ user, onLogout }) {
                     </div>
                     {todos.length > 0 && (
                       <>
-                        <div className="todo-pagination-controls">
-                          <select
-                            value={todoPageSize}
-                            onChange={(e) => {
-                              setTodoPageSize(parseInt(e.target.value, 10))
-                              setTodoPage(1)
-                            }}
-                            className="todo-page-size-select"
-                          >
-                            <option value={3}>3개</option>
-                            <option value={5}>5개</option>
-                            <option value={10}>10개</option>
-                            <option value={20}>20개</option>
-                            <option value={30}>30개</option>
-                          </select>
-                          <span className="todo-pagination-info">
-                            {todos.length}개 중 {Math.min((todoPage - 1) * todoPageSize + 1, todos.length)}-{Math.min(todoPage * todoPageSize, todos.length)}개 표시
-                          </span>
-                        </div>
                         <ul className="todo-list">
                           {todos.slice((todoPage - 1) * todoPageSize, todoPage * todoPageSize).map((todo, pageIdx) => {
                             const sortedTodos = [...todos].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
@@ -1146,36 +1127,56 @@ function Dashboard({ user, onLogout }) {
                             )
                           })}
                         </ul>
-                        {Math.ceil(todos.length / todoPageSize) > 1 && (
-                          <div className="todo-pagination">
-                            <button
-                              type="button"
-                              className="todo-page-btn"
-                              disabled={todoPage <= 1}
-                              onClick={() => setTodoPage(todoPage - 1)}
-                            >
-                              ◀
-                            </button>
-                            {Array.from({ length: Math.ceil(todos.length / todoPageSize) }, (_, i) => i + 1).map((p) => (
+                        <div className="todo-pagination-row">
+                          <select
+                            value={todoPageSize}
+                            onChange={(e) => {
+                              setTodoPageSize(parseInt(e.target.value, 10))
+                              setTodoPage(1)
+                            }}
+                            className="todo-page-size-select"
+                            aria-label="한 페이지에 보여질 할일 수"
+                          >
+                            <option value={3}>3개</option>
+                            <option value={5}>5개</option>
+                            <option value={10}>10개</option>
+                            <option value={20}>20개</option>
+                            <option value={30}>30개</option>
+                          </select>
+                          <span className="todo-pagination-info">
+                            {todos.length}개 중 {Math.min((todoPage - 1) * todoPageSize + 1, todos.length)}-{Math.min(todoPage * todoPageSize, todos.length)}개 표시
+                          </span>
+                          {Math.ceil(todos.length / todoPageSize) > 1 && (
+                            <span className="todo-pagination-btns">
                               <button
-                                key={p}
                                 type="button"
-                                className={`todo-page-btn ${p === todoPage ? 'active' : ''}`}
-                                onClick={() => setTodoPage(p)}
+                                className="todo-page-btn"
+                                disabled={todoPage <= 1}
+                                onClick={() => setTodoPage(todoPage - 1)}
                               >
-                                {p}
+                                ◀
                               </button>
-                            ))}
-                            <button
-                              type="button"
-                              className="todo-page-btn"
-                              disabled={todoPage >= Math.ceil(todos.length / todoPageSize)}
-                              onClick={() => setTodoPage(todoPage + 1)}
-                            >
-                              ▶
-                            </button>
-                          </div>
-                        )}
+                              {Array.from({ length: Math.ceil(todos.length / todoPageSize) }, (_, i) => i + 1).map((p) => (
+                                <button
+                                  key={p}
+                                  type="button"
+                                  className={`todo-page-btn ${p === todoPage ? 'active' : ''}`}
+                                  onClick={() => setTodoPage(p)}
+                                >
+                                  {p}
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                className="todo-page-btn"
+                                disabled={todoPage >= Math.ceil(todos.length / todoPageSize)}
+                                onClick={() => setTodoPage(todoPage + 1)}
+                              >
+                                ▶
+                              </button>
+                            </span>
+                          )}
+                        </div>
                       </>
                     )}
                     {todos.length === 0 && (
