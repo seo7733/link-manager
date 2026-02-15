@@ -100,6 +100,8 @@ function Dashboard({ user, onLogout }) {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
+  const [externalSearchQuery, setExternalSearchQuery] = useState('')
+  const [externalSearchEngine, setExternalSearchEngine] = useState('naver')
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
   const linksPanelRef = useRef(null)
   const [memoPanelWidth, setMemoPanelWidth] = useState(() => {
@@ -757,6 +759,16 @@ function Dashboard({ user, onLogout }) {
     setQuoteIndex(Math.floor(Math.random() * WELCOME_QUOTES.length))
   }
 
+  const handleExternalSearch = (e) => {
+    e?.preventDefault()
+    const q = externalSearchQuery?.trim()
+    if (!q) return
+    const url = externalSearchEngine === 'naver'
+      ? `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`
+      : `https://www.google.com/search?q=${encodeURIComponent(q)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   const runSearch = async () => {
     const q = searchQuery?.trim().toLowerCase()
     if (!q) {
@@ -913,6 +925,28 @@ function Dashboard({ user, onLogout }) {
         </aside>
 
         <section ref={linksPanelRef} className="panel panel-links">
+          <div className="links-panel-external-search">
+            <form className="links-panel-external-search-form" onSubmit={handleExternalSearch}>
+              <select
+                value={externalSearchEngine}
+                onChange={(e) => setExternalSearchEngine(e.target.value)}
+                className="links-panel-search-select"
+                aria-label="검색 엔진 선택"
+              >
+                <option value="naver">네이버</option>
+                <option value="google">구글</option>
+              </select>
+              <input
+                type="text"
+                placeholder="검색어 입력..."
+                value={externalSearchQuery}
+                onChange={(e) => setExternalSearchQuery(e.target.value)}
+                className="links-panel-search-input"
+                aria-label="검색어"
+              />
+              <button type="submit" className="btn-search-icon" title="검색">🔍</button>
+            </form>
+          </div>
           {(searchResults !== null || selectedCategory) && (
             <div className="panel-header">
               <h2>🔗 {searchResults !== null ? `검색 결과: ${searchQuery}` : selectedCategory ? selectedCategory.name : ''}</h2>
