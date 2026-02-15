@@ -843,8 +843,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin: 0;
+    gap: 4px;
+    margin: 16px 0 0 0;
     font-size: 12px;
     color: #6b7280;
     flex-wrap: wrap;
