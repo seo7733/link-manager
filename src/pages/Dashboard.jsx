@@ -910,19 +910,6 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">카테고리를 추가해보세요!</li>
             )}
           </ul>
-          <div className="category-panel-search">
-            <div className="category-search-row">
-              <input
-                type="text"
-                placeholder="카테고리·링크·메모 검색"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
-                aria-label="카테고리 링크 메모 검색"
-              />
-              <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
-            </div>
-          </div>
         </aside>
 
         <section ref={linksPanelRef} className="panel panel-links">
@@ -1428,6 +1415,19 @@ function Dashboard({ user, onLogout }) {
             </>
           ) : (
             <>
+              <div className="memo-panel-search">
+                <div className="category-search-row">
+                  <input
+                    type="text"
+                    placeholder="카테고리·링크·메모 검색"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), runSearch())}
+                    aria-label="카테고리 링크 메모 검색"
+                  />
+                  <button type="button" className="btn-search-icon" onClick={runSearch} title="카테고리·링크·메모 검색">🔍</button>
+                </div>
+              </div>
               <div className="sticker-memo-form">
                 <textarea
                   placeholder="스티커 메모 내용..."
