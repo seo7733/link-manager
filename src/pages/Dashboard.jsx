@@ -103,6 +103,11 @@ function Dashboard({ user, onLogout }) {
   const [externalSearchQuery, setExternalSearchQuery] = useState('')
   const [externalSearchEngine, setExternalSearchEngine] = useState('naver')
   const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * WELCOME_QUOTES.length))
+  const [linkPageSize, setLinkPageSize] = useState(() => {
+    const saved = localStorage.getItem('linkPageSize')
+    return saved ? parseInt(saved, 10) : 10
+  })
+  const [linkPage, setLinkPage] = useState(1)
   const linksPanelRef = useRef(null)
   const [memoPanelWidth, setMemoPanelWidth] = useState(() => {
     const saved = localStorage.getItem('memoPanelWidth')
@@ -262,6 +267,14 @@ function Dashboard({ user, onLogout }) {
   useEffect(() => {
     localStorage.setItem('todoPageSize', todoPageSize.toString())
   }, [todoPageSize])
+
+  useEffect(() => {
+    localStorage.setItem('linkPageSize', linkPageSize.toString())
+  }, [linkPageSize])
+
+  useEffect(() => {
+    setLinkPage(1)
+  }, [selectedCategory?.id, searchResults, linkPageSize])
 
   // 트리 구조 만들기 (형제는 sort_order로 정렬)
   const buildTree = (items, parentId = null) => {
@@ -1287,13 +1300,35 @@ function Dashboard({ user, onLogout }) {
             </>
           )}
 
+          {(searchResults !== null || selectedCategory) && (searchResults !== null ? searchResults : links).length > 0 && (
+            <div className="link-list-pagination-controls">
+              <select
+                value={linkPageSize}
+                onChange={(e) => { setLinkPageSize(parseInt(e.target.value, 10)); setLinkPage(1) }}
+                className="link-page-size-select"
+                aria-label="한 페이지에 보여질 링크 수"
+              >
+                <option value={5}>5개</option>
+                <option value={10}>10개</option>
+                <option value={20}>20개</option>
+                <option value={30}>30개</option>
+              </select>
+              <span className="link-pagination-info">
+                {(searchResults !== null ? searchResults : links).length}개 중 {Math.min((linkPage - 1) * linkPageSize + 1, (searchResults !== null ? searchResults : links).length)}-{Math.min(linkPage * linkPageSize, (searchResults !== null ? searchResults : links).length)}개 표시
+              </span>
+            </div>
+          )}
           <ul className="item-list">
-            {(searchResults !== null ? searchResults : links).map((link, idx) => {
+            {(() => {
               const list = searchResults !== null ? searchResults : links
-              const canMoveUp = searchResults === null && idx > 0
-              const canMoveDown = searchResults === null && idx < list.length - 1
-              const isSearchMode = searchResults !== null
-              return (
+              const start = (linkPage - 1) * linkPageSize
+              const pageList = list.slice(start, start + linkPageSize)
+              return pageList.map((link, idx) => {
+                const globalIdx = start + idx
+                const canMoveUp = searchResults === null && globalIdx > 0
+                const canMoveDown = searchResults === null && globalIdx < list.length - 1
+                const isSearchMode = searchResults !== null
+                return (
                 <li
                   key={link.id}
                   className={`item link-item ${selectedLink?.id === link.id ? 'active' : ''}`}
@@ -1366,7 +1401,8 @@ function Dashboard({ user, onLogout }) {
                   )}
                 </li>
               )
-            })}
+              })
+            })()}
             {searchResults !== null && searchResults.length === 0 && (
               <li className="empty-message">검색 결과가 없습니다</li>
             )}
@@ -1374,6 +1410,41 @@ function Dashboard({ user, onLogout }) {
               <li className="empty-message">링크를 추가해보세요!</li>
             )}
           </ul>
+          {(searchResults !== null || selectedCategory) && (() => {
+            const list = searchResults !== null ? searchResults : links
+            const totalPages = Math.max(1, Math.ceil(list.length / linkPageSize))
+            if (totalPages <= 1) return null
+            return (
+              <div className="link-pagination">
+                <button
+                  type="button"
+                  className="link-page-btn"
+                  disabled={linkPage <= 1}
+                  onClick={() => setLinkPage(linkPage - 1)}
+                >
+                  ◀
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    className={`link-page-btn ${p === linkPage ? 'active' : ''}`}
+                    onClick={() => setLinkPage(p)}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="link-page-btn"
+                  disabled={linkPage >= totalPages}
+                  onClick={() => setLinkPage(linkPage + 1)}
+                >
+                  ▶
+                </button>
+              </div>
+            )
+          })()}
           <footer className="panel-links-footer">
             <a href={`${import.meta.env.BASE_URL}manual.html`} target="_blank" rel="noopener noreferrer" className="footer-manual-link">매뉴얼 PDF</a>
             <span>© 2026 Seo Jongkeun. All rights reserved.</span>
