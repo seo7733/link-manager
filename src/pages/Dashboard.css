@@ -1166,7 +1166,7 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin: 0;
+    margin: 0 0 16px 0;
     padding: 0;
     font-size: 12px;
     color: #6b7280;
@@ -1860,7 +1860,7 @@
     }
 
     .fav-pagination-row {
-      margin: 0;
+      margin: 0 0 12px 0;
     }
 
     .link-shortcut-tile {
@@ -1980,7 +1980,7 @@
     }
 
     .fav-pagination-row {
-      margin: 0;
+      margin: 0 0 12px 0;
     }
 
     .todo-section,
