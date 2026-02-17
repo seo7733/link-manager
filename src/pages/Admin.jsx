@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import './Admin.css'
@@ -37,9 +37,22 @@ function Admin({ user, onLogout }) {
     return d.toISOString().slice(0, 10)
   })
   const [selectedPostId, setSelectedPostId] = useState(null)
+  const [boardListPageSize, setBoardListPageSize] = useState(10)
+  const [boardListPage, setBoardListPage] = useState(1)
+  const editorBodyRef = useRef(null)
 
   const location = useLocation()
   const isBoardView = location.pathname.includes('/board')
+
+  useEffect(() => {
+    if (!selectedPostId) return
+    const timer = setTimeout(() => {
+      if (!editorBodyRef.current) return
+      const html = selectedPostId === 'new' ? (newSchedule.description || '') : (editSchedule.description || '')
+      editorBodyRef.current.innerHTML = html
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [selectedPostId, selectedPostId === 'new' ? newSchedule.description : editSchedule.description])
 
   useEffect(() => {
     loadAll()
@@ -182,14 +195,15 @@ function Admin({ user, onLogout }) {
     setSchedules(data || [])
   }
 
-  const addSchedule = async () => {
+  const addSchedule = async (bodyHtml) => {
     if (!newSchedule.title.trim() || !newSchedule.event_date) return
+    const desc = (bodyHtml ?? newSchedule.description ?? '').trim() || null
     const { error } = await supabase.from('schedules').insert({
       user_id: user.id,
       title: newSchedule.title.trim(),
       event_date: newSchedule.event_date,
       event_time: newSchedule.event_time.trim() || null,
-      description: newSchedule.description.trim() || null
+      description: desc
     })
     if (!error) {
       setNewSchedule({ title: '', event_date: '', event_time: '', description: '' })
@@ -207,15 +221,16 @@ function Admin({ user, onLogout }) {
     })
   }
 
-  const updateSchedule = async (id) => {
+  const updateSchedule = async (id, bodyHtml) => {
     if (!editSchedule.title.trim() || !editSchedule.event_date) return
+    const desc = (bodyHtml ?? editSchedule.description ?? '').trim() || null
     const { error } = await supabase
       .from('schedules')
       .update({
         title: editSchedule.title.trim(),
         event_date: editSchedule.event_date,
         event_time: editSchedule.event_time.trim() || null,
-        description: editSchedule.description.trim() || null
+        description: desc
       })
       .eq('id', id)
     if (!error) {
@@ -277,6 +292,11 @@ function Admin({ user, onLogout }) {
   const boardCalendarDays = getBoardCalendarDays()
   const todayStr = new Date().toISOString().slice(0, 10)
 
+  const boardListTotal = schedules.length
+  const boardListTotalPages = Math.max(1, Math.ceil(boardListTotal / boardListPageSize))
+  const effectiveBoardListPage = Math.min(boardListPage, boardListTotalPages)
+  const boardListPaginated = schedules.slice((effectiveBoardListPage - 1) * boardListPageSize, effectiveBoardListPage * boardListPageSize)
+
   const openNewPost = () => {
     setSelectedPostId('new')
     setNewSchedule(prev => ({ ...prev, event_date: selectedDate }))
@@ -302,14 +322,21 @@ function Admin({ user, onLogout }) {
 
   const handleSaveNewSchedule = async () => {
     if (!newSchedule.title.trim() || !newSchedule.event_date) return
-    await addSchedule()
+    const bodyHtml = editorBodyRef.current?.innerHTML ?? ''
+    await addSchedule(bodyHtml)
     closePostForm()
   }
 
   const handleSaveEditSchedule = async () => {
     if (!editingScheduleId || !editSchedule.title.trim() || !editSchedule.event_date) return
-    await updateSchedule(editingScheduleId)
+    const bodyHtml = editorBodyRef.current?.innerHTML ?? ''
+    await updateSchedule(editingScheduleId, bodyHtml)
     closePostForm()
+  }
+
+  function execEditorCommand(cmd, value = null) {
+    document.execCommand(cmd, false, value)
+    editorBodyRef.current?.focus()
   }
 
   function formatDate(iso) {
@@ -480,13 +507,36 @@ function Admin({ user, onLogout }) {
               {/* 우측: 전체 게시물 목록 + 작성/수정 패널 */}
               <div className="admin-board-content-panel">
                 <div className="admin-board-list-section">
-                  <h3 className="admin-board-list-title">전체 게시물 목록</h3>
+                  <div className="admin-board-list-header">
+                    <h3 className="admin-board-list-title">전체 게시물 목록</h3>
+                    <button type="button" className="admin-board-btn-write" onClick={openNewPost}>✏️ 게시물 작성</button>
+                  </div>
+                  <div className="admin-board-pagination">
+                    <div className="admin-board-pagination-size">
+                      <span>표시:</span>
+                      <select value={boardListPageSize} onChange={(e) => { setBoardListPageSize(Number(e.target.value)); setBoardListPage(1) }} aria-label="페이지당 개수">
+                        <option value={10}>10개</option>
+                        <option value={20}>20개</option>
+                        <option value={30}>30개</option>
+                      </select>
+                    </div>
+                    <div className="admin-board-pagination-info">
+                      {boardListTotal === 0 ? '0건' : `${(effectiveBoardListPage - 1) * boardListPageSize + 1}–${Math.min(effectiveBoardListPage * boardListPageSize, boardListTotal)} / 전체 ${boardListTotal}건`}
+                    </div>
+                    <div className="admin-board-pagination-pages">
+                      <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage <= 1} onClick={() => setBoardListPage(p => p - 1)} aria-label="이전">◀</button>
+                      {Array.from({ length: boardListTotalPages }, (_, i) => i + 1).map(p => (
+                        <button key={p} type="button" className={`admin-board-page-btn ${p === effectiveBoardListPage ? 'active' : ''}`} onClick={() => setBoardListPage(p)}>{p}</button>
+                      ))}
+                      <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage >= boardListTotalPages} onClick={() => setBoardListPage(p => p + 1)} aria-label="다음">▶</button>
+                    </div>
+                  </div>
                   <div className="admin-board-list-wrap">
-                    {schedules.length === 0 ? (
+                    {boardListTotal === 0 ? (
                       <p className="admin-board-list-empty">등록된 게시물이 없습니다.</p>
                     ) : (
                       <ul className="admin-board-list">
-                        {schedules.map(sch => (
+                        {boardListPaginated.map(sch => (
                           <li
                             key={sch.id}
                             className={`admin-board-list-item ${selectedPostId === sch.id ? 'active' : ''}`}
@@ -502,36 +552,63 @@ function Admin({ user, onLogout }) {
                 </div>
 
                 {(selectedPostId === 'new' || selectedPostId) && selectedPostId !== null && (
-                  <div className="admin-board-form-section">
+                  <div className="admin-board-editor-section">
                     <h3 className="admin-board-form-title">{selectedPostId === 'new' ? '새 게시물 작성' : '게시물 수정'}</h3>
-                    {selectedPostId === 'new' ? (
-                      <div className="admin-schedule-form">
-                        <input type="text" placeholder="제목" value={newSchedule.title} onChange={(e) => setNewSchedule({ ...newSchedule, title: e.target.value })} className="admin-schedule-input" />
-                        <div className="admin-schedule-row">
-                          <input type="date" value={newSchedule.event_date} onChange={(e) => setNewSchedule({ ...newSchedule, event_date: e.target.value })} className="admin-schedule-input" />
-                          <input type="time" value={newSchedule.event_time} onChange={(e) => setNewSchedule({ ...newSchedule, event_time: e.target.value })} className="admin-schedule-input" />
-                        </div>
-                        <textarea placeholder="메모 (선택)" rows={3} value={newSchedule.description} onChange={(e) => setNewSchedule({ ...newSchedule, description: e.target.value })} className="admin-schedule-input admin-schedule-desc" />
-                        <div className="admin-board-form-actions">
-                          <button type="button" className="admin-btn-cancel" onClick={closePostForm}>취소</button>
-                          <button type="button" className="admin-btn-schedule-add" onClick={handleSaveNewSchedule}>저장</button>
-                        </div>
+                    <div className="admin-board-editor-toolbar">
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('bold')} title="굵게"><b>B</b></button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('italic')} title="기울임"><i>I</i></button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('underline')} title="밑줄"><u>U</u></button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('strikeThrough')} title="취소선"><s>S</s></button>
+                      <span className="admin-board-editor-divider" />
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'h1')} title="제목1">H1</button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'h2')} title="제목2">H2</button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'h3')} title="제목3">H3</button>
+                      <span className="admin-board-editor-divider" />
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('insertUnorderedList')} title="글머리">•</button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('insertOrderedList')} title="번호">1.</button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'blockquote')} title="인용">❝</button>
+                      <span className="admin-board-editor-divider" />
+                      <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('insertHorizontalRule')} title="구분선">—</button>
+                    </div>
+                    <div className="admin-board-editor-header">
+                      <input
+                        type="text"
+                        className="admin-board-editor-title-input"
+                        placeholder="제목을 입력하세요..."
+                        value={selectedPostId === 'new' ? newSchedule.title : editSchedule.title}
+                        onChange={(e) => selectedPostId === 'new' ? setNewSchedule({ ...newSchedule, title: e.target.value }) : setEditSchedule({ ...editSchedule, title: e.target.value })}
+                      />
+                      <div className="admin-board-editor-meta-row">
+                        <input
+                          type="date"
+                          className="admin-schedule-input"
+                          value={selectedPostId === 'new' ? newSchedule.event_date : editSchedule.event_date}
+                          onChange={(e) => selectedPostId === 'new' ? setNewSchedule({ ...newSchedule, event_date: e.target.value }) : setEditSchedule({ ...editSchedule, event_date: e.target.value })}
+                        />
+                        <input
+                          type="time"
+                          className="admin-schedule-input"
+                          value={selectedPostId === 'new' ? newSchedule.event_time : editSchedule.event_time}
+                          onChange={(e) => selectedPostId === 'new' ? setNewSchedule({ ...newSchedule, event_time: e.target.value }) : setEditSchedule({ ...editSchedule, event_time: e.target.value })}
+                        />
                       </div>
-                    ) : (
-                      <div className="admin-schedule-form">
-                        <input type="text" placeholder="제목" value={editSchedule.title} onChange={(e) => setEditSchedule({ ...editSchedule, title: e.target.value })} className="admin-schedule-input" />
-                        <div className="admin-schedule-row">
-                          <input type="date" value={editSchedule.event_date} onChange={(e) => setEditSchedule({ ...editSchedule, event_date: e.target.value })} className="admin-schedule-input" />
-                          <input type="time" value={editSchedule.event_time} onChange={(e) => setEditSchedule({ ...editSchedule, event_time: e.target.value })} className="admin-schedule-input" />
-                        </div>
-                        <textarea placeholder="메모 (선택)" rows={3} value={editSchedule.description} onChange={(e) => setEditSchedule({ ...editSchedule, description: e.target.value })} className="admin-schedule-input admin-schedule-desc" />
-                        <div className="admin-board-form-actions">
-                          <button type="button" className="admin-btn-cancel" onClick={closePostForm}>취소</button>
-                          <button type="button" className="admin-btn-detail" onClick={() => deleteSchedule(editingScheduleId)}>삭제</button>
-                          <button type="button" className="admin-btn-schedule-add" onClick={handleSaveEditSchedule}>저장</button>
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                    <div className="admin-board-editor-body-wrap">
+                      <div
+                        ref={editorBodyRef}
+                        className="admin-board-editor-body"
+                        contentEditable
+                        suppressContentEditableWarning
+                        data-placeholder="내용을 입력하세요..."
+                      />
+                    </div>
+                    <div className="admin-board-editor-footer">
+                      <button type="button" className="admin-btn-cancel" onClick={closePostForm}>취소</button>
+                      {selectedPostId !== 'new' && (
+                        <button type="button" className="admin-btn-delete" onClick={() => deleteSchedule(editingScheduleId)}>삭제</button>
+                      )}
+                      <button type="button" className="admin-btn-schedule-add" onClick={selectedPostId === 'new' ? handleSaveNewSchedule : handleSaveEditSchedule}>💾 저장</button>
+                    </div>
                   </div>
                 )}
               </div>

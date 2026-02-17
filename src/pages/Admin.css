@@ -518,6 +518,237 @@
   flex-wrap: wrap;
 }
 
+/* 목록 헤더 + 게시물 작성 버튼 */
+.admin-board-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-board-list-header .admin-board-list-title {
+  margin: 0;
+}
+
+.admin-board-btn-write {
+  padding: 8px 14px;
+  background: #475569;
+  color: #e2e8f0;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-board-btn-write:hover {
+  background: #6366f1;
+  border-color: #6366f1;
+}
+
+/* 목록 페이지네이션 */
+.admin-board-pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.admin-board-pagination-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-board-pagination-size select {
+  padding: 4px 8px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-board-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-board-page-btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-board-page-btn:hover:not(:disabled) {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.admin-board-page-btn.active {
+  background: #475569;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.admin-board-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 편집기 패널 (클로드 참고 형식) */
+.admin-board-editor-section {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 280px;
+}
+
+.admin-board-editor-section .admin-board-form-title {
+  margin: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.admin-board-editor-toolbar {
+  padding: 8px 16px;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.admin-board-editor-tool {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.admin-board-editor-tool:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.admin-board-editor-divider {
+  width: 1px;
+  height: 20px;
+  background: #334155;
+  margin: 0 4px;
+}
+
+.admin-board-editor-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-board-editor-title-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-board-editor-title-input::placeholder {
+  color: #64748b;
+}
+
+.admin-board-editor-meta-row {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-board-editor-meta-row .admin-schedule-input {
+  flex: 1;
+  max-width: 160px;
+}
+
+.admin-board-editor-body-wrap {
+  flex: 1;
+  min-height: 180px;
+  padding: 12px 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-board-editor-body {
+  flex: 1;
+  min-height: 160px;
+  padding: 12px 14px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-y: auto;
+  outline: none;
+}
+
+.admin-board-editor-body:empty::before {
+  content: attr(data-placeholder);
+  color: #64748b;
+}
+
+.admin-board-editor-body h1 { font-size: 1.4em; margin: 0.6em 0 0.3em; }
+.admin-board-editor-body h2 { font-size: 1.25em; margin: 0.5em 0 0.3em; }
+.admin-board-editor-body h3 { font-size: 1.1em; margin: 0.4em 0 0.2em; }
+.admin-board-editor-body ul, .admin-board-editor-body ol { margin: 0.5em 0; padding-left: 1.5em; }
+.admin-board-editor-body blockquote {
+  border-left: 4px solid #6366f1;
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: #1e293b;
+  border-radius: 0 6px 6px 0;
+  color: #94a3b8;
+}
+
+.admin-board-editor-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #334155;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .admin-section {
   margin-bottom: 32px;
 }
