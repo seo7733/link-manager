@@ -548,13 +548,16 @@
   border-color: #6366f1;
 }
 
-/* 목록 페이지네이션 */
+/* 목록 페이지네이션 (전체 게시물 목록 아래, 중앙 정렬) */
 .admin-board-pagination {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #334155;
   font-size: 12px;
   color: #94a3b8;
 }
