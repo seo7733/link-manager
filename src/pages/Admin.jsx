@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import './Admin.css'
 
@@ -45,11 +45,23 @@ function Admin({ user, onLogout }) {
   const boardImageInputRef = useRef(null)
   const boardFileInputRef = useRef(null)
   const [boardUploading, setBoardUploading] = useState(false)
+  const appliedSharePostRef = useRef(false)
 
   const BOARD_BUCKET = 'board-uploads'
 
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const isBoardView = location.pathname.includes('/board')
+
+  // 공유 링크(?post=id)로 들어왔을 때 해당 게시글 열기
+  useEffect(() => {
+    if (!isBoardView || schedules.length === 0 || appliedSharePostRef.current) return
+    const id = searchParams.get('post')
+    if (id && schedules.some(s => s.id === id)) {
+      setSelectedPostId(id)
+      appliedSharePostRef.current = true
+    }
+  }, [isBoardView, schedules, searchParams])
 
   useEffect(() => {
     if (!selectedPostId) return
@@ -373,6 +385,17 @@ function Admin({ user, onLogout }) {
     if (!selectedPostId || selectedPostId === 'new') return
     const sch = schedules.find(s => s.id === selectedPostId)
     if (sch) openEditPost(sch)
+  }
+
+  const copyBoardPostShareLink = async (postId) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('post', postId)
+    try {
+      await navigator.clipboard.writeText(url.toString())
+      window.alert('공유 링크가 클립보드에 복사되었습니다.')
+    } catch {
+      window.alert('복사에 실패했습니다.')
+    }
   }
 
   const closePostForm = () => {
@@ -842,6 +865,7 @@ function Admin({ user, onLogout }) {
                           />
                           <div className="admin-board-view-footer">
                             <button type="button" className="admin-btn-cancel" onClick={() => { setSelectedPostId(null) }}>목록</button>
+                            <button type="button" className="admin-btn-share" onClick={() => copyBoardPostShareLink(viewed.id)} title="공유 링크 복사">🔗 공유</button>
                             <button type="button" className="admin-btn-detail" onClick={startEditFromView}>수정</button>
                             <button type="button" className="admin-btn-delete" onClick={() => { deleteSchedule(viewed.id); setSelectedPostId(null) }}>삭제</button>
                           </div>

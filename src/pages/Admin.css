@@ -1124,6 +1124,19 @@
   background: #334155;
 }
 
+.admin-btn-share {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #334155;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.admin-btn-share:hover {
+  background: #475569;
+}
+
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
