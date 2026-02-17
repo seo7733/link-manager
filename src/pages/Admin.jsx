@@ -85,18 +85,23 @@ function Admin({ user, onLogout }) {
 
   // 에디터 본문은 글 전환 시에만 채움 (입력 중 깜빡임/초기화 방지)
   const lastSyncedPostIdRef = useRef(null)
+  const lastSyncedDescriptionRef = useRef(null)
   useEffect(() => {
     if (!selectedPostId) {
       lastSyncedPostIdRef.current = null
+      lastSyncedDescriptionRef.current = null
       return
     }
-    if (lastSyncedPostIdRef.current === selectedPostId) return
-    lastSyncedPostIdRef.current = selectedPostId
     const html = selectedPostId === 'new' ? (newSchedule.description || '') : (editSchedule.description || '')
-    requestAnimationFrame(() => {
-      if (editorBodyRef.current) editorBodyRef.current.innerHTML = html
-    })
-  }, [selectedPostId])
+    // selectedPostId가 변경되었거나, 같은 글인데 description이 변경된 경우(수정 모드 진입) 업데이트
+    if (lastSyncedPostIdRef.current !== selectedPostId || lastSyncedDescriptionRef.current !== html) {
+      lastSyncedPostIdRef.current = selectedPostId
+      lastSyncedDescriptionRef.current = html
+      requestAnimationFrame(() => {
+        if (editorBodyRef.current) editorBodyRef.current.innerHTML = html
+      })
+    }
+  }, [selectedPostId, selectedPostId === 'new' ? newSchedule.description : editSchedule.description])
 
   useEffect(() => {
     loadAll()
