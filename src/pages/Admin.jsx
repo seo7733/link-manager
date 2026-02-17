@@ -293,6 +293,9 @@ function Admin({ user, onLogout }) {
   const todayStr = new Date().toISOString().slice(0, 10)
 
   const schedulesForList = [...schedules].sort((a, b) => {
+    const ta = a.created_at ? new Date(a.created_at).getTime() : 0
+    const tb = b.created_at ? new Date(b.created_at).getTime() : 0
+    if (ta || tb) return tb - ta
     const da = a.event_date || ''
     const db = b.event_date || ''
     if (da !== db) return db.localeCompare(da)
