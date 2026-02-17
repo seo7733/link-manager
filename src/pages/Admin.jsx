@@ -358,6 +358,7 @@ function Admin({ user, onLogout }) {
   const todayStr = new Date().toISOString().slice(0, 10)
 
   const topLevelSchedules = schedules.filter(s => !s.parent_id)
+  const getReplyCount = (postId) => schedules.filter(s => s.parent_id === postId).length
   const schedulesForList = [...topLevelSchedules].sort((a, b) => {
     const noticeA = Boolean(a.is_notice) ? 1 : 0
     const noticeB = Boolean(b.is_notice) ? 1 : 0
@@ -785,6 +786,7 @@ function Admin({ user, onLogout }) {
                                 <span className="admin-board-list-item-title">
                                   <span className="admin-board-list-item-title-text">{sch.title || '(제목 없음)'}</span>
                                   {sch.is_notice && <span className="admin-board-list-badge-notice">공지</span>}
+                                  {getReplyCount(sch.id) > 0 && <span className="admin-board-list-reply-count">({getReplyCount(sch.id)})</span>}
                                 </span>
                                 <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
                               </li>
@@ -925,31 +927,32 @@ function Admin({ user, onLogout }) {
                           />
                           <div className="admin-board-view-footer">
                             <button type="button" className="admin-btn-cancel" onClick={() => { setSelectedPostId(null) }}>목록</button>
+                            {viewed.parent_id && (
+                              <button type="button" className="admin-btn-parent" onClick={() => setSelectedPostId(viewed.parent_id)}>↑ 상위글</button>
+                            )}
                             <button type="button" className="admin-btn-share" onClick={() => copyBoardPostShareLink(viewed.id)} title="공유 링크 복사">🔗 공유</button>
                             <button type="button" className="admin-btn-reply" onClick={() => openReplyPost(viewed)}>✏️ 답변</button>
                             <button type="button" className="admin-btn-detail" onClick={startEditFromView}>수정</button>
-                            <button type="button" className="admin-btn-delete" onClick={() => { deleteSchedule(viewed.id); setSelectedPostId(null) }}>삭제</button>
+                            <button type="button" className="admin-btn-delete" onClick={() => { deleteSchedule(viewed.id); setSelectedPostId(viewed.parent_id || null) }}>삭제</button>
                           </div>
                           {replies.length > 0 && (
                             <div className="admin-board-replies">
                               <h4 className="admin-board-replies-title">답변 ({replies.length})</h4>
-                              <ul className="admin-board-replies-list">
-                                {replies.map(r => (
-                                  <li key={r.id} className="admin-board-reply-item">
-                                    <div className="admin-board-reply-header">
-                                      <span className="admin-board-reply-title">{r.title || '(제목 없음)'}</span>
+                              <ul className="admin-board-replies-list admin-board-replies-list-titles">
+                                {replies.map(r => {
+                                  const childCount = getReplyCount(r.id)
+                                  return (
+                                    <li
+                                      key={r.id}
+                                      className={`admin-board-reply-item admin-board-reply-item-title-only ${selectedPostId === r.id ? 'active' : ''}`}
+                                      onClick={() => openViewPost(r)}
+                                    >
+                                      <span className="admin-board-reply-title-text">{r.title || '(제목 없음)'}</span>
+                                      {childCount > 0 && <span className="admin-board-reply-child-count">({childCount})</span>}
                                       <span className="admin-board-reply-meta">{r.event_date} {r.event_time || ''}</span>
-                                    </div>
-                                    <div
-                                      className="admin-board-reply-body"
-                                      dangerouslySetInnerHTML={{ __html: ensureLinksOpenInNewTab(r.description || '') }}
-                                    />
-                                    <div className="admin-board-reply-actions">
-                                      <button type="button" className="admin-board-reply-btn-edit" onClick={() => openEditPost(r)}>수정</button>
-                                      <button type="button" className="admin-board-reply-btn-delete" onClick={() => deleteSchedule(r.id)}>삭제</button>
-                                    </div>
-                                  </li>
-                                ))}
+                                    </li>
+                                  )
+                                })}
                               </ul>
                             </div>
                           )}
