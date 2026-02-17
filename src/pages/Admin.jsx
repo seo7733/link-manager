@@ -835,12 +835,9 @@ function Admin({ user, onLogout }) {
                     <div className="admin-board-pagination">
                       <div className="admin-board-pagination-size">
                         <span>표시:</span>
-                        <select value={boardListPageSize} onChange={(e) => { setBoardListPageSize(Number(e.target.value)); setBoardListPage(1) }} aria-label="페이지당 개수">
-                          <option value={5}>5개</option>
-                          <option value={10}>10개</option>
-                          <option value={20}>20개</option>
-                          <option value={30}>30개</option>
-                        </select>
+                        {[5, 10, 20, 30].map(n => (
+                          <button key={n} type="button" className={`admin-board-size-btn ${boardListPageSize === n ? 'active' : ''}`} onClick={() => { setBoardListPageSize(n); setBoardListPage(1) }}>{n}개</button>
+                        ))}
                       </div>
                       <div className="admin-board-pagination-info">
                         {boardListTotal === 0 ? '0건' : `${(effectiveBoardListPage - 1) * boardListPageSize + 1}–${Math.min(effectiveBoardListPage * boardListPageSize, boardListTotal)} / 전체 ${boardListTotal}건`}

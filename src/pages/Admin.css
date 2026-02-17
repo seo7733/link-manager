@@ -469,12 +469,12 @@
 .admin-board-list-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
 }
 
 .admin-board-list-item-check {
@@ -509,7 +509,7 @@
 .admin-board-list-item.active {
   background: #334155;
   border-left: 3px solid #6366f1;
-  padding-left: 9px;
+  padding-left: 7px;
 }
 
 .admin-board-list-item-title {
@@ -707,14 +707,24 @@
   gap: 6px;
 }
 
-.admin-board-pagination-size select {
+.admin-board-size-btn {
+  min-width: 36px;
   padding: 4px 8px;
   border: 1px solid #334155;
   border-radius: 6px;
   background: #0f172a;
-  color: #e2e8f0;
+  color: #94a3b8;
   font-size: 12px;
   cursor: pointer;
+}
+.admin-board-size-btn:hover {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+.admin-board-size-btn.active {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
 }
 
 .admin-board-pagination-pages {
