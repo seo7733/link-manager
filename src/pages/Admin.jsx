@@ -40,6 +40,11 @@ function Admin({ user, onLogout }) {
   const [boardListPageSize, setBoardListPageSize] = useState(10)
   const [boardListPage, setBoardListPage] = useState(1)
   const editorBodyRef = useRef(null)
+  const boardImageInputRef = useRef(null)
+  const boardFileInputRef = useRef(null)
+  const [boardUploading, setBoardUploading] = useState(false)
+
+  const BOARD_BUCKET = 'board-uploads'
 
   const location = useLocation()
   const isBoardView = location.pathname.includes('/board')
@@ -348,6 +353,69 @@ function Admin({ user, onLogout }) {
     editorBodyRef.current?.focus()
   }
 
+  function insertLink() {
+    const url = prompt('링크 URL을 입력하세요:', 'https://')
+    if (!url || !url.trim()) return
+    const href = url.trim()
+    editorBodyRef.current?.focus()
+    const sel = window.getSelection()
+    const range = sel?.rangeCount ? sel.getRangeAt(0) : null
+    if (range && sel.toString()) {
+      document.execCommand('createLink', false, href)
+    } else {
+      document.execCommand('insertHTML', false, `<a href="${href.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">${href}</a>`)
+    }
+  }
+
+  async function uploadBoardFile(file, subPath = '') {
+    const pathPrefix = `board/${user?.id || 'anon'}`
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+    const storagePath = subPath ? `${pathPrefix}/${subPath}/${Date.now()}-${safeName}` : `${pathPrefix}/${Date.now()}-${safeName}`
+    const { error } = await supabase.storage.from(BOARD_BUCKET).upload(storagePath, file, { upsert: true })
+    if (error) throw error
+    const { data: { publicUrl } } = supabase.storage.from(BOARD_BUCKET).getPublicUrl(storagePath)
+    return publicUrl
+  }
+
+  async function handleBoardImageUpload(e) {
+    const file = e.target?.files?.[0]
+    if (!file || !file.type.startsWith('image/')) {
+      e.target.value = ''
+      return
+    }
+    setBoardUploading(true)
+    try {
+      const url = await uploadBoardFile(file, 'images')
+      editorBodyRef.current?.focus()
+      document.execCommand('insertImage', false, url)
+    } catch (err) {
+      alert('이미지 업로드 실패: ' + (err.message || err))
+    } finally {
+      setBoardUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  async function handleBoardFileAttach(e) {
+    const file = e.target?.files?.[0]
+    if (!file) {
+      e.target.value = ''
+      return
+    }
+    setBoardUploading(true)
+    try {
+      const url = await uploadBoardFile(file, 'files')
+      editorBodyRef.current?.focus()
+      const label = file.name
+      document.execCommand('insertHTML', false, `<a href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">📎 ${label}</a> `)
+    } catch (err) {
+      alert('파일 첨부 실패: ' + (err.message || err))
+    } finally {
+      setBoardUploading(false)
+      e.target.value = ''
+    }
+  }
+
   function formatDate(iso) {
     if (!iso) return '-'
     const d = new Date(iso)
@@ -583,7 +651,30 @@ function Admin({ user, onLogout }) {
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'blockquote')} title="인용">❝</button>
                       <span className="admin-board-editor-divider" />
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('insertHorizontalRule')} title="구분선">—</button>
+                      <span className="admin-board-editor-divider" />
+                      <button type="button" className="admin-board-editor-tool" onClick={insertLink} title="링크">🔗</button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => boardImageInputRef.current?.click()} title="이미지 삽입" disabled={boardUploading}>
+                        🖼️
+                      </button>
+                      <button type="button" className="admin-board-editor-tool" onClick={() => boardFileInputRef.current?.click()} title="파일 첨부" disabled={boardUploading}>
+                        📎
+                      </button>
                     </div>
+                    <input
+                      ref={boardImageInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="admin-board-file-input-hidden"
+                      onChange={handleBoardImageUpload}
+                      aria-hidden
+                    />
+                    <input
+                      ref={boardFileInputRef}
+                      type="file"
+                      className="admin-board-file-input-hidden"
+                      onChange={handleBoardFileAttach}
+                      aria-hidden
+                    />
                     <div className="admin-board-editor-header">
                       <input
                         type="text"
