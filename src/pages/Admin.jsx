@@ -25,7 +25,7 @@ function Admin({ user, onLogout }) {
   const [logPageSize, setLogPageSize] = useState(10)
   const [logPage, setLogPage] = useState(1)
   const [schedules, setSchedules] = useState([])
-  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
+  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '', is_notice: false, parent_id: null })
   const [editingScheduleId, setEditingScheduleId] = useState(null)
   const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
   const [boardCalendarMonth, setBoardCalendarMonth] = useState(() => {
@@ -46,6 +46,8 @@ function Admin({ user, onLogout }) {
   const boardFileInputRef = useRef(null)
   const [boardUploading, setBoardUploading] = useState(false)
   const appliedSharePostRef = useRef(false)
+  const [postComments, setPostComments] = useState([])
+  const [commentInput, setCommentInput] = useState('')
 
   const BOARD_BUCKET = 'board-uploads'
 
@@ -62,6 +64,24 @@ function Admin({ user, onLogout }) {
       appliedSharePostRef.current = true
     }
   }, [isBoardView, schedules, searchParams])
+
+  // 덧글 로드 (게시글 보기 시)
+  useEffect(() => {
+    if (!selectedPostId || selectedPostId === 'new' || !user?.id) {
+      setPostComments([])
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('schedule_comments')
+      .select('*')
+      .eq('schedule_id', selectedPostId)
+      .order('created_at', { ascending: true })
+      .then(({ data }) => {
+        if (!cancelled) setPostComments(data || [])
+      })
+    return () => { cancelled = true }
+  }, [selectedPostId, user?.id])
 
   useEffect(() => {
     if (!selectedPostId) return
@@ -223,11 +243,14 @@ function Admin({ user, onLogout }) {
       event_date: newSchedule.event_date,
       event_time: newSchedule.event_time.trim() || null,
       description: desc,
-      is_notice: Boolean(newSchedule.is_notice)
+      is_notice: Boolean(newSchedule.is_notice),
+      parent_id: newSchedule.parent_id || null
     })
     if (!error) {
-      setNewSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
+      const returnToParentId = newSchedule.parent_id || null
+      setNewSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false, parent_id: null })
       await fetchSchedules()
+      if (returnToParentId) setSelectedPostId(returnToParentId)
     }
   }
 
@@ -316,7 +339,7 @@ function Admin({ user, onLogout }) {
   }
 
   function getDaysWithPosts() {
-    return [...new Set(schedules.map(s => s.event_date).filter(Boolean))]
+    return [...new Set(schedules.filter(s => !s.parent_id).map(s => s.event_date).filter(Boolean))]
   }
 
   function formatSelectedDateLabel(dateStr) {
@@ -329,12 +352,13 @@ function Admin({ user, onLogout }) {
     return `${month}월 ${date}일 (${w})`
   }
 
-  const schedulesByDate = schedules.filter(s => s.event_date === selectedDate)
+  const schedulesByDate = schedules.filter(s => s.event_date === selectedDate && !s.parent_id)
   const daysWithPosts = getDaysWithPosts()
   const boardCalendarDays = getBoardCalendarDays()
   const todayStr = new Date().toISOString().slice(0, 10)
 
-  const schedulesForList = [...schedules].sort((a, b) => {
+  const topLevelSchedules = schedules.filter(s => !s.parent_id)
+  const schedulesForList = [...topLevelSchedules].sort((a, b) => {
     const noticeA = Boolean(a.is_notice) ? 1 : 0
     const noticeB = Boolean(b.is_notice) ? 1 : 0
     if (noticeB !== noticeA) return noticeB - noticeA
@@ -361,7 +385,7 @@ function Admin({ user, onLogout }) {
 
   const openNewPost = () => {
     setSelectedPostId('new')
-    setNewSchedule(prev => ({ ...prev, event_date: selectedDate }))
+    setNewSchedule({ title: '', event_date: selectedDate, event_time: '', description: '', is_notice: false, parent_id: null })
   }
 
   const openViewPost = (sch) => {
@@ -402,14 +426,47 @@ function Admin({ user, onLogout }) {
     setSelectedPostId(null)
     setEditingScheduleId(null)
     setEditSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
-    setNewSchedule({ title: '', event_date: selectedDate, event_time: '', description: '', is_notice: false })
+    setNewSchedule({ title: '', event_date: selectedDate, event_time: '', description: '', is_notice: false, parent_id: null })
+  }
+
+  const openReplyPost = (viewed) => {
+    setSelectedPostId('new')
+    setNewSchedule({
+      title: '답변',
+      event_date: viewed.event_date || selectedDate,
+      event_time: '',
+      description: '',
+      is_notice: false,
+      parent_id: viewed.id
+    })
+  }
+
+  const addScheduleComment = async () => {
+    const content = commentInput.trim()
+    if (!content || !selectedPostId || selectedPostId === 'new' || !user?.id) return
+    const { data, error } = await supabase
+      .from('schedule_comments')
+      .insert({ schedule_id: selectedPostId, user_id: user.id, content })
+      .select()
+      .single()
+    if (!error && data) {
+      setPostComments(prev => [...prev, data])
+      setCommentInput('')
+    }
+  }
+
+  const deleteScheduleComment = async (commentId) => {
+    if (!confirm('이 덧글을 삭제할까요?')) return
+    const { error } = await supabase.from('schedule_comments').delete().eq('id', commentId)
+    if (!error) setPostComments(prev => prev.filter(c => c.id !== commentId))
   }
 
   const handleSaveNewSchedule = async () => {
     if (!newSchedule.title.trim() || !newSchedule.event_date) return
     const bodyHtml = editorBodyRef.current?.innerHTML ?? ''
+    const wasReply = Boolean(newSchedule.parent_id)
     await addSchedule(bodyHtml)
-    closePostForm()
+    if (!wasReply) closePostForm()
   }
 
   function getStorageUrlsFromHtml(html) {
@@ -853,6 +910,9 @@ function Admin({ user, onLogout }) {
                     {(() => {
                       const viewed = schedules.find(s => s.id === selectedPostId)
                       if (!viewed) return null
+                      const replies = schedules
+                        .filter(s => s.parent_id === viewed.id)
+                        .sort((a, b) => (new Date(b.created_at)).getTime() - (new Date(a.created_at)).getTime())
                       return (
                         <>
                           <div className="admin-board-view-header">
@@ -866,8 +926,55 @@ function Admin({ user, onLogout }) {
                           <div className="admin-board-view-footer">
                             <button type="button" className="admin-btn-cancel" onClick={() => { setSelectedPostId(null) }}>목록</button>
                             <button type="button" className="admin-btn-share" onClick={() => copyBoardPostShareLink(viewed.id)} title="공유 링크 복사">🔗 공유</button>
+                            <button type="button" className="admin-btn-reply" onClick={() => openReplyPost(viewed)}>✏️ 답변</button>
                             <button type="button" className="admin-btn-detail" onClick={startEditFromView}>수정</button>
                             <button type="button" className="admin-btn-delete" onClick={() => { deleteSchedule(viewed.id); setSelectedPostId(null) }}>삭제</button>
+                          </div>
+                          {replies.length > 0 && (
+                            <div className="admin-board-replies">
+                              <h4 className="admin-board-replies-title">답변 ({replies.length})</h4>
+                              <ul className="admin-board-replies-list">
+                                {replies.map(r => (
+                                  <li key={r.id} className="admin-board-reply-item">
+                                    <div className="admin-board-reply-header">
+                                      <span className="admin-board-reply-title">{r.title || '(제목 없음)'}</span>
+                                      <span className="admin-board-reply-meta">{r.event_date} {r.event_time || ''}</span>
+                                    </div>
+                                    <div
+                                      className="admin-board-reply-body"
+                                      dangerouslySetInnerHTML={{ __html: ensureLinksOpenInNewTab(r.description || '') }}
+                                    />
+                                    <div className="admin-board-reply-actions">
+                                      <button type="button" className="admin-board-reply-btn-edit" onClick={() => openEditPost(r)}>수정</button>
+                                      <button type="button" className="admin-board-reply-btn-delete" onClick={() => deleteSchedule(r.id)}>삭제</button>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          <div className="admin-board-comments">
+                            <h4 className="admin-board-comments-title">덧글 ({postComments.length})</h4>
+                            <ul className="admin-board-comments-list">
+                              {postComments.map(c => (
+                                <li key={c.id} className="admin-board-comment-item">
+                                  <span className="admin-board-comment-content">{c.content}</span>
+                                  <span className="admin-board-comment-meta">{c.created_at ? new Date(c.created_at).toLocaleString('ko-KR') : ''}</span>
+                                  <button type="button" className="admin-board-comment-delete" onClick={() => deleteScheduleComment(c.id)} aria-label="덧글 삭제">삭제</button>
+                                </li>
+                              ))}
+                            </ul>
+                            <div className="admin-board-comment-form">
+                              <input
+                                type="text"
+                                className="admin-board-comment-input"
+                                placeholder="덧글을 입력하세요..."
+                                value={commentInput}
+                                onChange={(e) => setCommentInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && addScheduleComment()}
+                              />
+                              <button type="button" className="admin-board-comment-submit" onClick={addScheduleComment} disabled={!commentInput.trim()}>등록</button>
+                            </div>
                           </div>
                         </>
                       )
