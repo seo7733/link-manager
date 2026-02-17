@@ -553,6 +553,13 @@
   flex-direction: column;
   gap: 0;
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.admin-board-list-item:hover .admin-board-list-item-order {
+  opacity: 1;
+  pointer-events: auto;
 }
 .admin-board-order-btn {
   padding: 2px 6px;
@@ -578,6 +585,13 @@
   flex-direction: column;
   gap: 0;
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.admin-board-reply-item-title-only:hover .admin-board-reply-order {
+  opacity: 1;
+  pointer-events: auto;
 }
 .admin-board-reply-order .admin-board-order-btn {
   padding: 1px 4px;
