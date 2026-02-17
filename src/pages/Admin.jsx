@@ -291,7 +291,11 @@ function Admin({ user, onLogout }) {
   }
 
   const deleteSchedule = async (id) => {
-    if (!confirm('이 일정을 삭제할까요?')) return
+    const descendantCount = getDescendantCount(id, schedules)
+    const message = descendantCount > 0
+      ? `이 글과 답변글 ${descendantCount}개가 모두 삭제됩니다. 계속할까요?`
+      : '이 일정을 삭제할까요?'
+    if (!confirm(message)) return
     const { error } = await supabase.from('schedules').delete().eq('id', id)
     if (!error) {
       await fetchSchedules()
@@ -364,6 +368,10 @@ function Admin({ user, onLogout }) {
 
   const topLevelSchedules = schedules.filter(s => !s.parent_id)
   const getReplyCount = (postId) => schedules.filter(s => s.parent_id === postId).length
+  const getDescendantCount = (postId, list) => {
+    const direct = list.filter(s => s.parent_id === postId)
+    return direct.length + direct.reduce((acc, s) => acc + getDescendantCount(s.id, list), 0)
+  }
   const sortByOrderThenCreated = (a, b) => {
     const orderA = a.sort_order != null ? a.sort_order : Infinity
     const orderB = b.sort_order != null ? b.sort_order : Infinity
