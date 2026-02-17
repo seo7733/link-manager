@@ -595,7 +595,7 @@ function Admin({ user, onLogout }) {
                       ) : (
                         <ul className="admin-board-list">
                           {boardListPaginated.map((sch, idx) => {
-                            const no = (effectiveBoardListPage - 1) * boardListPageSize + idx + 1
+                            const no = boardListTotal - (effectiveBoardListPage - 1) * boardListPageSize - idx
                             return (
                               <li
                                 key={sch.id}
