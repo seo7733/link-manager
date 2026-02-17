@@ -855,6 +855,83 @@
   flex-wrap: wrap;
 }
 
+/* 게시물 뷰 (본문 HTML + 수정/삭제 버튼) */
+.admin-board-view-section {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.admin-board-view-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #334155;
+}
+
+.admin-board-view-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.admin-board-view-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.admin-board-view-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #e2e8f0;
+  min-height: 0;
+}
+
+.admin-board-view-body a {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.admin-board-view-body a:hover {
+  text-decoration: none;
+}
+
+.admin-board-view-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.admin-board-view-body h1 { font-size: 1.4em; margin: 0.6em 0 0.3em; color: #e2e8f0; }
+.admin-board-view-body h2 { font-size: 1.25em; margin: 0.5em 0 0.3em; color: #e2e8f0; }
+.admin-board-view-body h3 { font-size: 1.1em; margin: 0.4em 0 0.2em; color: #e2e8f0; }
+.admin-board-view-body ul, .admin-board-view-body ol { margin: 0.5em 0; padding-left: 1.5em; }
+.admin-board-view-body blockquote {
+  border-left: 4px solid #6366f1;
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: #1e293b;
+  border-radius: 0 6px 6px 0;
+  color: #94a3b8;
+}
+
+.admin-board-view-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #334155;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .admin-section {
   margin-bottom: 32px;
 }

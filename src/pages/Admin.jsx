@@ -337,6 +337,11 @@ function Admin({ user, onLogout }) {
     setNewSchedule(prev => ({ ...prev, event_date: selectedDate }))
   }
 
+  const openViewPost = (sch) => {
+    setSelectedPostId(sch.id)
+    setEditingScheduleId(null)
+  }
+
   const openEditPost = (sch) => {
     setSelectedPostId(sch.id)
     setEditingScheduleId(sch.id)
@@ -346,6 +351,12 @@ function Admin({ user, onLogout }) {
       event_time: sch.event_time || '',
       description: sch.description || ''
     })
+  }
+
+  const startEditFromView = () => {
+    if (!selectedPostId || selectedPostId === 'new') return
+    const sch = schedules.find(s => s.id === selectedPostId)
+    if (sch) openEditPost(sch)
   }
 
   const closePostForm = () => {
@@ -591,7 +602,7 @@ function Admin({ user, onLogout }) {
                         <div
                           key={sch.id}
                           className={`admin-board-daily-item ${selectedPostId === sch.id ? 'active' : ''}`}
-                          onClick={() => openEditPost(sch)}
+                          onClick={() => openViewPost(sch)}
                         >
                           <div className="admin-board-daily-item-title">{sch.title || '(제목 없음)'}</div>
                           <div className="admin-board-daily-item-meta">{sch.event_time || '-'}</div>
@@ -603,9 +614,9 @@ function Admin({ user, onLogout }) {
                 </div>
               </aside>
 
-              {/* 우측: 목록 또는 게시물 작성/수정만 패널에 꽉 차게 */}
+              {/* 우측: 목록 / 뷰(본문 HTML) / 작성·수정 에디터 */}
               <div className={`admin-board-content-panel ${(selectedPostId === 'new' || selectedPostId) ? 'editor-only' : ''}`}>
-                {!(selectedPostId === 'new' || selectedPostId) ? (
+                {!selectedPostId ? (
                   <div className="admin-board-list-section">
                     <div className="admin-board-list-header">
                       <h3 className="admin-board-list-title">전체 게시물 목록</h3>
@@ -628,7 +639,7 @@ function Admin({ user, onLogout }) {
                               <li
                                 key={sch.id}
                                 className={`admin-board-list-item ${selectedPostId === sch.id ? 'active' : ''}`}
-                                onClick={() => openEditPost(sch)}
+                                onClick={() => openViewPost(sch)}
                               >
                                 <label className="admin-board-list-item-check" onClick={e => e.stopPropagation()}>
                                   <input type="checkbox" checked={isChecked} onChange={e => toggleBoardSelection(sch.id, e)} />
@@ -664,7 +675,7 @@ function Admin({ user, onLogout }) {
                       </div>
                     </div>
                   </div>
-                ) : (
+                ) : selectedPostId === 'new' || editingScheduleId ? (
                   <div className="admin-board-editor-section admin-board-editor-full">
                     <h3 className="admin-board-form-title">{selectedPostId === 'new' ? '새 게시물 작성' : '게시물 수정'}</h3>
                     <div className="admin-board-editor-toolbar">
@@ -745,6 +756,30 @@ function Admin({ user, onLogout }) {
                       )}
                       <button type="button" className="admin-btn-schedule-add" onClick={selectedPostId === 'new' ? handleSaveNewSchedule : handleSaveEditSchedule}>💾 저장</button>
                     </div>
+                  </div>
+                ) : (
+                  <div className="admin-board-view-section admin-board-editor-full">
+                    {(() => {
+                      const viewed = schedules.find(s => s.id === selectedPostId)
+                      if (!viewed) return null
+                      return (
+                        <>
+                          <div className="admin-board-view-header">
+                            <h3 className="admin-board-view-title">{viewed.title || '(제목 없음)'}</h3>
+                            <p className="admin-board-view-meta">{viewed.event_date} {viewed.event_time || ''}</p>
+                          </div>
+                          <div
+                            className="admin-board-view-body"
+                            dangerouslySetInnerHTML={{ __html: viewed.description || '' }}
+                          />
+                          <div className="admin-board-view-footer">
+                            <button type="button" className="admin-btn-cancel" onClick={() => { setSelectedPostId(null) }}>목록</button>
+                            <button type="button" className="admin-btn-detail" onClick={startEditFromView}>수정</button>
+                            <button type="button" className="admin-btn-delete" onClick={() => { deleteSchedule(viewed.id); setSelectedPostId(null) }}>삭제</button>
+                          </div>
+                        </>
+                      )
+                    })()}
                   </div>
                 )}
               </div>
