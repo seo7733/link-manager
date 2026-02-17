@@ -477,6 +477,22 @@
   margin-bottom: 4px;
 }
 
+.admin-board-list-item-check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  padding: 0 4px 0 0;
+}
+
+.admin-board-list-item-check input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #6366f1;
+}
+
 .admin-board-list-item-no {
   flex-shrink: 0;
   width: 28px;
@@ -552,6 +568,33 @@
 
 .admin-board-list-header .admin-board-list-title {
   margin: 0;
+}
+
+.admin-board-list-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-board-btn-delete-selected {
+  padding: 8px 12px;
+  background: #7f1d1d;
+  color: #fecaca;
+  border: 1px solid #991b1b;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-board-btn-delete-selected:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.admin-board-btn-delete-selected:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .admin-board-btn-write {

@@ -39,6 +39,7 @@ function Admin({ user, onLogout }) {
   const [selectedPostId, setSelectedPostId] = useState(null)
   const [boardListPageSize, setBoardListPageSize] = useState(10)
   const [boardListPage, setBoardListPage] = useState(1)
+  const [selectedBoardIds, setSelectedBoardIds] = useState([])
   const editorBodyRef = useRef(null)
   const boardImageInputRef = useRef(null)
   const boardFileInputRef = useRef(null)
@@ -251,7 +252,27 @@ function Admin({ user, onLogout }) {
     if (!error) {
       await fetchSchedules()
       if (selectedPostId === id) setSelectedPostId(null)
+      setSelectedBoardIds(prev => prev.filter(x => x !== id))
     }
+  }
+
+  const toggleBoardSelection = (id, e) => {
+    e.stopPropagation()
+    setSelectedBoardIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  }
+
+  const deleteSelectedBoardPosts = async () => {
+    if (selectedBoardIds.length === 0) {
+      alert('삭제할 게시물을 선택하세요.')
+      return
+    }
+    if (!confirm(`선택한 ${selectedBoardIds.length}개 게시물을 삭제할까요?`)) return
+    for (const id of selectedBoardIds) {
+      await supabase.from('schedules').delete().eq('id', id)
+    }
+    setSelectedBoardIds([])
+    if (selectedPostId && selectedBoardIds.includes(selectedPostId)) setSelectedPostId(null)
+    await fetchSchedules()
   }
 
   function getBoardCalendarDays() {
@@ -587,7 +608,12 @@ function Admin({ user, onLogout }) {
                   <div className="admin-board-list-section">
                     <div className="admin-board-list-header">
                       <h3 className="admin-board-list-title">전체 게시물 목록</h3>
-                      <button type="button" className="admin-board-btn-write" onClick={openNewPost}>✏️ 게시물 작성</button>
+                      <div className="admin-board-list-header-actions">
+                        <button type="button" className="admin-board-btn-delete-selected" onClick={deleteSelectedBoardPosts} disabled={selectedBoardIds.length === 0} title="선택 삭제">
+                          🗑️ 선택 삭제
+                        </button>
+                        <button type="button" className="admin-board-btn-write" onClick={openNewPost}>✏️ 게시물 작성</button>
+                      </div>
                     </div>
                     <div className="admin-board-list-wrap">
                       {boardListTotal === 0 ? (
@@ -596,12 +622,16 @@ function Admin({ user, onLogout }) {
                         <ul className="admin-board-list">
                           {boardListPaginated.map((sch, idx) => {
                             const no = boardListTotal - (effectiveBoardListPage - 1) * boardListPageSize - idx
+                            const isChecked = selectedBoardIds.includes(sch.id)
                             return (
                               <li
                                 key={sch.id}
                                 className={`admin-board-list-item ${selectedPostId === sch.id ? 'active' : ''}`}
                                 onClick={() => openEditPost(sch)}
                               >
+                                <label className="admin-board-list-item-check" onClick={e => e.stopPropagation()}>
+                                  <input type="checkbox" checked={isChecked} onChange={e => toggleBoardSelection(sch.id, e)} />
+                                </label>
                                 <span className="admin-board-list-item-no">{no}</span>
                                 <span className="admin-board-list-item-title">{sch.title || '(제목 없음)'}</span>
                                 <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
