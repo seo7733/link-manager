@@ -428,7 +428,8 @@ function Admin({ user, onLogout }) {
       const url = await uploadBoardFile(file, 'files')
       editorBodyRef.current?.focus()
       const label = file.name
-      document.execCommand('insertHTML', false, `<a href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">📎 ${label}</a> `)
+      const safeLabel = label.replace(/"/g, '&quot;')
+      document.execCommand('insertHTML', false, `<a href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer" download="${safeLabel}">📎 ${label}</a> `)
     } catch (err) {
       alert('파일 첨부 실패: ' + (err.message || err))
     } finally {
