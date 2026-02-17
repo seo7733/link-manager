@@ -67,6 +67,17 @@
   margin-bottom: 20px;
 }
 
+.admin-board-section .admin-table-wrap {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.admin-board-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 24px 16px !important;
+}
+
 .admin-section {
   margin-bottom: 32px;
 }

@@ -24,6 +24,7 @@ function Admin({ user, onLogout }) {
   const [userPage, setUserPage] = useState(1)
   const [logPageSize, setLogPageSize] = useState(10)
   const [logPage, setLogPage] = useState(1)
+  const [schedules, setSchedules] = useState([])
 
   useEffect(() => {
     loadAll()
@@ -56,14 +57,15 @@ function Admin({ user, onLogout }) {
     setLoading(true)
     setError(null)
     try {
-      const [logsRes, catRowsRes, catCountRes, catFullRes, linkCountRes, linkFullRes, memoRes] = await Promise.all([
+      const [logsRes, catRowsRes, catCountRes, catFullRes, linkCountRes, linkFullRes, memoRes, schedRes] = await Promise.all([
         supabase.from('access_logs').select('id, user_id, email, ip, accessed_at').order('accessed_at', { ascending: false }).limit(200),
         supabase.from('categories').select('user_id'),
         supabase.from('categories').select('id', { count: 'exact', head: true }),
         supabase.from('categories').select('id, user_id, name, parent_id, sort_order').order('sort_order', { ascending: true }),
         supabase.from('links').select('id', { count: 'exact', head: true }),
         supabase.from('links').select('id, category_id, user_id, title, url, sort_order').order('sort_order', { ascending: true }),
-        supabase.from('memos').select('id', { count: 'exact', head: true })
+        supabase.from('memos').select('id', { count: 'exact', head: true }),
+        user?.id ? supabase.from('schedules').select('*').eq('user_id', user.id).order('event_date', { ascending: true }).order('event_time', { ascending: true }) : Promise.resolve({ data: [] })
       ])
 
       if (logsRes.error) throw logsRes.error
@@ -73,6 +75,7 @@ function Admin({ user, onLogout }) {
       if (linkCountRes.error) throw linkCountRes.error
       if (linkFullRes.error) throw linkFullRes.error
       if (memoRes.error) throw memoRes.error
+      if (schedRes && schedRes.error) throw schedRes.error
 
       setAllCategories(catFullRes.data || [])
       setAllLinks(linkFullRes.data || [])
@@ -120,6 +123,7 @@ function Admin({ user, onLogout }) {
         links: linkCountRes.count ?? 0,
         memos: memoRes.count ?? 0
       })
+      setSchedules(schedRes?.data ?? [])
     } catch (e) {
       setError(e.message || '데이터를 불러오지 못했습니다.')
     } finally {
@@ -274,6 +278,39 @@ function Admin({ user, onLogout }) {
                   <span className="admin-stat-value">{stats.memos}</span>
                   <span className="admin-stat-label">메모 수</span>
                 </div>
+              </div>
+            </section>
+
+            <section className="admin-section admin-board-section">
+              <h2>게시판</h2>
+              <p className="admin-hint">캘린더 일정과 연동됩니다. 메인 화면의 일정을 목록으로 확인할 수 있습니다.</p>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>제목</th>
+                      <th>날짜</th>
+                      <th>시간</th>
+                      <th>설명</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedules.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="admin-board-empty">등록된 일정이 없습니다.</td>
+                      </tr>
+                    ) : (
+                      schedules.map(sch => (
+                        <tr key={sch.id}>
+                          <td>{sch.title || '-'}</td>
+                          <td>{sch.event_date || '-'}</td>
+                          <td>{sch.event_time || '-'}</td>
+                          <td>{sch.description ? String(sch.description).slice(0, 80) + (String(sch.description).length > 80 ? '…' : '') : '-'}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </section>
 
