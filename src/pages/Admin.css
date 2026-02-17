@@ -706,24 +706,14 @@
   gap: 6px;
 }
 
-.admin-board-size-btn {
-  min-width: 36px;
+.admin-board-pagination-size select {
   padding: 4px 8px;
   border: 1px solid #334155;
   border-radius: 6px;
   background: #0f172a;
-  color: #94a3b8;
+  color: #e2e8f0;
   font-size: 12px;
   cursor: pointer;
-}
-.admin-board-size-btn:hover {
-  background: #1e293b;
-  color: #e2e8f0;
-}
-.admin-board-size-btn.active {
-  background: #334155;
-  color: #e2e8f0;
-  border-color: #475569;
 }
 
 .admin-board-pagination-pages {
