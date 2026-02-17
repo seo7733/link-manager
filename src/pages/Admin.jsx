@@ -510,56 +510,60 @@ function Admin({ user, onLogout }) {
                 </div>
               </aside>
 
-              {/* 우측: 전체 게시물 목록 + 작성/수정 패널 */}
-              <div className="admin-board-content-panel">
-                <div className="admin-board-list-section">
-                  <div className="admin-board-list-header">
-                    <h3 className="admin-board-list-title">전체 게시물 목록</h3>
-                    <button type="button" className="admin-board-btn-write" onClick={openNewPost}>✏️ 게시물 작성</button>
-                  </div>
-                  <div className="admin-board-list-wrap">
-                    {boardListTotal === 0 ? (
-                      <p className="admin-board-list-empty">등록된 게시물이 없습니다.</p>
-                    ) : (
-                      <ul className="admin-board-list">
-                        {boardListPaginated.map(sch => (
-                          <li
-                            key={sch.id}
-                            className={`admin-board-list-item ${selectedPostId === sch.id ? 'active' : ''}`}
-                            onClick={() => openEditPost(sch)}
-                          >
-                            <span className="admin-board-list-item-title">{sch.title || '(제목 없음)'}</span>
-                            <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
-                          </li>
+              {/* 우측: 목록 또는 게시물 작성/수정만 패널에 꽉 차게 */}
+              <div className={`admin-board-content-panel ${(selectedPostId === 'new' || selectedPostId) ? 'editor-only' : ''}`}>
+                {!(selectedPostId === 'new' || selectedPostId) ? (
+                  <div className="admin-board-list-section">
+                    <div className="admin-board-list-header">
+                      <h3 className="admin-board-list-title">전체 게시물 목록</h3>
+                      <button type="button" className="admin-board-btn-write" onClick={openNewPost}>✏️ 게시물 작성</button>
+                    </div>
+                    <div className="admin-board-list-wrap">
+                      {boardListTotal === 0 ? (
+                        <p className="admin-board-list-empty">등록된 게시물이 없습니다.</p>
+                      ) : (
+                        <ul className="admin-board-list">
+                          {boardListPaginated.map((sch, idx) => {
+                            const no = (effectiveBoardListPage - 1) * boardListPageSize + idx + 1
+                            return (
+                              <li
+                                key={sch.id}
+                                className={`admin-board-list-item ${selectedPostId === sch.id ? 'active' : ''}`}
+                                onClick={() => openEditPost(sch)}
+                              >
+                                <span className="admin-board-list-item-no">{no}</span>
+                                <span className="admin-board-list-item-title">{sch.title || '(제목 없음)'}</span>
+                                <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                    <div className="admin-board-pagination">
+                      <div className="admin-board-pagination-size">
+                        <span>표시:</span>
+                        <select value={boardListPageSize} onChange={(e) => { setBoardListPageSize(Number(e.target.value)); setBoardListPage(1) }} aria-label="페이지당 개수">
+                          <option value={5}>5개</option>
+                          <option value={10}>10개</option>
+                          <option value={20}>20개</option>
+                          <option value={30}>30개</option>
+                        </select>
+                      </div>
+                      <div className="admin-board-pagination-info">
+                        {boardListTotal === 0 ? '0건' : `${(effectiveBoardListPage - 1) * boardListPageSize + 1}–${Math.min(effectiveBoardListPage * boardListPageSize, boardListTotal)} / 전체 ${boardListTotal}건`}
+                      </div>
+                      <div className="admin-board-pagination-pages">
+                        <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage <= 1} onClick={() => setBoardListPage(p => p - 1)} aria-label="이전">◀</button>
+                        {Array.from({ length: boardListTotalPages }, (_, i) => i + 1).map(p => (
+                          <button key={p} type="button" className={`admin-board-page-btn ${p === effectiveBoardListPage ? 'active' : ''}`} onClick={() => setBoardListPage(p)}>{p}</button>
                         ))}
-                      </ul>
-                    )}
-                  </div>
-                  <div className="admin-board-pagination">
-                    <div className="admin-board-pagination-size">
-                      <span>표시:</span>
-                      <select value={boardListPageSize} onChange={(e) => { setBoardListPageSize(Number(e.target.value)); setBoardListPage(1) }} aria-label="페이지당 개수">
-                        <option value={5}>5개</option>
-                        <option value={10}>10개</option>
-                        <option value={20}>20개</option>
-                        <option value={30}>30개</option>
-                      </select>
-                    </div>
-                    <div className="admin-board-pagination-info">
-                      {boardListTotal === 0 ? '0건' : `${(effectiveBoardListPage - 1) * boardListPageSize + 1}–${Math.min(effectiveBoardListPage * boardListPageSize, boardListTotal)} / 전체 ${boardListTotal}건`}
-                    </div>
-                    <div className="admin-board-pagination-pages">
-                      <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage <= 1} onClick={() => setBoardListPage(p => p - 1)} aria-label="이전">◀</button>
-                      {Array.from({ length: boardListTotalPages }, (_, i) => i + 1).map(p => (
-                        <button key={p} type="button" className={`admin-board-page-btn ${p === effectiveBoardListPage ? 'active' : ''}`} onClick={() => setBoardListPage(p)}>{p}</button>
-                      ))}
-                      <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage >= boardListTotalPages} onClick={() => setBoardListPage(p => p + 1)} aria-label="다음">▶</button>
+                        <button type="button" className="admin-board-page-btn" disabled={effectiveBoardListPage >= boardListTotalPages} onClick={() => setBoardListPage(p => p + 1)} aria-label="다음">▶</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {(selectedPostId === 'new' || selectedPostId) && selectedPostId !== null && (
-                  <div className="admin-board-editor-section">
+                ) : (
+                  <div className="admin-board-editor-section admin-board-editor-full">
                     <h3 className="admin-board-form-title">{selectedPostId === 'new' ? '새 게시물 작성' : '게시물 수정'}</h3>
                     <div className="admin-board-editor-toolbar">
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('bold')} title="굵게"><b>B</b></button>

@@ -176,9 +176,10 @@
 .admin-board-layout {
   display: flex;
   gap: 0;
-  min-height: 520px;
+  min-height: calc(100vh - 180px);
   margin: 0 -20px;
   padding: 0;
+  flex: 1;
 }
 
 .admin-board-calendar-panel {
@@ -410,13 +411,26 @@
   background: #475569;
 }
 
-/* 우측: 전체 목록 + 작성/수정 */
+/* 우측: 전체 목록 또는 작성/수정만 패널 꽉 차게 */
 .admin-board-content-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  min-height: 0;
+}
+
+.admin-board-content-panel.editor-only {
+  gap: 0;
+}
+
+.admin-board-content-panel.editor-only .admin-board-editor-full {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .admin-board-list-section {
@@ -454,7 +468,6 @@
 
 .admin-board-list-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
@@ -462,6 +475,15 @@
   cursor: pointer;
   transition: background 0.2s;
   margin-bottom: 4px;
+}
+
+.admin-board-list-item-no {
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
 .admin-board-list-item:hover {
@@ -483,6 +505,7 @@
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  margin-right: 8px;
 }
 
 .admin-board-list-item-date {
@@ -627,6 +650,12 @@
   min-height: 280px;
 }
 
+.admin-board-editor-section.admin-board-editor-full {
+  min-height: 0;
+  flex: 1;
+  border-radius: 10px;
+}
+
 .admin-board-editor-section .admin-board-form-title {
   margin: 0;
   padding: 12px 16px;
@@ -704,16 +733,21 @@
 
 .admin-board-editor-body-wrap {
   flex: 1;
-  min-height: 180px;
+  min-height: 280px;
   padding: 12px 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
+.admin-board-editor-full .admin-board-editor-body-wrap {
+  min-height: 0;
+  flex: 1;
+}
+
 .admin-board-editor-body {
   flex: 1;
-  min-height: 160px;
+  min-height: 240px;
   padding: 12px 14px;
   border: 1px solid #334155;
   border-radius: 8px;
@@ -723,6 +757,11 @@
   line-height: 1.6;
   overflow-y: auto;
   outline: none;
+}
+
+.admin-board-editor-full .admin-board-editor-body {
+  min-height: 320px;
+  flex: 1;
 }
 
 .admin-board-editor-body:empty::before {
