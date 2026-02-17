@@ -827,6 +827,41 @@
   margin: 0 4px;
 }
 
+.admin-board-editor-color-wrapper {
+  position: relative;
+}
+
+.admin-board-editor-color-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  padding: 8px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.admin-board-editor-color-item {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.admin-board-editor-color-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
 .admin-board-file-input-hidden {
   position: absolute;
   width: 0;

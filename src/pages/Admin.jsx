@@ -48,6 +48,8 @@ function Admin({ user, onLogout }) {
   const appliedSharePostRef = useRef(false)
   const [postComments, setPostComments] = useState([])
   const [commentInput, setCommentInput] = useState('')
+  const [showColorPicker, setShowColorPicker] = useState(false)
+  const colorPickerRef = useRef(null)
 
   const BOARD_BUCKET = 'board-uploads'
 
@@ -106,6 +108,19 @@ function Admin({ user, onLogout }) {
   useEffect(() => {
     loadAll()
   }, [])
+
+  // 색상 선택기 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target)) {
+        setShowColorPicker(false)
+      }
+    }
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showColorPicker])
 
   useEffect(() => {
     if (!user?.id || !user?.email) return
@@ -567,6 +582,12 @@ function Admin({ user, onLogout }) {
     }
   }
 
+  function setTextColor(color) {
+    editorBodyRef.current?.focus()
+    document.execCommand('foreColor', false, color)
+    setShowColorPicker(false)
+  }
+
   async function uploadBoardFile(file, subPath = '') {
     const pathPrefix = `board/${user?.id || 'anon'}`
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
@@ -867,6 +888,24 @@ function Admin({ user, onLogout }) {
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('italic')} title="기울임"><i>I</i></button>
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('underline')} title="밑줄"><u>U</u></button>
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('strikeThrough')} title="취소선"><s>S</s></button>
+                      <span className="admin-board-editor-divider" />
+                      <div className="admin-board-editor-color-wrapper" ref={colorPickerRef}>
+                        <button type="button" className="admin-board-editor-tool" onClick={() => setShowColorPicker(!showColorPicker)} title="글자 색상">🎨</button>
+                        {showColorPicker && (
+                          <div className="admin-board-editor-color-picker">
+                            {['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#800080', '#ffc0cb', '#a52a2a', '#808080', '#008000', '#000080'].map(color => (
+                              <button
+                                key={color}
+                                type="button"
+                                className="admin-board-editor-color-item"
+                                style={{ backgroundColor: color }}
+                                onClick={() => setTextColor(color)}
+                                title={color}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <span className="admin-board-editor-divider" />
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'h1')} title="제목1">H1</button>
                       <button type="button" className="admin-board-editor-tool" onClick={() => execEditorCommand('formatBlock', 'h2')} title="제목2">H2</button>
