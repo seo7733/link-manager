@@ -25,9 +25,9 @@ function Admin({ user, onLogout }) {
   const [logPageSize, setLogPageSize] = useState(10)
   const [logPage, setLogPage] = useState(1)
   const [schedules, setSchedules] = useState([])
-  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
   const [editingScheduleId, setEditingScheduleId] = useState(null)
-  const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+  const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
   const [boardCalendarMonth, setBoardCalendarMonth] = useState(() => {
     const d = new Date()
     return { year: d.getFullYear(), month: d.getMonth() }
@@ -210,10 +210,11 @@ function Admin({ user, onLogout }) {
       title: newSchedule.title.trim(),
       event_date: newSchedule.event_date,
       event_time: newSchedule.event_time.trim() || null,
-      description: desc
+      description: desc,
+      is_notice: Boolean(newSchedule.is_notice)
     })
     if (!error) {
-      setNewSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      setNewSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
       await fetchSchedules()
     }
   }
@@ -224,7 +225,8 @@ function Admin({ user, onLogout }) {
       title: schedule.title || '',
       event_date: schedule.event_date || '',
       event_time: schedule.event_time || '',
-      description: schedule.description || ''
+      description: schedule.description || '',
+      is_notice: Boolean(schedule.is_notice)
     })
   }
 
@@ -237,12 +239,13 @@ function Admin({ user, onLogout }) {
         title: editSchedule.title.trim(),
         event_date: editSchedule.event_date,
         event_time: editSchedule.event_time.trim() || null,
-        description: desc
+        description: desc,
+        is_notice: Boolean(editSchedule.is_notice)
       })
       .eq('id', id)
     if (!error) {
       setEditingScheduleId(null)
-      setEditSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      setEditSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
       await fetchSchedules()
     }
   }
@@ -320,6 +323,9 @@ function Admin({ user, onLogout }) {
   const todayStr = new Date().toISOString().slice(0, 10)
 
   const schedulesForList = [...schedules].sort((a, b) => {
+    const noticeA = Boolean(a.is_notice) ? 1 : 0
+    const noticeB = Boolean(b.is_notice) ? 1 : 0
+    if (noticeB !== noticeA) return noticeB - noticeA
     const ta = a.created_at ? new Date(a.created_at).getTime() : 0
     const tb = b.created_at ? new Date(b.created_at).getTime() : 0
     if (ta || tb) return tb - ta
@@ -358,7 +364,8 @@ function Admin({ user, onLogout }) {
       title: sch.title || '',
       event_date: sch.event_date || '',
       event_time: sch.event_time || '',
-      description: sch.description || ''
+      description: sch.description || '',
+      is_notice: Boolean(sch.is_notice)
     })
   }
 
@@ -371,8 +378,8 @@ function Admin({ user, onLogout }) {
   const closePostForm = () => {
     setSelectedPostId(null)
     setEditingScheduleId(null)
-    setEditSchedule({ title: '', event_date: '', event_time: '', description: '' })
-    setNewSchedule({ title: '', event_date: selectedDate, event_time: '', description: '' })
+    setEditSchedule({ title: '', event_date: '', event_time: '', description: '', is_notice: false })
+    setNewSchedule({ title: '', event_date: selectedDate, event_time: '', description: '', is_notice: false })
   }
 
   const handleSaveNewSchedule = async () => {
@@ -695,7 +702,10 @@ function Admin({ user, onLogout }) {
                                   <input type="checkbox" checked={isChecked} onChange={e => toggleBoardSelection(sch.id, e)} />
                                 </label>
                                 <span className="admin-board-list-item-no">{no}</span>
-                                <span className="admin-board-list-item-title">{sch.title || '(제목 없음)'}</span>
+                                <span className="admin-board-list-item-title">
+                                  <span className="admin-board-list-item-title-text">{sch.title || '(제목 없음)'}</span>
+                                  {sch.is_notice && <span className="admin-board-list-badge-notice">공지</span>}
+                                </span>
                                 <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
                               </li>
                             )
@@ -788,6 +798,14 @@ function Admin({ user, onLogout }) {
                           value={selectedPostId === 'new' ? newSchedule.event_time : editSchedule.event_time}
                           onChange={(e) => selectedPostId === 'new' ? setNewSchedule({ ...newSchedule, event_time: e.target.value }) : setEditSchedule({ ...editSchedule, event_time: e.target.value })}
                         />
+                        <label className="admin-board-notice-check">
+                          <input
+                            type="checkbox"
+                            checked={selectedPostId === 'new' ? newSchedule.is_notice : editSchedule.is_notice}
+                            onChange={(e) => selectedPostId === 'new' ? setNewSchedule({ ...newSchedule, is_notice: e.target.checked }) : setEditSchedule({ ...editSchedule, is_notice: e.target.checked })}
+                          />
+                          <span>공지</span>
+                        </label>
                       </div>
                     </div>
                     <div className="admin-board-editor-body-wrap">
