@@ -373,11 +373,44 @@ function Admin({ user, onLogout }) {
     closePostForm()
   }
 
+  function getStorageUrlsFromHtml(html) {
+    if (!html) return []
+    const urls = []
+    const hrefRegex = /(?:href|src)=["']([^"']*board-uploads[^"']*)["']/gi
+    let m
+    while ((m = hrefRegex.exec(html)) !== null) urls.push(m[1].replace(/&quot;/g, '"'))
+    return [...new Set(urls)]
+  }
+
+  function getStoragePathFromUrl(url) {
+    const idx = url.indexOf('board-uploads/')
+    if (idx === -1) return null
+    const path = url.slice(idx + 'board-uploads/'.length).split('?')[0]
+    return decodeURIComponent(path)
+  }
+
   const handleSaveEditSchedule = async () => {
     if (!editingScheduleId || !editSchedule.title.trim() || !editSchedule.event_date) return
-    const bodyHtml = editorBodyRef.current?.innerHTML ?? ''
-    await updateSchedule(editingScheduleId, bodyHtml)
+    const newHtml = editorBodyRef.current?.innerHTML ?? ''
+    const oldHtml = editSchedule.description || ''
+    const oldUrls = getStorageUrlsFromHtml(oldHtml)
+    const newUrls = new Set(getStorageUrlsFromHtml(newHtml))
+    const toRemove = oldUrls.filter(u => !newUrls.has(u))
+    for (const url of toRemove) {
+      const path = getStoragePathFromUrl(url)
+      if (path) {
+        try {
+          await supabase.storage.from(BOARD_BUCKET).remove([path])
+        } catch (_) {}
+      }
+    }
+    await updateSchedule(editingScheduleId, newHtml)
     closePostForm()
+  }
+
+  function ensureLinksOpenInNewTab(html) {
+    if (!html) return ''
+    return html.replace(/<a (?![^>]*\btarget\s*=)/gi, '<a target="_blank" rel="noopener noreferrer" ')
   }
 
   function execEditorCommand(cmd, value = null) {
@@ -770,7 +803,7 @@ function Admin({ user, onLogout }) {
                           </div>
                           <div
                             className="admin-board-view-body"
-                            dangerouslySetInnerHTML={{ __html: viewed.description || '' }}
+                            dangerouslySetInnerHTML={{ __html: ensureLinksOpenInNewTab(viewed.description || '') }}
                           />
                           <div className="admin-board-view-footer">
                             <button type="button" className="admin-btn-cancel" onClick={() => { setSelectedPostId(null) }}>목록</button>
