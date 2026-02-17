@@ -449,8 +449,7 @@
 }
 
 .admin-board-list-wrap {
-  max-height: 200px;
-  overflow-y: auto;
+  /* 설정한 페이지 크기만큼만 표시, 내부 스크롤 없음 */
 }
 
 .admin-board-list-empty {
