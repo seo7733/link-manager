@@ -561,7 +561,7 @@ function Admin({ user, onLogout }) {
       <header className="admin-header">
         <div className="admin-header-inner">
           <nav className="admin-nav-links">
-            <Link to="/" className="admin-back">← 대시보드</Link>
+            <Link to="/" className="admin-back">즐순이</Link>
             <Link to="/admin/board" className={isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>게시판</Link>
             <Link to="/admin" className={!isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>관리자</Link>
           </nav>
