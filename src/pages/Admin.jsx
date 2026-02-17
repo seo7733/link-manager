@@ -604,7 +604,7 @@ function Admin({ user, onLogout }) {
             <Link to="/admin/board" className={isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>게시판</Link>
             <Link to="/admin" className={!isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>관리자</Link>
           </nav>
-          <h1 className="admin-title">관리자</h1>
+          <h1 className="admin-title">과거는 자산, 현재는 선물, 미래는 가능성</h1>
           <div className="admin-header-right">
             <span className="admin-user-email">{user.email}</span>
             <button type="button" className="btn-logout" onClick={onLogout}>로그아웃</button>
