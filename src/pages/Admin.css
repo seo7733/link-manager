@@ -577,6 +577,24 @@
   flex-shrink: 0;
 }
 
+.admin-board-search-input {
+  min-width: 160px;
+  padding: 8px 12px;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+.admin-board-search-input::placeholder {
+  color: #94a3b8;
+}
+.admin-board-search-input:focus {
+  outline: none;
+  border-color: #64748b;
+  box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.3);
+}
+
 .admin-board-btn-delete-selected {
   padding: 8px 12px;
   background: #7f1d1d;

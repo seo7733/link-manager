@@ -40,6 +40,7 @@ function Admin({ user, onLogout }) {
   const [boardListPageSize, setBoardListPageSize] = useState(10)
   const [boardListPage, setBoardListPage] = useState(1)
   const [selectedBoardIds, setSelectedBoardIds] = useState([])
+  const [boardSearchQuery, setBoardSearchQuery] = useState('')
   const editorBodyRef = useRef(null)
   const boardImageInputRef = useRef(null)
   const boardFileInputRef = useRef(null)
@@ -327,10 +328,18 @@ function Admin({ user, onLogout }) {
     if (da !== db) return db.localeCompare(da)
     return (b.event_time || '').localeCompare(a.event_time || '')
   })
-  const boardListTotal = schedulesForList.length
+  const boardSearchLower = boardSearchQuery.trim().toLowerCase()
+  const schedulesFiltered = boardSearchLower
+    ? schedulesForList.filter(s => {
+        const title = (s.title || '').toLowerCase()
+        const body = (s.description || '').replace(/<[^>]+>/g, ' ').toLowerCase()
+        return title.includes(boardSearchLower) || body.includes(boardSearchLower)
+      })
+    : schedulesForList
+  const boardListTotal = schedulesFiltered.length
   const boardListTotalPages = Math.max(1, Math.ceil(boardListTotal / boardListPageSize))
   const effectiveBoardListPage = Math.min(boardListPage, boardListTotalPages)
-  const boardListPaginated = schedulesForList.slice((effectiveBoardListPage - 1) * boardListPageSize, effectiveBoardListPage * boardListPageSize)
+  const boardListPaginated = schedulesFiltered.slice((effectiveBoardListPage - 1) * boardListPageSize, effectiveBoardListPage * boardListPageSize)
 
   const openNewPost = () => {
     setSelectedPostId('new')
@@ -654,6 +663,14 @@ function Admin({ user, onLogout }) {
                     <div className="admin-board-list-header">
                       <h3 className="admin-board-list-title">전체 게시물 목록</h3>
                       <div className="admin-board-list-header-actions">
+                        <input
+                          type="search"
+                          placeholder="제목·본문 검색"
+                          value={boardSearchQuery}
+                          onChange={(e) => { setBoardSearchQuery(e.target.value); setBoardListPage(1) }}
+                          className="admin-board-search-input"
+                          aria-label="게시물 검색"
+                        />
                         <button type="button" className="admin-board-btn-delete-selected" onClick={deleteSelectedBoardPosts} disabled={selectedBoardIds.length === 0} title="선택 삭제">
                           🗑️ 선택 삭제
                         </button>
