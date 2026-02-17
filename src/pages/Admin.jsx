@@ -83,15 +83,20 @@ function Admin({ user, onLogout }) {
     return () => { cancelled = true }
   }, [selectedPostId, user?.id])
 
+  // 에디터 본문은 글 전환 시에만 채움 (입력 중 깜빡임/초기화 방지)
+  const lastSyncedPostIdRef = useRef(null)
   useEffect(() => {
-    if (!selectedPostId) return
-    const timer = setTimeout(() => {
-      if (!editorBodyRef.current) return
-      const html = selectedPostId === 'new' ? (newSchedule.description || '') : (editSchedule.description || '')
-      editorBodyRef.current.innerHTML = html
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [selectedPostId, selectedPostId === 'new' ? newSchedule.description : editSchedule.description])
+    if (!selectedPostId) {
+      lastSyncedPostIdRef.current = null
+      return
+    }
+    if (lastSyncedPostIdRef.current === selectedPostId) return
+    lastSyncedPostIdRef.current = selectedPostId
+    const html = selectedPostId === 'new' ? (newSchedule.description || '') : (editSchedule.description || '')
+    requestAnimationFrame(() => {
+      if (editorBodyRef.current) editorBodyRef.current.innerHTML = html
+    })
+  }, [selectedPostId])
 
   useEffect(() => {
     loadAll()
@@ -359,7 +364,10 @@ function Admin({ user, onLogout }) {
 
   const topLevelSchedules = schedules.filter(s => !s.parent_id)
   const getReplyCount = (postId) => schedules.filter(s => s.parent_id === postId).length
-  const schedulesForList = [...topLevelSchedules].sort((a, b) => {
+  const sortByOrderThenCreated = (a, b) => {
+    const orderA = a.sort_order != null ? a.sort_order : Infinity
+    const orderB = b.sort_order != null ? b.sort_order : Infinity
+    if (orderA !== orderB) return orderA - orderB
     const noticeA = Boolean(a.is_notice) ? 1 : 0
     const noticeB = Boolean(b.is_notice) ? 1 : 0
     if (noticeB !== noticeA) return noticeB - noticeA
@@ -370,7 +378,8 @@ function Admin({ user, onLogout }) {
     const db = b.event_date || ''
     if (da !== db) return db.localeCompare(da)
     return (b.event_time || '').localeCompare(a.event_time || '')
-  })
+  }
+  const schedulesForList = [...topLevelSchedules].sort(sortByOrderThenCreated)
   const boardSearchLower = boardSearchQuery.trim().toLowerCase()
   const schedulesFiltered = boardSearchLower
     ? schedulesForList.filter(s => {
@@ -460,6 +469,22 @@ function Admin({ user, onLogout }) {
     if (!confirm('이 덧글을 삭제할까요?')) return
     const { error } = await supabase.from('schedule_comments').delete().eq('id', commentId)
     if (!error) setPostComments(prev => prev.filter(c => c.id !== commentId))
+  }
+
+  const moveScheduleOrder = async (id, list, direction) => {
+    const idx = list.findIndex(s => s.id === id)
+    if (idx < 0) return
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= list.length) return
+    const curr = list[idx]
+    const other = list[swapIdx]
+    const currOrder = curr.sort_order != null ? curr.sort_order : 999999 + idx
+    const otherOrder = other.sort_order != null ? other.sort_order : 999999 + swapIdx
+    const newCurrOrder = otherOrder
+    const newOtherOrder = currOrder
+    await supabase.from('schedules').update({ sort_order: newCurrOrder }).eq('id', curr.id)
+    await supabase.from('schedules').update({ sort_order: newOtherOrder }).eq('id', other.id)
+    await fetchSchedules()
   }
 
   const handleSaveNewSchedule = async () => {
@@ -789,6 +814,10 @@ function Admin({ user, onLogout }) {
                                   {getReplyCount(sch.id) > 0 && <span className="admin-board-list-reply-count">({getReplyCount(sch.id)})</span>}
                                 </span>
                                 <span className="admin-board-list-item-date">{sch.event_date} {sch.event_time || ''}</span>
+                                <div className="admin-board-list-item-order" onClick={e => e.stopPropagation()}>
+                                  <button type="button" className="admin-board-order-btn" title="위로" disabled={schedulesFiltered.findIndex(s => s.id === sch.id) <= 0} onClick={() => moveScheduleOrder(sch.id, schedulesFiltered, 'up')}>▲</button>
+                                  <button type="button" className="admin-board-order-btn" title="아래로" disabled={schedulesFiltered.findIndex(s => s.id === sch.id) >= schedulesFiltered.length - 1} onClick={() => moveScheduleOrder(sch.id, schedulesFiltered, 'down')}>▼</button>
+                                </div>
                               </li>
                             )
                           })}
@@ -914,7 +943,12 @@ function Admin({ user, onLogout }) {
                       if (!viewed) return null
                       const replies = schedules
                         .filter(s => s.parent_id === viewed.id)
-                        .sort((a, b) => (new Date(b.created_at)).getTime() - (new Date(a.created_at)).getTime())
+                        .sort((a, b) => {
+                          const orderA = a.sort_order != null ? a.sort_order : Infinity
+                          const orderB = b.sort_order != null ? b.sort_order : Infinity
+                          if (orderA !== orderB) return orderA - orderB
+                          return (new Date(b.created_at)).getTime() - (new Date(a.created_at)).getTime()
+                        })
                       return (
                         <>
                           <div className="admin-board-view-header">
@@ -939,7 +973,7 @@ function Admin({ user, onLogout }) {
                             <div className="admin-board-replies">
                               <h4 className="admin-board-replies-title">답변 ({replies.length})</h4>
                               <ul className="admin-board-replies-list admin-board-replies-list-titles">
-                                {replies.map(r => {
+                                {replies.map((r, replyIdx) => {
                                   const childCount = getReplyCount(r.id)
                                   return (
                                     <li
@@ -947,6 +981,10 @@ function Admin({ user, onLogout }) {
                                       className={`admin-board-reply-item admin-board-reply-item-title-only ${selectedPostId === r.id ? 'active' : ''}`}
                                       onClick={() => openViewPost(r)}
                                     >
+                                      <div className="admin-board-reply-order" onClick={e => e.stopPropagation()}>
+                                        <button type="button" className="admin-board-order-btn" title="위로" disabled={replyIdx <= 0} onClick={() => moveScheduleOrder(r.id, replies, 'up')}>▲</button>
+                                        <button type="button" className="admin-board-order-btn" title="아래로" disabled={replyIdx >= replies.length - 1} onClick={() => moveScheduleOrder(r.id, replies, 'down')}>▼</button>
+                                      </div>
                                       <span className="admin-board-reply-title-text">{r.title || '(제목 없음)'}</span>
                                       {childCount > 0 && <span className="admin-board-reply-child-count">({childCount})</span>}
                                       <span className="admin-board-reply-meta">{r.event_date} {r.event_time || ''}</span>

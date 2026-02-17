@@ -549,6 +549,42 @@
   flex-shrink: 0;
 }
 
+.admin-board-list-item-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+}
+.admin-board-order-btn {
+  padding: 2px 6px;
+  font-size: 10px;
+  line-height: 1;
+  background: #334155;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.admin-board-order-btn:hover:not(:disabled) {
+  background: #475569;
+  color: #e2e8f0;
+}
+.admin-board-order-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-board-reply-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+}
+.admin-board-reply-order .admin-board-order-btn {
+  padding: 1px 4px;
+  font-size: 9px;
+}
+
 .admin-board-form-section {
   background: #1e293b;
   border: 1px solid #334155;
