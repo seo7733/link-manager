@@ -19,15 +19,33 @@
   gap: 16px;
 }
 
-.admin-back {
+.admin-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-back,
+.admin-nav-link {
   color: #94a3b8;
   text-decoration: none;
   font-size: 14px;
 }
 
-.admin-back:hover {
+.admin-back:hover,
+.admin-nav-link:hover {
   color: #e2e8f0;
   text-decoration: underline;
+}
+
+.admin-nav-link.active {
+  color: #e2e8f0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-back {
+  padding: 0;
 }
 
 .admin-title {
@@ -76,6 +94,82 @@
   text-align: center;
   color: #94a3b8;
   padding: 24px 16px !important;
+}
+
+.admin-schedule-board .admin-schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-width: 480px;
+}
+
+.admin-schedule-input {
+  padding: 8px 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.admin-schedule-input::placeholder {
+  color: #64748b;
+}
+
+.admin-schedule-row {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-schedule-row .admin-schedule-input {
+  flex: 1;
+}
+
+.admin-schedule-desc {
+  resize: vertical;
+  min-height: 56px;
+}
+
+.admin-btn-schedule-add {
+  padding: 8px 16px;
+  background: #334155;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.admin-btn-schedule-add:hover {
+  background: #475569;
+}
+
+.admin-schedule-inline {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.admin-btn-cancel {
+  padding: 6px 12px;
+  background: #334155;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.admin-btn-cancel:hover {
+  background: #475569;
 }
 
 .admin-section {

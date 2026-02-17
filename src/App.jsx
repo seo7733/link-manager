@@ -66,6 +66,16 @@ function App() {
           }
         />
         <Route
+          path="/admin/board"
+          element={
+            user.email === 'jkseo1974@gmail.com' ? (
+              <Admin user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
           path="/board"
           element={
             user.email === 'jkseo1974@gmail.com' ? (

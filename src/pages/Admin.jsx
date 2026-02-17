@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import './Admin.css'
 
@@ -25,6 +25,12 @@ function Admin({ user, onLogout }) {
   const [logPageSize, setLogPageSize] = useState(10)
   const [logPage, setLogPage] = useState(1)
   const [schedules, setSchedules] = useState([])
+  const [newSchedule, setNewSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+  const [editingScheduleId, setEditingScheduleId] = useState(null)
+  const [editSchedule, setEditSchedule] = useState({ title: '', event_date: '', event_time: '', description: '' })
+
+  const location = useLocation()
+  const isBoardView = location.pathname.includes('/board')
 
   useEffect(() => {
     loadAll()
@@ -156,6 +162,66 @@ function Admin({ user, onLogout }) {
     }
   }
 
+  async function fetchSchedules() {
+    if (!user?.id) return
+    const { data } = await supabase
+      .from('schedules')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('event_date', { ascending: true })
+      .order('event_time', { ascending: true })
+    setSchedules(data || [])
+  }
+
+  const addSchedule = async () => {
+    if (!newSchedule.title.trim() || !newSchedule.event_date) return
+    const { error } = await supabase.from('schedules').insert({
+      user_id: user.id,
+      title: newSchedule.title.trim(),
+      event_date: newSchedule.event_date,
+      event_time: newSchedule.event_time.trim() || null,
+      description: newSchedule.description.trim() || null
+    })
+    if (!error) {
+      setNewSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      await fetchSchedules()
+    }
+  }
+
+  const startEditSchedule = (schedule) => {
+    setEditingScheduleId(schedule.id)
+    setEditSchedule({
+      title: schedule.title || '',
+      event_date: schedule.event_date || '',
+      event_time: schedule.event_time || '',
+      description: schedule.description || ''
+    })
+  }
+
+  const updateSchedule = async (id) => {
+    if (!editSchedule.title.trim() || !editSchedule.event_date) return
+    const { error } = await supabase
+      .from('schedules')
+      .update({
+        title: editSchedule.title.trim(),
+        event_date: editSchedule.event_date,
+        event_time: editSchedule.event_time.trim() || null,
+        description: editSchedule.description.trim() || null
+      })
+      .eq('id', id)
+    if (!error) {
+      setEditingScheduleId(null)
+      setEditSchedule({ title: '', event_date: '', event_time: '', description: '' })
+      await fetchSchedules()
+    }
+  }
+
+  const deleteSchedule = async (id) => {
+    if (!confirm('이 일정을 삭제할까요?')) return
+    const { error } = await supabase.from('schedules').delete().eq('id', id)
+    if (!error) await fetchSchedules()
+  }
+
   function formatDate(iso) {
     if (!iso) return '-'
     const d = new Date(iso)
@@ -234,7 +300,11 @@ function Admin({ user, onLogout }) {
     <div className="admin-page">
       <header className="admin-header">
         <div className="admin-header-inner">
-          <Link to="/" className="admin-back">← 대시보드</Link>
+          <nav className="admin-nav-links">
+            <Link to="/" className="admin-back">← 대시보드</Link>
+            <Link to="/admin/board" className={isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>게시판</Link>
+            <Link to="/admin" className={!isBoardView ? 'admin-nav-link active' : 'admin-nav-link'}>관리자</Link>
+          </nav>
           <h1 className="admin-title">관리자</h1>
           <div className="admin-header-right">
             <span className="admin-user-email">{user.email}</span>
@@ -246,6 +316,93 @@ function Admin({ user, onLogout }) {
       <main className="admin-main">
         {loading ? (
           <p className="admin-loading">로딩 중...</p>
+        ) : isBoardView ? (
+          <>
+            {error && <div className="admin-error">{error}</div>}
+            <section className="admin-section admin-schedule-board">
+              <h2>일정 게시판</h2>
+              <p className="admin-hint">캘린더 일정을 입력·수정·삭제할 수 있습니다. 메인 화면 캘린더와 연동됩니다.</p>
+              <div className="admin-schedule-form">
+                <input
+                  type="text"
+                  placeholder="일정 제목"
+                  value={newSchedule.title}
+                  onChange={(e) => setNewSchedule({ ...newSchedule, title: e.target.value })}
+                  className="admin-schedule-input"
+                />
+                <div className="admin-schedule-row">
+                  <input
+                    type="date"
+                    value={newSchedule.event_date}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, event_date: e.target.value })}
+                    className="admin-schedule-input"
+                  />
+                  <input
+                    type="time"
+                    value={newSchedule.event_time}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, event_time: e.target.value })}
+                    className="admin-schedule-input"
+                  />
+                </div>
+                <textarea
+                  placeholder="메모 (선택)"
+                  rows={2}
+                  value={newSchedule.description}
+                  onChange={(e) => setNewSchedule({ ...newSchedule, description: e.target.value })}
+                  className="admin-schedule-input admin-schedule-desc"
+                />
+                <button type="button" className="admin-btn-schedule-add" onClick={addSchedule}>일정 추가</button>
+              </div>
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>제목</th>
+                      <th>날짜</th>
+                      <th>시간</th>
+                      <th>설명</th>
+                      <th>동작</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedules.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="admin-board-empty">등록된 일정이 없습니다.</td>
+                      </tr>
+                    ) : (
+                      schedules.map(sch => (
+                        <tr key={sch.id}>
+                          {editingScheduleId === sch.id ? (
+                            <>
+                              <td><input type="text" value={editSchedule.title} onChange={(e) => setEditSchedule({ ...editSchedule, title: e.target.value })} className="admin-schedule-inline" /></td>
+                              <td><input type="date" value={editSchedule.event_date} onChange={(e) => setEditSchedule({ ...editSchedule, event_date: e.target.value })} className="admin-schedule-inline" /></td>
+                              <td><input type="time" value={editSchedule.event_time} onChange={(e) => setEditSchedule({ ...editSchedule, event_time: e.target.value })} className="admin-schedule-inline" /></td>
+                              <td><input type="text" value={editSchedule.description} onChange={(e) => setEditSchedule({ ...editSchedule, description: e.target.value })} className="admin-schedule-inline" /></td>
+                              <td>
+                                <button type="button" className="admin-btn-detail" onClick={() => updateSchedule(sch.id)}>저장</button>
+                                <button type="button" className="admin-btn-cancel" onClick={() => { setEditingScheduleId(null) }}>취소</button>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td>{sch.title || '-'}</td>
+                              <td>{sch.event_date || '-'}</td>
+                              <td>{sch.event_time || '-'}</td>
+                              <td>{sch.description ? String(sch.description).slice(0, 60) + (String(sch.description).length > 60 ? '…' : '') : '-'}</td>
+                              <td>
+                                <button type="button" className="admin-btn-detail" onClick={() => startEditSchedule(sch)}>수정</button>
+                                <button type="button" className="admin-btn-delete" onClick={() => deleteSchedule(sch.id)}>삭제</button>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </>
         ) : (
           <>
             {error && <div className="admin-error">{error}</div>}
