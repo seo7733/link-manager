@@ -105,8 +105,8 @@ function Dashboard({ user, onLogout }) {
   const [linkPage, setLinkPage] = useState(1)
   const [favLinkPageSize, setFavLinkPageSize] = useState(() => {
     const saved = localStorage.getItem('favLinkPageSize')
-    const n = saved ? parseInt(saved, 10) : 20
-    return [20, 30, 40, 0].includes(n) ? n : 20
+    const n = saved ? parseInt(saved, 10) : 18
+    return [9, 18, 27, 0].includes(n) ? n : 18
   })
   const [favLinkPage, setFavLinkPage] = useState(1)
   const linksPanelRef = useRef(null)
@@ -1012,9 +1012,9 @@ function Dashboard({ user, onLogout }) {
                         className="fav-page-size-select"
                         aria-label="한 페이지에 표시할 개수"
                       >
-                        <option value={20}>20개</option>
-                        <option value={30}>30개</option>
-                        <option value={40}>40개</option>
+                        <option value={9}>9개</option>
+                        <option value={18}>18개</option>
+                        <option value={27}>27개</option>
                         <option value={0}>전체</option>
                       </select>
                       <span className="fav-pagination-info">
