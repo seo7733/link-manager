@@ -582,6 +582,8 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
+  const FALLBACK_FAVICON = `${import.meta.env.BASE_URL || '/'}app-favicon.svg`
+
   const getFaviconUrl = (url) => {
     try {
       const host = new URL(url).hostname
@@ -589,6 +591,12 @@ function Dashboard({ user, onLogout }) {
     } catch {
       return ''
     }
+  }
+
+  const handleFaviconError = (e) => {
+    e.target.onerror = null
+    e.target.style.display = ''
+    e.target.src = FALLBACK_FAVICON
   }
 
   const linksForGrid = searchResults === null
@@ -1177,8 +1185,8 @@ function Dashboard({ user, onLogout }) {
                             title={link.title}
                           >
                             <span className="link-shortcut-icon">
-                              <span className="link-shortcut-icon-fallback" aria-hidden>🔗</span>
-                              <img src={getFaviconUrl(link.url)} alt="" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }} />
+                              <span className="link-shortcut-icon-fallback" aria-hidden>⭐</span>
+                              <img src={getFaviconUrl(link.url)} alt="" onError={handleFaviconError} />
                             </span>
                             <span className="link-shortcut-label">{link.title || '링크'}</span>
                           </a>
