@@ -229,6 +229,38 @@
     margin-top: 6px;
   }
 
+  .category-root-drop-zone {
+    flex-shrink: 0;
+    min-height: 28px;
+    margin: 4px 8px;
+    padding: 6px 10px;
+    border: 1px dashed #475569;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .category-root-drop-zone.drag-over {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+  }
+  .category-root-drop-hint {
+    font-size: 11px;
+    color: #64748b;
+  }
+  .panel-categories .category-draggable-item {
+    cursor: grab;
+  }
+  .panel-categories .category-draggable-item:active {
+    cursor: grabbing;
+  }
+  .panel-categories .category-drop-target {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
   .panel-links {
     flex: 1;
     min-width: 0;

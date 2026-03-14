@@ -356,6 +356,92 @@ function Dashboard({ user, onLogout }) {
     if (!e1 && !e2) fetchCategories()
   }
 
+  // targetId가 draggedId의 자손인지 (순환 방지)
+  const isDescendantOf = (targetId, draggedId) => {
+    let c = categories.find(x => x.id === targetId)
+    while (c?.parent_id) {
+      if (c.parent_id === draggedId) return true
+      c = categories.find(x => x.id === c.parent_id)
+    }
+    return false
+  }
+
+  const moveCategoryByDrop = async (draggedId, newParentId, insertAtIndex) => {
+    const dragged = categories.find(c => c.id === draggedId)
+    if (!dragged) return
+    const oldParentId = dragged.parent_id
+    if (oldParentId === newParentId) {
+      const siblings = getSiblingCategories(oldParentId)
+      const fromIdx = siblings.findIndex(s => s.id === draggedId)
+      if (fromIdx < 0 || insertAtIndex === fromIdx) return
+      const reordered = siblings.map(s => s.id)
+      reordered.splice(fromIdx, 1)
+      reordered.splice(insertAtIndex, 0, draggedId)
+      const updates = reordered.map((id, i) => supabase.from('categories').update({ sort_order: i }).eq('id', id))
+      const results = await Promise.all(updates)
+      if (results.every(r => !r.error)) fetchCategories()
+      return
+    }
+    const oldSiblings = categories.filter(c => c.parent_id === oldParentId && c.id !== draggedId).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    const newSiblingsEx = categories.filter(c => c.parent_id === newParentId && c.id !== draggedId).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    const newSiblings = [...newSiblingsEx]
+    newSiblings.splice(insertAtIndex, 0, dragged)
+    const updates = [
+      supabase.from('categories').update({ parent_id: newParentId, sort_order: insertAtIndex }).eq('id', draggedId),
+      ...oldSiblings.map((s, i) => supabase.from('categories').update({ sort_order: i }).eq('id', s.id)),
+      ...newSiblings.map((s, i) => supabase.from('categories').update({ parent_id: newParentId, sort_order: i }).eq('id', s.id))
+    ]
+    const results = await Promise.all(updates)
+    if (results.every(r => !r.error)) fetchCategories()
+  }
+
+  const [categoryDragOverId, setCategoryDragOverId] = useState(null)
+  const CATEGORY_DROP_ROOT = 'category-drop-root'
+
+  const handleCategoryDragStart = (e, cat) => {
+    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.edit-form')) {
+      e.preventDefault()
+      return
+    }
+    e.dataTransfer.setData('text/plain', cat.id)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleCategoryDragOver = (e, dropTargetId) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'move'
+    setCategoryDragOverId(dropTargetId)
+  }
+
+  const handleCategoryDragLeave = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) setCategoryDragOverId(null)
+  }
+
+  const handleCategoryDrop = (e, dropTargetId) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setCategoryDragOverId(null)
+    const raw = e.dataTransfer.getData('text/plain')
+    if (!raw) return
+    const draggedId = raw.trim()
+    if (dropTargetId === CATEGORY_DROP_ROOT) {
+      moveCategoryByDrop(draggedId, null, 0)
+      return
+    }
+    const target = categories.find(c => c.id === dropTargetId)
+    if (!target || target.id === draggedId) return
+    if (isDescendantOf(target.id, draggedId)) return
+    const siblings = getSiblingCategories(target.parent_id)
+    const targetIdx = siblings.findIndex(s => s.id === target.id)
+    if (targetIdx < 0) return
+    moveCategoryByDrop(draggedId, target.parent_id, targetIdx)
+  }
+
+  const handleCategoryDragEnd = () => {
+    setCategoryDragOverId(null)
+  }
+
   // 링크 CRUD
   const addLink = async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) return
@@ -389,17 +475,54 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
+  const parseUrlAndTitleFromDrop = (e) => {
+    let url = ''
+    let title = ''
+    const uriList = e.dataTransfer.getData('text/uri-list') || ''
+    const plain = e.dataTransfer.getData('text/plain') || ''
+    const mozUrl = e.dataTransfer.getData('application/x-moz-url') || ''
+    const html = e.dataTransfer.getData('text/html') || ''
+
+    if (uriList.trim()) {
+      const lines = uriList.split('\n').map(s => s.trim()).filter(Boolean)
+      url = lines[0] || ''
+    }
+    if (!url && plain.trim() && /^https?:\/\//i.test(plain)) {
+      url = (plain.split(/\s/)[0] || '').trim()
+    }
+    if (!url && mozUrl.trim()) {
+      const parts = mozUrl.split('\n')
+      url = (parts[0] || '').trim()
+      title = (parts[1] || '').trim()
+    }
+    if (!url && html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      const a = doc.querySelector('a[href^="http"]')
+      if (a) {
+        url = (a.getAttribute('href') || '').trim()
+        title = (a.textContent || '').trim().replace(/\s+/g, ' ')
+      }
+    }
+    if (!url && (uriList || plain)) {
+      const firstLine = (uriList || plain).split('\n')[0] || ''
+      const match = firstLine.match(/^(https?:\/\/[^\s]+)/i)
+      if (match) url = match[1].trim()
+    }
+    return { url, title }
+  }
+
   const handleLinkFormDrop = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    const uri = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || ''
-    const url = (uri.split('\n')[0] || '').trim()
+    const { url: rawUrl, title: droppedTitle } = parseUrlAndTitleFromDrop(e)
+    const url = (rawUrl || '').trim()
     if (!url || !url.startsWith('http')) return
-    let title = ''
-    if (/youtube\.com|youtu\.be/i.test(url)) {
+    let title = droppedTitle
+    if (!title && /youtube\.com|youtu\.be/i.test(url)) {
       const videoTitle = await fetchYouTubeTitle(url)
-      title = videoTitle || new URL(url).hostname
-    } else {
+      title = videoTitle || ''
+    }
+    if (!title) {
       try {
         title = new URL(url).hostname.replace(/^www\./, '')
       } catch {
@@ -412,6 +535,27 @@ function Dashboard({ user, onLogout }) {
   const handleLinkFormDragOver = (e) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'link'
+  }
+
+  const handleLinkFormPaste = async (e) => {
+    const text = (e.clipboardData?.getData('text/plain') || '').trim()
+    const urlMatch = text.match(/^(https?:\/\/[^\s]+)/) || text.match(/(https?:\/\/[^\s]+)/)
+    const url = urlMatch ? urlMatch[1].replace(/[.,;:!?)]+$/, '').trim() : ''
+    if (!url || !url.startsWith('http')) return
+    e.preventDefault()
+    let title = ''
+    if (/youtube\.com|youtu\.be/i.test(url)) {
+      const videoTitle = await fetchYouTubeTitle(url)
+      title = videoTitle || ''
+    }
+    if (!title) {
+      try {
+        title = new URL(url).hostname.replace(/^www\./, '')
+      } catch {
+        title = ''
+      }
+    }
+    setNewLink(prev => ({ ...prev, url, title: title || prev.title }))
   }
 
   const updateLink = async (id) => {
@@ -800,8 +944,14 @@ function Dashboard({ user, onLogout }) {
     return (
       <div key={cat.id}>
         <li
-          className={`item ${selectedCategory?.id === cat.id ? 'active' : ''}`}
+          className={`item category-draggable-item ${selectedCategory?.id === cat.id ? 'active' : ''} ${categoryDragOverId === cat.id ? 'category-drop-target' : ''}`}
           style={{ paddingLeft: `${16 + depth * 20}px` }}
+          draggable
+          onDragStart={(e) => handleCategoryDragStart(e, cat)}
+          onDragEnd={handleCategoryDragEnd}
+          onDragOver={(e) => handleCategoryDragOver(e, cat.id)}
+          onDragLeave={handleCategoryDragLeave}
+          onDrop={(e) => handleCategoryDrop(e, cat.id)}
         >
           {editingCategory === cat.id ? (
             <div className="edit-form">
@@ -909,6 +1059,14 @@ function Dashboard({ user, onLogout }) {
             />
             <button className="btn-add" onClick={() => addCategory(null)}>추가</button>
           </div>
+          <div
+            className={`category-root-drop-zone ${categoryDragOverId === CATEGORY_DROP_ROOT ? 'drag-over' : ''}`}
+            onDragOver={(e) => handleCategoryDragOver(e, CATEGORY_DROP_ROOT)}
+            onDragLeave={handleCategoryDragLeave}
+            onDrop={(e) => handleCategoryDrop(e, CATEGORY_DROP_ROOT)}
+          >
+            <span className="category-root-drop-hint">끌어다 놓으면 최상위로 이동</span>
+          </div>
           <ul className="item-list">
             {categoryTree.map((cat, i) => renderCategoryItem(cat, 0, i, categoryTree.length))}
             {categories.length === 0 && (
@@ -958,8 +1116,9 @@ function Dashboard({ user, onLogout }) {
               className="link-form link-form-droppable"
               onDragOver={handleLinkFormDragOver}
               onDrop={handleLinkFormDrop}
+              onPaste={handleLinkFormPaste}
             >
-              <p className="link-form-drop-hint">브라우저에서 링크나 탭을 여기로 끌어다 놓으면 URL·제목이 자동 입력됩니다 (유튜브는 영상 제목)</p>
+              <p className="link-form-drop-hint">페이지에서 링크를 끌어다 놓거나, 주소창 URL을 붙여넣으면 URL·제목이 자동 입력됩니다 (유튜브는 영상 제목). 탭 끌어놓기는 브라우저 보안상 지원되지 않을 수 있습니다.</p>
               <label className="link-form-checkbox">
                 <input
                   type="checkbox"
