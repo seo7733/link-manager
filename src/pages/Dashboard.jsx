@@ -373,8 +373,8 @@ function Dashboard({ user, onLogout }) {
     if (!error) {
       setNewLink({ title: '', url: '', description: '', showOnMain: true })
       setShowLinkForm(false)
-      fetchLinks(selectedCategory.id)
-      fetchAllLinks()
+      await fetchLinks(selectedCategory.id)
+      await fetchAllLinks()
     }
   }
 
