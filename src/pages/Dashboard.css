@@ -189,7 +189,7 @@
     width: 260px;
     min-width: 260px;
     background: #1e293b;
-    border-right: 1px solid #334155;
+    box-shadow: 1px 0 0 0 #334155;
   }
 
   .panel-categories .item {
@@ -370,7 +370,8 @@
   }
   
   .panel-resizer {
-    width: 4px;
+    width: 1px;
+    min-width: 1px;
     background: #334155;
     cursor: col-resize;
     flex-shrink: 0;
@@ -1875,7 +1876,7 @@
       width: 100%;
       min-width: 100%;
       max-height: 250px;
-      border-right: none;
+      box-shadow: none;
       border-bottom: 1px solid #334155;
     }
 
