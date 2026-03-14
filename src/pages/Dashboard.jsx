@@ -587,7 +587,7 @@ function Dashboard({ user, onLogout }) {
   const getFaviconUrl = (url) => {
     try {
       const host = new URL(url).hostname
-      return `https://www.google.com/s2/favicons?domain=${host}&sz=64`
+      return `https://icons.duckduckgo.com/ip3/${host}.ico`
     } catch {
       return ''
     }
@@ -1186,7 +1186,11 @@ function Dashboard({ user, onLogout }) {
                           >
                             <span className="link-shortcut-icon">
                               <span className="link-shortcut-icon-fallback" aria-hidden>⭐</span>
-                              <img src={getFaviconUrl(link.url)} alt="" onError={handleFaviconError} />
+                              <img
+                                src={getFaviconUrl(link.url) || FALLBACK_FAVICON}
+                                alt=""
+                                onError={handleFaviconError}
+                              />
                             </span>
                             <span className="link-shortcut-label">{link.title || '링크'}</span>
                           </a>
