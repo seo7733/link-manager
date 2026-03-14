@@ -1185,7 +1185,6 @@ function Dashboard({ user, onLogout }) {
                             title={link.title}
                           >
                             <span className="link-shortcut-icon">
-                              <span className="link-shortcut-icon-fallback" aria-hidden>⭐</span>
                               <img
                                 src={getFaviconUrl(link.url) || FALLBACK_FAVICON}
                                 alt=""
