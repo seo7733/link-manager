@@ -1,7 +1,7 @@
 .dashboard {
     min-height: 100vh;
-    background: #f5f7fb;
-    color: #1a1a2e;
+    background: #0f172a;
+    color: #e2e8f0;
     font-family: 'Segoe UI', sans-serif;
     display: flex;
     flex-direction: column;
@@ -12,8 +12,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f7fb;
-    color: #6b7280;
+    background: #0f172a;
+    color: #94a3b8;
     font-size: 18px;
   }
   
@@ -23,15 +23,14 @@
     justify-content: space-between;
     min-height: 64px;
     padding: 0 28px 0 0;
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
   }
 
   .dashboard-header h1 {
     font-size: 20px;
     margin: 0;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-weight: 700;
     letter-spacing: -0.3px;
   }
@@ -73,7 +72,7 @@
   .dashboard-logo-title {
     font-size: 21px;
     font-weight: 700;
-    color: #ffffff;
+    color: #e2e8f0;
     letter-spacing: -0.3px;
     white-space: nowrap;
   }
@@ -81,14 +80,14 @@
   .dashboard-logo-sub {
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: #94a3b8;
     letter-spacing: -0.2px;
     white-space: nowrap;
   }
 
   .dashboard-logo-btn:hover .dashboard-logo-title,
   .dashboard-logo-btn:hover .dashboard-logo-sub {
-    color: #e0e7ff;
+    color: #f1f5f9;
   }
 
   .dashboard-logo-btn img {
@@ -114,38 +113,39 @@
   }
 
   .user-email {
-    color: #6b7280;
+    color: #94a3b8;
     font-size: 13px;
   }
 
   .dashboard-header .user-email {
-    color: rgba(255, 255, 255, 0.95);
+    color: #e2e8f0;
   }
 
   .admin-link {
     font-size: 11px;
     font-weight: 600;
-    color: #7c3aed;
+    color: #93c5fd;
     text-decoration: none;
   }
 
   .dashboard-header .admin-link {
-    color: rgba(255, 255, 255, 0.95);
+    color: #e2e8f0;
   }
 
   .admin-link:hover {
     text-decoration: underline;
+    color: #f1f5f9;
   }
 
   .dashboard-header .admin-link:hover {
-    color: #fff;
+    color: #f1f5f9;
   }
 
   .btn-logout {
     padding: 8px 18px;
-    background: #fff0f0;
-    color: #dc2626;
-    border: 1px solid #fecaca;
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
     border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
@@ -154,21 +154,21 @@
   }
 
   .dashboard-header .btn-logout {
-    background: rgba(255, 255, 255, 0.95);
-    color: #1e40af;
-    border-color: rgba(255, 255, 255, 0.8);
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
   }
 
   .btn-logout:hover {
-    background: #dc2626;
-    color: #ffffff;
-    border-color: #dc2626;
+    background: #475569;
+    color: #f1f5f9;
+    border-color: #64748b;
   }
 
   .dashboard-header .btn-logout:hover {
-    background: #fff;
-    color: #1e40af;
-    border-color: #fff;
+    background: #475569;
+    color: #f1f5f9;
+    border-color: #64748b;
   }
   
   .dashboard-body {
@@ -176,7 +176,7 @@
     flex: 1;
     overflow: hidden;
     height: calc(100vh - 60px);
-    background: #ffffff;
+    background: #0f172a;
   }
   
   .panel {
@@ -188,8 +188,8 @@
   .panel-categories {
     width: 260px;
     min-width: 260px;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
+    background: #1e293b;
+    border-right: 1px solid #334155;
   }
 
   .panel-categories .item {
@@ -235,7 +235,7 @@
     max-width: 960px;
     margin: 0 auto;
     width: 100%;
-    background: #ffffff;
+    background: #1e293b;
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -250,7 +250,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ffffff;
+    background: #1e293b;
   }
 
   .links-panel-external-search-form {
@@ -263,11 +263,11 @@
 
   .links-panel-search-select {
     padding: 9px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 8px;
     font-size: 13px;
-    background: #ffffff;
-    color: #1a1a2e;
+    background: #0f172a;
+    color: #e2e8f0;
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -276,17 +276,17 @@
     flex: 1;
     min-width: 0;
     padding: 9px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 8px;
     font-size: 13px;
     outline: none;
-    background: #ffffff;
-    color: #1a1a2e;
+    background: #0f172a;
+    color: #e2e8f0;
   }
 
   .links-panel-search-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #475569;
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
   }
 
   .links-panel-external-search .btn-search-icon {
@@ -297,8 +297,8 @@
 
   .btn-search-icon {
     padding: 8px 12px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
+    background: #334155;
+    border: 1px solid #334155;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
@@ -307,18 +307,18 @@
   }
 
   .btn-search-icon:hover {
-    background: #e5e7eb;
-    border-color: #d1d5db;
+    background: #475569;
+    border-color: #64748b;
   }
 
   .panel-links-footer {
     flex-shrink: 0;
     padding: 12px 16px;
     font-size: 11px;
-    color: #9ca3af;
+    color: #94a3b8;
     text-align: center;
-    border-top: 1px solid #e5e7eb;
-    background: #f9fafb;
+    border-top: 1px solid #334155;
+    background: #1e293b;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -327,18 +327,19 @@
   }
 
   .footer-manual-link {
-    color: #6366f1;
+    color: #93c5fd;
     text-decoration: none;
     font-weight: 500;
   }
 
   .footer-manual-link:hover {
     text-decoration: underline;
+    color: #bfdbfe;
   }
   
   .panel-resizer {
     width: 4px;
-    background: #e5e7eb;
+    background: #334155;
     cursor: col-resize;
     flex-shrink: 0;
     user-select: none;
@@ -347,15 +348,15 @@
 
   .panel-resizer:hover,
   .panel-resizer.resizing {
-    background: #3b82f6;
+    background: #475569;
   }
 
   .panel-memos {
     width: 320px;
     min-width: 200px;
     max-width: 800px;
-    background: #ffffff;
-    border-left: 1px solid #e5e7eb;
+    background: #1e293b;
+    border-left: 1px solid #334155;
   }
   
   .panel-header {
@@ -363,14 +364,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 20px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #ffffff;
+    border-bottom: 1px solid #334155;
+    background: #1e293b;
   }
   
   .panel-header h2 {
     font-size: 15px;
     margin: 0;
-    color: #374151;
+    color: #e2e8f0;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -384,36 +385,36 @@
     min-height: 52px;
     box-sizing: border-box;
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    background: #fafbfc;
+    border-bottom: 1px solid #334155;
+    background: #1e293b;
   }
   
   .add-form input {
     flex: 1;
     min-width: 0;
     padding: 9px 10px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
+    background: #0f172a;
+    border: 1px solid #334155;
     border-radius: 8px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     transition: border-color 0.2s;
   }
   
   .add-form input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #475569;
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
   }
   
   .add-form input::placeholder {
-    color: #9ca3af;
+    color: #64748b;
   }
 
   .category-panel-search {
     padding: 10px 12px;
-    border-top: 1px solid #e5e7eb;
-    background: #fafbfc;
+    border-top: 1px solid #334155;
+    background: #1e293b;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -429,18 +430,18 @@
     flex: 1;
     min-width: 0;
     padding: 9px 10px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
+    background: #0f172a;
+    border: 1px solid #334155;
     border-radius: 8px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     transition: border-color 0.2s;
   }
 
   .category-search-row input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #475569;
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
   }
 
   .category-panel-search .btn-search-icon {
@@ -455,9 +456,9 @@
 
   .btn-add {
     padding: 9px 14px;
-    background: #6366f1;
-    color: white;
-    border: none;
+    background: #475569;
+    color: #e2e8f0;
+    border: 1px solid #64748b;
     border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
@@ -468,9 +469,8 @@
   }
   
   .btn-add:hover {
-    background: #4f46e5;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    background: #64748b;
+    color: #f1f5f9;
   }
   
   .item-list {
@@ -486,29 +486,29 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #334155;
     cursor: pointer;
     transition: all 0.15s;
   }
   
   .item:hover {
-    background: #f5f7fb;
+    background: #334155;
   }
   
   .item.active {
-    background: #eef2ff;
+    background: #334155;
     border-left: 3px solid #6366f1;
   }
   
   .item-name {
     flex: 1;
     font-size: 14px;
-    color: #374151;
+    color: #e2e8f0;
     font-weight: 500;
   }
   
   .item.active .item-name {
-    color: #4338ca;
+    color: #f1f5f9;
     font-weight: 600;
   }
   
@@ -526,6 +526,7 @@
   .item-actions button {
     background: none;
     border: none;
+    color: #94a3b8;
     cursor: pointer;
     font-size: 13px;
     padding: 4px 6px;
@@ -534,12 +535,13 @@
   }
   
   .item-actions button:hover {
-    background: #e5e7eb;
+    background: #475569;
+    color: #e2e8f0;
   }
   
   .empty-message {
     padding: 32px 16px;
-    color: #9ca3af;
+    color: #94a3b8;
     font-size: 13px;
     text-align: center;
     cursor: default;
@@ -554,7 +556,7 @@
     align-items: center;
     gap: 4px;
     font-size: 13px;
-    color: #374151;
+    color: #e2e8f0;
     cursor: pointer;
     justify-content: flex-start;
     width: 100%;
@@ -596,16 +598,16 @@
     gap: 8px;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
+    border: 1px solid #334155;
+    background: #1e293b;
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
     font-size: 13px;
-    color: #374151;
+    color: #e2e8f0;
   }
 
   .board-entry-tile:hover {
-    background: #f1f5f9;
+    background: #334155;
     transform: translateY(-2px);
   }
 
@@ -620,10 +622,10 @@
   .main-quote-block {
     padding: 16px 20px 10px;
     text-align: center;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #334155;
     border-radius: 12px;
     margin: 0 20px 16px;
-    background: #ffffff;
+    background: #1e293b;
   }
 
   .main-quote-block .welcome-quote {
@@ -643,7 +645,7 @@
     margin: 0 0 8px 0;
     font-size: 15px;
     font-weight: 600;
-    color: #374151;
+    color: #e2e8f0;
   }
 
   .main-calendar-placeholder {
@@ -651,8 +653,8 @@
     display: flex;
     align-items: stretch;
     justify-content: center;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 12px;
     overflow: hidden;
   }
@@ -670,9 +672,9 @@
 
   .schedule-section {
     margin: 0 20px 16px;
-    background: #ffffff;
+    background: #1e293b;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #334155;
     padding: 14px 16px;
   }
 
@@ -687,7 +689,7 @@
   .schedule-form textarea {
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     font-size: 13px;
   }
 
@@ -722,8 +724,8 @@
   .schedule-item {
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
+    border: 1px solid #334155;
+    background: #1e293b;
   }
 
   .schedule-display {
@@ -753,7 +755,7 @@
   .schedule-desc {
     margin: 0;
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
   }
 
   .schedule-actions {
@@ -767,8 +769,8 @@
     padding: 2px 6px;
     font-size: 11px;
     border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
+    border: 1px solid #334155;
+    background: #1e293b;
     cursor: pointer;
   }
 
@@ -782,7 +784,7 @@
   .schedule-edit textarea {
     padding: 6px 8px;
     border-radius: 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     font-size: 13px;
   }
 
@@ -794,16 +796,16 @@
 
   .schedule-empty {
     font-size: 12px;
-    color: #9ca3af;
+    color: #94a3b8;
     text-align: center;
     padding: 8px 0;
   }
 
   .todo-section {
     margin: 0 20px 16px;
-    background: #ffffff;
+    background: #1e293b;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #334155;
     padding: 16px 18px;
   }
 
@@ -815,7 +817,7 @@
     margin: 0;
     font-size: 15px;
     font-weight: 600;
-    color: #1a1a2e;
+    color: #e2e8f0;
   }
 
   .todo-form {
@@ -827,7 +829,7 @@
   .todo-form input {
     flex: 1;
     padding: 8px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 8px;
     font-size: 13px;
     outline: none;
@@ -846,7 +848,7 @@
     gap: 4px;
     margin: 16px 0 0 0;
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
     flex-wrap: wrap;
   }
 
@@ -856,10 +858,10 @@
 
   .todo-page-size-select {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
     font-size: 12px;
-    background: #ffffff;
+    background: #1e293b;
     cursor: pointer;
   }
 
@@ -881,15 +883,15 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 12px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 8px;
     transition: all 0.2s;
   }
 
   .todo-item:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
+    background: #334155;
+    border-color: #475569;
   }
 
   .todo-item.completed {
@@ -914,7 +916,7 @@
   .todo-text {
     flex: 1;
     font-size: 13px;
-    color: #374151;
+    color: #e2e8f0;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
@@ -923,7 +925,7 @@
 
   .todo-item.completed .todo-text {
     text-decoration: line-through;
-    color: #9ca3af;
+    color: #94a3b8;
   }
 
   .todo-actions {
@@ -943,7 +945,7 @@
   }
 
   .todo-actions button:hover {
-    background: #e5e7eb;
+    background: #334155;
   }
 
   .todo-edit-form {
@@ -971,17 +973,17 @@
 
   .todo-page-btn {
     padding: 6px 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
-    background: #ffffff;
-    color: #374151;
+    background: #1e293b;
+    color: #e2e8f0;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .todo-page-btn:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: #334155;
     border-color: #6366f1;
   }
 
@@ -999,7 +1001,7 @@
   .todo-empty {
     padding: 24px;
     text-align: center;
-    color: #9ca3af;
+    color: #94a3b8;
     font-size: 13px;
   }
 
@@ -1010,8 +1012,8 @@
   }
 
   .welcome-quote {
-    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-    border: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid #334155;
     border-radius: 16px;
     padding: 32px 28px;
     margin-bottom: 20px;
@@ -1021,7 +1023,7 @@
   .welcome-quote-text {
     font-size: 18px;
     line-height: 1.7;
-    color: #374151;
+    color: #e2e8f0;
     margin: 0 0 12px 0;
     font-weight: 500;
   }
@@ -1035,7 +1037,7 @@
 
   .welcome-quote-hint {
     font-size: 13px;
-    color: #9ca3af;
+    color: #94a3b8;
     margin: 0;
   }
   
@@ -1051,10 +1053,10 @@
   .edit-form select {
     flex: 1;
     padding: 7px 10px;
-    background: #ffffff;
+    background: #1e293b;
     border: 1.5px solid #6366f1;
     border-radius: 6px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
   }
@@ -1089,8 +1091,8 @@
   
   .btn-cancel {
     padding: 6px 14px;
-    background: #e5e7eb;
-    color: #374151;
+    background: #334155;
+    color: #e2e8f0;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -1125,8 +1127,8 @@
     flex-direction: column;
     gap: 10px;
     padding: 18px 20px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #ffffff;
+    border-bottom: 1px solid #334155;
+    background: #1e293b;
     margin: 12px 16px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -1134,23 +1136,23 @@
   
   .link-form input {
     padding: 11px 14px;
-    background: #f9fafb;
-    border: 1px solid #d1d5db;
+    background: #0f172a;
+    border: 1px solid #334155;
     border-radius: 8px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     transition: border-color 0.2s;
   }
   
   .link-form input:focus {
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #475569;
+    background: #0f172a;
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
   }
   
   .link-form input::placeholder {
-    color: #9ca3af;
+    color: #64748b;
   }
 
   .link-form-droppable {
@@ -1164,7 +1166,7 @@
   .link-form-drop-hint {
     margin: 0 0 4px 0;
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
   }
   
   .link-shortcut-grid {
@@ -1172,7 +1174,7 @@
     grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
     gap: 16px;
     padding: 16px 20px;
-    background: #ffffff !important;
+    background: #1e293b !important;
   }
 
   .fav-pagination-row {
@@ -1183,7 +1185,7 @@
     margin: 0 0 16px 0;
     padding: 0;
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
     flex-wrap: wrap;
   }
 
@@ -1193,10 +1195,10 @@
 
   .fav-page-size-select {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
     font-size: 12px;
-    background: #ffffff;
+    background: #1e293b;
     cursor: pointer;
   }
 
@@ -1209,17 +1211,17 @@
 
   .fav-page-btn {
     padding: 6px 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
-    background: #ffffff;
-    color: #374151;
+    background: #1e293b;
+    color: #e2e8f0;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .fav-page-btn:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: #334155;
     border-color: #6366f1;
   }
 
@@ -1260,12 +1262,12 @@
     padding: 12px 8px;
     border-radius: 12px;
     text-decoration: none;
-    color: #374151;
+    color: #e2e8f0;
     transition: background 0.2s, transform 0.15s;
   }
 
   .link-shortcut-tile-wrap:hover .link-shortcut-tile {
-    background: #f1f5f9;
+    background: #334155;
     transform: translateY(-2px);
   }
 
@@ -1276,9 +1278,9 @@
     transform: translateX(-50%);
     padding: 4px 8px;
     font-size: 11px;
-    color: #dc2626;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
+    color: #fecaca;
+    background: #334155;
+    border: 1px solid #475569;
     border-radius: 6px;
     cursor: pointer;
     opacity: 0;
@@ -1291,7 +1293,8 @@
   }
 
   .link-shortcut-remove:hover {
-    background: #fee2e2;
+    background: #7f1d1d;
+    color: #fecaca;
   }
 
   .link-shortcut-icon {
@@ -1301,9 +1304,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: #334155;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
 
   .link-shortcut-icon img {
@@ -1336,16 +1339,16 @@
     gap: 12px;
     padding: 8px 16px 12px;
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
     flex-shrink: 0;
   }
 
   .link-page-size-select {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
     font-size: 12px;
-    background: #ffffff;
+    background: #1e293b;
     cursor: pointer;
   }
 
@@ -1364,17 +1367,17 @@
 
   .link-page-btn {
     padding: 6px 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #334155;
     border-radius: 6px;
-    background: #ffffff;
-    color: #374151;
+    background: #1e293b;
+    color: #e2e8f0;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .link-page-btn:hover:not(:disabled) {
-    background: #f3f4f6;
+    background: #334155;
     border-color: #6366f1;
   }
 
@@ -1401,11 +1404,11 @@
     align-items: flex-start;
     gap: 6px;
     position: relative;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 12px;
     padding: 16px 18px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #334155;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     transition: all 0.2s ease;
   }
@@ -1414,7 +1417,7 @@
     border-color: #c7d2fe;
     box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
     transform: translateY(-1px);
-    background: #ffffff;
+    background: #1e293b;
   }
   
   .link-item.active {
@@ -1439,7 +1442,7 @@
   
   .link-info strong {
     font-size: 14px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-weight: 600;
   }
   
@@ -1452,13 +1455,13 @@
   }
   
   .link-info a:hover {
-    color: #4338ca;
+    color: #93c5fd;
     text-decoration: underline;
   }
   
   .link-desc {
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
     margin: 2px 0 0 0;
     line-height: 1.5;
   }
@@ -1467,7 +1470,7 @@
     display: inline-block;
     font-size: 11px;
     color: #6366f1;
-    background: #eef2ff;
+    background: #334155;
     padding: 2px 8px;
     border-radius: 6px;
     margin-bottom: 4px;
@@ -1495,16 +1498,16 @@
     flex-direction: column;
     gap: 8px;
     padding: 14px 16px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #334155;
     background: #fafbfc;
   }
   
   .memo-form textarea {
     padding: 11px 14px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 8px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     resize: vertical;
@@ -1518,7 +1521,7 @@
   }
   
   .memo-form textarea::placeholder {
-    color: #9ca3af;
+    color: #94a3b8;
   }
   
   .memo-item {
@@ -1529,7 +1532,7 @@
   
   .memo-content {
     font-size: 13px;
-    color: #374151;
+    color: #e2e8f0;
     margin: 0;
     line-height: 1.7;
     white-space: pre-wrap;
@@ -1546,7 +1549,7 @@
   
   .memo-date {
     font-size: 11px;
-    color: #9ca3af;
+    color: #94a3b8;
   }
   
   .memo-item .item-actions {
@@ -1581,8 +1584,8 @@
     flex: 1;
     min-width: 0;
     padding: 9px 10px;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 8px;
     font-size: 13px;
     outline: none;
@@ -1604,15 +1607,15 @@
     flex-direction: column;
     gap: 8px;
     padding: 14px 16px 14px 16px;
-    background: #ffffff;
+    background: #1e293b;
   }
 
   .sticker-memo-form textarea {
     padding: 11px 14px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: #1e293b;
+    border: 1px solid #334155;
     border-radius: 8px;
-    color: #1a1a2e;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     resize: vertical;
@@ -1640,14 +1643,14 @@
     padding: 0 12px;
     cursor: pointer;
     border-radius: 8px;
-    background: #f1f5f9;
-    border: 1px solid #e5e7eb;
+    background: #334155;
+    border: 1px solid #334155;
     transition: background 0.2s, border-color 0.2s;
   }
 
   .sticker-memo-file-label:hover {
     background: #e2e8f0;
-    border-color: #d1d5db;
+    border-color: #475569;
   }
 
   .sticker-memo-file-icon {
@@ -1659,7 +1662,7 @@
 
   .sticker-memo-file-text {
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
     pointer-events: none;
     flex: 1;
   }
@@ -1678,7 +1681,7 @@
 
   .sticker-memo-file-names {
     font-size: 12px;
-    color: #6b7280;
+    color: #94a3b8;
   }
 
   .sticker-memo-list {
@@ -1689,7 +1692,7 @@
   }
 
   .sticker-memo-list .sticker-memo-item {
-    background: #ffffff;
+    background: #1e293b;
     border: 1px solid #e5e7eb !important;
     border-radius: 8px;
     padding: 11px 14px !important;
@@ -1753,7 +1756,7 @@
   
   .expand-toggle {
     font-size: 10px;
-    color: #9ca3af;
+    color: #94a3b8;
     cursor: pointer;
     width: 16px;
     text-align: center;
@@ -1771,12 +1774,12 @@
   }
   
   .sub-add-form {
-    background: #f9fafb;
+    background: #1e293b;
     cursor: default;
   }
   
   .sub-add-form:hover {
-    background: #f9fafb;
+    background: #1e293b;
   }
   
   .item-actions button[title="하위 카테고리 추가"] {
@@ -1843,7 +1846,7 @@
       min-width: 100%;
       max-height: 250px;
       border-right: none;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid #334155;
     }
 
     .panel-links {
@@ -1856,7 +1859,7 @@
       min-width: 100%;
       max-height: 300px;
       border-left: none;
-      border-top: 1px solid #e5e7eb;
+      border-top: 1px solid #334155;
     }
 
     .panel-header {
