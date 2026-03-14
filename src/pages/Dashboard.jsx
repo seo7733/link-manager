@@ -378,6 +378,42 @@ function Dashboard({ user, onLogout }) {
     }
   }
 
+  const fetchYouTubeTitle = async (url) => {
+    try {
+      const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`)
+      if (!res.ok) return null
+      const data = await res.json()
+      return data?.title || null
+    } catch {
+      return null
+    }
+  }
+
+  const handleLinkFormDrop = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const uri = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || ''
+    const url = (uri.split('\n')[0] || '').trim()
+    if (!url || !url.startsWith('http')) return
+    let title = ''
+    if (/youtube\.com|youtu\.be/i.test(url)) {
+      const videoTitle = await fetchYouTubeTitle(url)
+      title = videoTitle || new URL(url).hostname
+    } else {
+      try {
+        title = new URL(url).hostname.replace(/^www\./, '')
+      } catch {
+        title = ''
+      }
+    }
+    setNewLink(prev => ({ ...prev, url, title: title || prev.title }))
+  }
+
+  const handleLinkFormDragOver = (e) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'link'
+  }
+
   const updateLink = async (id) => {
     if (!editLink.title.trim() || !editLink.url.trim() || !editLink.category_id) return
     const oldCategoryId = links.find(l => l.id === id)?.category_id
@@ -918,7 +954,12 @@ function Dashboard({ user, onLogout }) {
           )}
 
           {showLinkForm && selectedCategory && (
-            <div className="link-form">
+            <div
+              className="link-form link-form-droppable"
+              onDragOver={handleLinkFormDragOver}
+              onDrop={handleLinkFormDrop}
+            >
+              <p className="link-form-drop-hint">브라우저에서 링크나 탭을 여기로 끌어다 놓으면 URL·제목이 자동 입력됩니다 (유튜브는 영상 제목)</p>
               <label className="link-form-checkbox">
                 <input
                   type="checkbox"
