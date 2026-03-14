@@ -861,16 +861,22 @@
   .todo-form input {
     flex: 1;
     padding: 8px 12px;
+    background: #0f172a;
     border: 1px solid #334155;
     border-radius: 8px;
+    color: #e2e8f0;
     font-size: 13px;
     outline: none;
     transition: border-color 0.2s;
   }
 
+  .todo-form input::placeholder {
+    color: #64748b;
+  }
+
   .todo-form input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #475569;
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
   }
 
   .todo-pagination-row {
